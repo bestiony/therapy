@@ -16,6 +16,5 @@ yarn-error.log
 /.vscode
 /public/uploads
 /public/scorm
-/resources/lang
 composer.lock
 11-3.zip

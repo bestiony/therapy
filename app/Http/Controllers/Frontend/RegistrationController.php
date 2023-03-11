@@ -93,7 +93,15 @@ class RegistrationController extends Controller
 
         return redirect(route('login'));
     }
-
+    public function change_phone_number(Request $request){
+        $data = $request->validate([
+            'phone_number'=>'required',
+        ]);
+        $response =  createPhoneVerification($data['phone_number']);
+        return response(
+            $response == true
+        );
+    }
 
     public function emailVerification($token)
     {

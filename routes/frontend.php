@@ -14,6 +14,7 @@ use App\Http\Controllers\Frontend\SupportTicketController;
 use App\Http\Controllers\Instructor\LiveClassController;
 use App\Http\Controllers\Student\MyCourseController;
 use App\Providers\RouteServiceProvider;
+use Google\Service\Classroom\Registration;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
@@ -35,6 +36,7 @@ Route::get('user/phone-verify', function(){
 })->name('user.phone.verification')->middleware('notverifiedphone');
 
 Route::post('user/verify_phone',[LoginController::class,'verifyPhone'])->name('verify_phone');
+Route::post('user/send_another_verification_code', [RegistrationController::class,'change_phone_number'])->name('change_phone_number');
 // Route::post('user/verify_phone',function(){
 //     // dd('gadas');
 //     $user = auth()->user();

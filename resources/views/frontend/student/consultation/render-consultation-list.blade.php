@@ -9,7 +9,7 @@
                 <th scope="col" class="color-gray font-15 font-medium">{{__('Order Id')}}</th>
                 <th scope="col" class="color-gray font-15 font-medium">{{__('Type')}}</th>
                 <th scope="col" class="color-gray font-15 font-medium">{{__('Status')}}</th>
-                 <th scope="col" class="color-gray font-15 font-medium">{{__('Action')}}</th> 
+                 <th scope="col" class="color-gray font-15 font-medium">{{__('Action')}}</th>
             </tr>
             </thead>
             <tbody>
@@ -17,7 +17,7 @@
             @foreach($orderItems as $orderItem)
                 @if($orderItem->consultation_slot_id)
                     @php
-                        
+
                         $relation = getUserRoleRelation($orderItem->consultationSlot->user)
                     @endphp
                 <tr>
@@ -97,7 +97,7 @@
                               <i class="fa fa-video"></i> Details
                             </button>
                         </div>
-                    </td> 
+                    </td>
                 </tr>
                 <tr class="show-details-content">
                     <td class="p-0" colspan="7">
@@ -125,7 +125,7 @@
                                     <div class="booking-history-details-wrap d-flex align-items-center p-20">
                                         <div class="booking-history-left">
                                             @if(@$orderItem->bookingHistory->meeting_host_name == 'zoom')
-                                                <h6 class="font-15"><a href="{{ @$orderItem->bookingHistory->join_url }}" target="_blank" class="theme-btn theme-button1 default-hover-btn green-theme-btn">Join Now</a></h6>
+                                                <h6 class="font-15"><a href="{{ $orderItem->bookingHistory->start_url }}" target="_blank" class="theme-btn theme-button1 default-hover-btn green-theme-btn">Join Now</a></h6>
                                             @elseif(@$orderItem->bookingHistory->meeting_host_name == 'bbb')
                                                 <h6 class="font-15"><a href="{{ route('student.consultation.join-bbb-meeting', $orderItem->bookingHistory->id) }}" target="_blank" class="theme-btn theme-button1 default-hover-btn green-theme-btn">Join Now</a></h6>
                                             @elseif(@$orderItem->bookingHistory->meeting_host_name == 'jitsi')
@@ -161,7 +161,7 @@
                                                     <label class="label-text-title color-heading font-medium font-16 mb-3">{{ __('Zoom Live Class Link') }}</label>
                                                     <div class="row align-items-center">
                                                         <div class="col-md-9">
-                                                            <textarea class="form-control" name="" id="" cols="30" rows="10" disabled>{{$orderItem->bookingHistory->join_url}} </textarea>
+                                                            <textarea class="form-control" name="" id="" cols="30" rows="10" disabled>{{$orderItem->bookingHistory->start_url}} </textarea>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -228,7 +228,7 @@
                         </div>
                     </td>
                 </tr>
-                @endif 
+                @endif
                 @endif
             @endforeach
 

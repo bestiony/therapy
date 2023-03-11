@@ -1108,7 +1108,8 @@ function createPhoneVerification($phone_number){
             $token = get_option("twilio_auth_token");
             $twilio_verify_sid = get_option("twilio_verify_sid");
             $twilio = new Client($twilio_sid, $token);
-            $twilio->verify->v2->services($twilio_verify_sid)
+            return $twilio->verify->v2->services($twilio_verify_sid)
             ->verifications
             ->create($phone_number, "sms");
+
 }

@@ -3,7 +3,7 @@
 @section('content')
 
     <div class="bg-page">
-        
+
         <!-- Page Header Start -->
         <header class="page-banner-header blank-page-banner-header gradient-bg position-relative">
             <div class="section-overlay">

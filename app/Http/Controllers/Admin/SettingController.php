@@ -285,16 +285,20 @@ class SettingController extends Controller
     {
         $values['BBB_SECURITY_SALT'] = $request->BBB_SECURITY_SALT;
         $values['BBB_SERVER_BASE_URL'] = $request->BBB_SERVER_BASE_URL;
-
-        if ($request->bbb_status) {
+        // if ($request->bbb_status) {
             $option = Setting::firstOrCreate(['option_key' => 'bbb_status']);
             $option->option_value = $request->bbb_status;
             $option->save();
-        }
-        if(!updateEnv($values)){
-            $this->showToastrMessage('error', __(SWR));
-            return redirect()->back();
-        }
+        // }
+
+        /** this breaks the serve by messing with the .env file
+         * only uncomment if you managed to fix it or
+         * figure a way to change .env values safely
+         */
+        // if(!updateEnv($values)){
+        //     $this->showToastrMessage('error', __(SWR));
+        //     return redirect()->back();
+        // }
 
         Artisan::call('optimize:clear');
 

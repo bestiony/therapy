@@ -1,7 +1,7 @@
 @extends('layouts.auth')
 
 @section('content')
-    <!-- Sing In Area Start -->
+    <!-- Verify Phone Area Start -->
     <section class="sign-up-page p-0">
         <div class="container-fluid p-0">
             <div class="row">
@@ -28,12 +28,16 @@
                                 <p class="mb-2">{{ __(get_option('forgot_subtitle')) }}</p>
                             </div> --}}
 
-                            <div class="row mb-30">
-                                <div class="col-md-12">
+                            <div class="row mb-30 d-flex align-items-end">
+                                <div class="col-md-8">
                                     <label class="label-text-title color-heading font-medium font-16 mb-3">{{ __('Phone Number') }}</label>
-                                    <input value="{{auth()->user()->phone_number}}" type="text" name="phone_number" class="form-control" placeholder="{{ __('Type your phone number') }}" required>
+                                    <input value="{{auth()->user()->phone_number}}" type="text" name="phone_number" id="phone_number" class="form-control" placeholder="{{ __('Type your phone number') }}" required>
                                 </div>
+                                <a href="#" id="send_again" class="theme-btn theme-button1 theme-button3 font-15 fw-bold col-4">send again</a>
                             </div>
+                            <div id="success_message" class="alert alert-success d-none" role="alert">
+                                This is a success alert—check it out!
+                              </div>
                             <div class="row mb-30">
                                 <div class="col-md-12">
                                     <label class="label-text-title color-heading font-medium font-16 mb-3">{{ __('Verification Code') }}</label>
@@ -54,5 +58,43 @@
             </div>
         </div>
     </section>
-    <!-- Sing In Area End -->
+    @push('script')
+    <script>
+        $(document).ready(function() {
+        // Wait for the document to be ready
+        $("#send_again").click(function() {
+            if(!$("#success_message").hasClass('d-none')){
+                $("#success_message").addClass('d-none')
+            }
+            // When the "send_again" button is clicked
+            var csrf_token = "{{csrf_token()}}";
+
+            var phone_number = $("#phone_number").val(); // Get the value of the phone_number input
+            $.ajax({
+            url: "{{route('change_phone_number')}}",
+            method: "POST",
+            data: {
+                phone_number: phone_number,
+                _token : csrf_token,
+            }, // Send the phone number as data
+            success: function() {
+                // If the request succeeds
+
+                $("#success_message").removeClass('d-none') // Set the success message text
+                $("#success_message").text("Verification code sent!"); // Set the success message text
+            },
+            error: function() {
+                // If the request fails
+                $("#success_message").text("Error sending verification code!"); // Set the error message text
+            }
+            });
+        });
+        });
+
+    </script>
+    @endpush
+
+
+    <!-- Verify Phone Area End -->
+
 @endsection

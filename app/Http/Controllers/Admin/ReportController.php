@@ -314,8 +314,14 @@ class ReportController extends Controller
                 $target_url = route('student.my-learning');
 
                 /** ====== Send notification to instructor =========*/
-                $text2 = "New student enrolled";
-                $target_url2 = route('instructor.all-student');
+                if($orderItem->type == ITEM_TYPE_COURSE){
+                    $text2 = "New student enrolled";
+                    $target_url2 = route('instructor.all-student');
+                } else{
+                    $text2 = "New Consultation";
+                    $target_url2 = route('instructor.bookingRequest');
+                }
+
                 $this->send($text2, 2, $target_url2, $orderItem->consultationSlot->user_id);
                 /** ====== Send notification to instructor =========*/
 

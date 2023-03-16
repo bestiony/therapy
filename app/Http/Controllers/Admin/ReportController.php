@@ -319,7 +319,7 @@ class ReportController extends Controller
                     $target_url2 = route('instructor.all-student');
                 } else{
                     $text2 = "New Consultation";
-                    $target_url2 = route('instructor.bookingRequest');
+                    $target_url2 = route('instructor.bookingHistory');
                 }
 
                 $this->send($text2, 2, $target_url2, $orderItem->consultationSlot->user_id);

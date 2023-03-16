@@ -1455,7 +1455,7 @@ class CartManagementController extends Controller
                     $booking->time = is_array($cart['consultation_details']) ? $cart['consultation_details'][0]->time : null;
                     $booking->duration = is_array($cart['consultation_details']) ? ($cart['consultation_details'][0]->clientOrderType == "hourly" ? $cart['consultation_details'][0]->duration : " one month") : null;
                     $booking->type = $cart->consultation_available_type;
-                    $booking->status = 0; //Pending
+                    $booking->status = 1; //Pending
                     $booking->save();
 
                     //End:: Add Booking History

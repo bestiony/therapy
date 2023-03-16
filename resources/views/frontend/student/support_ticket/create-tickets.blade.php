@@ -1,7 +1,7 @@
 @extends('frontend.layouts.app')
 
 @section('content')
-
+    
 <div class="bg-page">
     <!-- Course Single Page Header Start -->
     <header class="page-banner-header gradient-bg position-relative">

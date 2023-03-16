@@ -12,12 +12,13 @@ use App\Models\TicketPriority;
 use App\Models\TicketRelatedService;
 use App\Traits\General;
 use App\Traits\ImageSaveTrait;
+use App\Traits\SendNotification;
 use Illuminate\Http\Request;
 
 class SupportTicketController extends Controller
 {
     use General, ImageSaveTrait;
-
+    use SendNotification;
     public function supportTicketFAQ()
     {
         $data['pageTitle'] = 'Support Ticket';
@@ -49,6 +50,7 @@ class SupportTicketController extends Controller
 
     public function store(TicketRequest $request)
     {
+
         $ticket = new Ticket();
         $ticket->ticket_number = 100;
         $ticket->name = $request->name;
@@ -71,7 +73,11 @@ class SupportTicketController extends Controller
         }
 
         $message->save();
-
+        // send notification to admin
+        $text = 'new support ticket';
+        $target_url = route('support-ticket.admin.show', $ticket->uuid);
+        $this->send($text, 1,$target_url,null );
+        // end notification
         $this->showToastrMessage('success', __('Ticket Created Successfully'));
         return redirect()->back();
     }

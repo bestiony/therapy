@@ -14,13 +14,14 @@ use App\Models\TicketRelatedService;
 use App\Tools\Repositories\Crud;
 use App\Traits\General;
 use App\Traits\ImageSaveTrait;
+use App\Traits\SendNotification;
 use Illuminate\Http\Request;
 use Auth;
 
 class SupportTicketController extends Controller
 {
     use General, ImageSaveTrait;
-
+    use SendNotification;
     protected $modalTicket, $modelTicketDepartment, $modelTicketPriority, $modelTicketService;
 
     public function __construct(Ticket $modalTicket,TicketDepartment $modelTicketDepartment, TicketPriority $modelTicketPriority, TicketRelatedService $modelTicketService)
@@ -130,6 +131,13 @@ class SupportTicketController extends Controller
 
         $message->save();
 
+        // send client notification
+        $ticket = Ticket::find($request->ticket_id);
+
+        $text = 'an admin has replied to your support ticket';
+        $target_url = route('student.support-ticket.show', $ticket->uuid);
+        $this->send($text,3, $target_url,$ticket->user_id);
+        // end send
         return redirect()->back();
     }
 

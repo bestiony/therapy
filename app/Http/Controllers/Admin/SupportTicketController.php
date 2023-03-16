@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\AdminRepliedToSuppportTicketMail;
 use App\Models\Assignment;
 use App\Models\AssignmentSubmit;
 use App\Models\Course;
@@ -11,12 +12,14 @@ use App\Models\TicketDepartment;
 use App\Models\TicketMessages;
 use App\Models\TicketPriority;
 use App\Models\TicketRelatedService;
+use App\Models\User;
 use App\Tools\Repositories\Crud;
 use App\Traits\General;
 use App\Traits\ImageSaveTrait;
 use App\Traits\SendNotification;
 use Illuminate\Http\Request;
 use Auth;
+use Illuminate\Support\Facades\Mail;
 
 class SupportTicketController extends Controller
 {
@@ -137,6 +140,14 @@ class SupportTicketController extends Controller
         $text = 'an admin has replied to your support ticket';
         $target_url = route('student.support-ticket.show', $ticket->uuid);
         $this->send($text,3, $target_url,$ticket->user_id);
+
+        $user = User::find($ticket->user_id);
+        $data = [
+            'email_title' => 'New Message in Your Support Tickets',
+            'user_name' => $user->name,
+            'target_url' => $target_url,
+        ];
+        Mail::to($user)->send(new AdminRepliedToSuppportTicketMail($data));
         // end send
         return redirect()->back();
     }

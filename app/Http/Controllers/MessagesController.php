@@ -27,14 +27,14 @@ class MessagesController extends Controller
         }
         $data['conversations'] = Conversation::with(['messages','therapist','patient','order'])->wherePatientId($user->id)->orderBy('id','desc')->get();
         $data['selected_conversation'] = $selected_conversation;
-        $data['current_conversation'] = Conversation::find($selected_conversation);
-        $data['messages'] = Messages::whereConversationId($selected_conversation)->get();
-        $data['messages']->each(function($item, $key) use($user){
-            if($item->sender_id != $user->id){
-                $item->is_seen = true;
-                $item->update();
-            }
-        });
+        // $data['current_conversation'] = Conversation::find($selected_conversation);
+        // $data['messages'] = Messages::whereConversationId($selected_conversation)->get();
+        // $data['messages']->each(function($item, $key) use($user){
+        //     if($item->sender_id != $user->id){
+        //         $item->is_seen = true;
+        //         $item->update();
+        //     }
+        // });
         $data['user'] = $user;
         return view('frontend.student.messages.index',$data);
     }
@@ -63,18 +63,19 @@ class MessagesController extends Controller
             $fileName = 'storage/'. CONVERSATIONS_FILES_STORAGE . $fileName;
         }
         $last_message = $conversation->messages->last();
-            if(!$last_message || $last_message->is_seen){
-                $text = 'you have a new message from ' . $user->name ;
-                $url = route('instructor.messages',['convo'=>$conversation->id]);
-                $reciever = $conversation->therapist_id;
-                $this->send($text, USER_ROLE_INSTRUCTOR,$url, $reciever);
-                $email_data =[
-                    'email_title'=>'New Message from '. $user->name .' on '. get_option('app_name'),
-                    'sender_name' => $user->name,
-                    'user_name'=>User::find($reciever)->name,
-                    'conversation_id'=>$conversation->id,
-                ];
-                Mail::to(User::find($reciever))->send(new NewMessageFromStudentMail($email_data));
+            if(!$last_message || $last_message->is_seen){ 
+            notify_therapist_about_patient_message($conversation, $user);
+                // $text = 'you have a new message from ' . $user->name ;
+                // $url = route('instructor.messages',['convo'=>$conversation->id]);
+                // $reciever = $conversation->therapist_id;
+                // $this->send($text, USER_ROLE_INSTRUCTOR,$url, $reciever);
+                // $email_data =[
+                //     'email_title'=>'New Message from '. $user->name .' on '. get_option('app_name'),
+                //     'sender_name' => $user->name,
+                //     'user_name'=>User::find($reciever)->name,
+                //     'conversation_id'=>$conversation->id,
+                // ];
+                // Mail::to(User::find($reciever))->send(new NewMessageFromStudentMail($email_data));
         }
         $message = Messages::create([
             'sender_id'=> $user->id,

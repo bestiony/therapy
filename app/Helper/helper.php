@@ -1,5 +1,6 @@
 <?php
 
+use App\Mail\NewMessageFromStudentMail;
 use App\Models\AffiliateHistory;
 use App\Models\BookingHistory;
 use App\Models\Bundle;
@@ -35,7 +36,8 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\PaidForNewConsultationMail;
 use App\Mail\PaidForMonthMail;
 use App\Mail\PaidForCourseMail;
-
+use App\Models\Notification;
+use App\Mail\NewMessageFromInstructorMail;
 function staticMeta($id)
 {
     $meta = \App\Models\Meta::find($id);
@@ -1112,4 +1114,29 @@ function createPhoneVerification($phone_number){
             ->verifications
             ->create($phone_number, "sms");
 
+}
+
+function notify_therapist_about_patient_message($conversation , $sender){
+    $text = 'you have a new message from ' . $sender->name;
+    $url = route('instructor.messages', ['convo' => $conversation->id]);
+    $reciever = $conversation->therapist_id;
+    send($text, USER_ROLE_INSTRUCTOR, $url, $reciever);
+    $email_data = [
+        'email_title' => 'New Message from ' . $sender->name . ' on ' . get_option('app_name'),
+        'sender_name' => $sender->name,
+        'user_name' => User::find($reciever)->name,
+        'conversation_id' => $conversation->id,
+    ];
+    Mail::to(User::find($reciever))->send(new NewMessageFromStudentMail($email_data));
+}
+
+function send($text, $user_type, $target_url = null, $user_id = null)
+{
+    $notification = new Notification();
+    $notification->user_id = $user_id;
+    $notification->text = $text;
+    $notification->target_url = $target_url;
+    $notification->user_type = $user_type;
+    $notification->save();
+    return $notification;
 }

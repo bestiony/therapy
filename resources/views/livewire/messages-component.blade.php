@@ -1,70 +1,20 @@
-@extends('frontend.layouts.app')
 
-@section('content')
-    @push('style')
-        <link rel="stylesheet" href="{{ asset('frontend/assets/css/messages.css') }}">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
-        @livewireStyles
-    @endpush
-    @push('script')
-        @livewireScripts
-    @endpush
-    <div class="inner-container min-vh-100">
-        <div class="row flex-wrap vh-100">
-            @php
-                $user_timezone = session('timezone');
-                // dd(Carbon\Carbon::now()->timezone($user_timezone));
-            @endphp
-            <section id="discussions" class="discussions col-12 col-sm-4  overflow-auto position-relative">
-                <div class="discussion search ">
-                    <div class="searchbar">
-                        <i class="fa fa-search" aria-hidden="true"></i>
-                        <input type="text" placeholder="Search..."></input>
-                    </div>
-                </div>
-                @forelse ($conversations as $convo)
-                    @php
-
-                        $latestMessage = $convo->messages->last();
-                        $time = $latestMessage ? $latestMessage->created_at : false;
-                        $now = Carbon\Carbon::now('Asia/Qatar');
-                        $timeSinceLatestMessage = $time ? $now->diffForHumans($time, true) : '';
-
-                        // dd($time);
-
-                    @endphp
-                    <div
-                        class="discussion {{ $selected_conversation == $convo->id ? 'message-active' : '' }} position-relative">
-                        <div class="photo"
-                            style="background-image: url({{ asset($convo->therapist ? $convo->therapist->image : '') }});">
-                            {{-- <div class="online"></div> --}}
-                            <a class="stretched-link" href="{{ route('student.messages', ['convo' => $convo->id]) }}"></a>
-                        </div>
-                        <div class="desc-contact">
-                            <p class="name">{{ $convo->therapist ? $convo->therapist->name : '' }}
-                                [O-{{ $convo->order->id }}]</p>
-                            <p class="message">{{ $latestMessage ? $latestMessage->content : '' }}</p>
-                        </div>
-                        @if ($time)
-                            <div class="timer text-center">{{ $timeSinceLatestMessage }}</div>
-                        @endif
-                    </div>
-                @empty
-                    <p class="text-center text-danger my-4">No conversations available </p>
-                @endforelse
-
-            </section>
-            @livewire('messages-component', ['selected_conversation' => $selected_conversation ,'user_timezone'=>$user_timezone])
-            {{-- <section id="messages" class="chat col-12 col-sm-8  vh-100 align-items-end">
+<section id="messages" class="chat col-12 col-sm-8  vh-100 align-items-end" >
                 <div class="header-chat col-12 justify-content-between pr-6">
                     <div class="d-flex ">
 
                         <i class="icon fa fa-user-o" aria-hidden="true"></i>
                         <p class="name">{{ $current_conversation ? $current_conversation->therapist->name : '' }}</p>
                     </div>
+                    {{-- <i class="icon clickable fa fa-ellipsis-h mx-4 " aria-hidden="true" data-bs-toggle="dropdown"
+                        aria-expanded="false"></i>
 
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">book another session</a></li>
+
+                    </ul> --}}
                 </div>
-                <div id="messages_container" class="messages-chat overflow-auto  ">
+                <div id="messages_container" class="messages-chat overflow-auto" wire:poll  >
 
                     @php
                         $sender = 0;
@@ -108,6 +58,7 @@
                                 <div class="message">
                                     <div class="photo"
                                         style="background-image: url({{ asset($message->sender->image) }});">
+                                        {{-- <div class="online"></div> --}}
                                     </div>
                                     <p class="text"> {{ $message->content }} </p>
                                 </div>
@@ -135,19 +86,20 @@
                     @endforelse
 
                 </div>
+
                 @if (isset($current_conversation))
                     @if ($current_conversation->status == 'active')
-                        <form enctype="multipart/form-data" action="{{ route('student.send_message') }}" method="POST"
+                        <form enctype="multipart/form-data" wire:submit.prevent='patient_sends_message' action="{{ route('student.send_message') }}" method="POST"
                             class="">
                             @csrf
                             <div class="footer-chat col-12 mt-10 p-20">
-                                <input type="hidden" name="conversation_id" value="{{ $selected_conversation }}">
+                                <input type="hidden" name="conversation_id" value="{{ $selected_conversation }}" >
                                 <label for="file-upload" class="custom-file-upload">
                                     <i class="fa fa-cloud-upload">Upload</i>
                                 </label>
                                 <input id="file-upload" type="file" name="shared_file" />
-                                <input name="content" type="text" class="write-message col-10"
-                                    placeholder="Type your message here" />
+                                <input wire:model.defer='content' name="content" type="text" class="write-message col-10"
+                                    placeholder="Type your message here"  required/>
                                 <button type="submit" class="ms-auto">
                                     <i class="icon send fa fa-paper-plane-o clickable   mb-2" aria-hidden="true"></i>
                                 </button>
@@ -163,10 +115,5 @@
                         </div>
                     @endif
                 @endif
-            </section> --}}
+            </section>
 
-
-        </div>
-    </div>
-
-@endsection

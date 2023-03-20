@@ -425,8 +425,8 @@ class MainIndexController extends Controller
         }
 
         if(is_array($request->consultation_day)){
-            $users->leftJoin('instructor_consultation_day_statuses as icds', 'icds.user_id', '=', 'users.id');
-            $users->whereIn('icds.day', $request->consultation_day);
+            $users->leftJoin('consultation_slots as cs', 'cs.user_id', '=', 'users.id');
+            $users->whereIn('cs.day', $request->consultation_day);
         }
 
 

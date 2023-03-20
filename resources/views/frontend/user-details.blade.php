@@ -342,13 +342,19 @@ $userRelation = getUserRoleRelation($user);
                             @endphp
                             @endif
                             <div class="instructor-bottom-item mt-20">
-                                <button type="button" data-type="{{ @$user->$userRelation->available_type }}"
+                                <button type="button"
+                                    data-type="{{ @$user->$userRelation->available_type }}"
                                     data-booking_instructor_user_id="{{ @$user->$userRelation->user_id }}"
-                                    data-hourly_fee="{{ $hourly_fee }}" data-hours_per_month="{{ $hours_per_month }}" data-monthly_rate="{{get_currency_symbol().' '.$user->$userRelation->monthly_rate .'/'. $hours_per_month . __('Session') }}"
-                                    data-hourly_rate="{{ @$user->$userRelation->hourly_rate }}" data-monthly_rate-pure = "{{$user->$userRelation->monthly_rate}}"
+                                    data-hourly_fee="{{ $hourly_fee }}"
+                                    data-hours_per_month="{{ $hours_per_month }}"
+                                    data-monthly_rate="{{get_currency_symbol().' '.$user->$userRelation->monthly_rate .'/'. $hours_per_month . __('Session') }}"
+                                    data-hourly_rate="{{ @$user->$userRelation->hourly_rate }}"
+                                    data-monthly_rate-pure = "{{$user->$userRelation->monthly_rate}}"
                                     data-get_off_days_route="{{ route('getOffDays', @$user->$userRelation->user_id) }}"
                                     class="theme-btn theme-button1 theme-button3 w-100 bookSchedule"
-                                    data-bs-toggle="modal" data-bs-target="#consultationBookingModal">{{ __('Book
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#consultationBookingModal">
+                                    {{ __('Book
                                     Schedule') }}
                                 </button>
                             </div>

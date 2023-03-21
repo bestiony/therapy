@@ -1,6 +1,7 @@
 <?php
 
 use App\Mail\NewMessageFromStudentMail;
+use App\Mail\InstructorApprovedConsultationMail;
 use App\Models\AffiliateHistory;
 use App\Models\BookingHistory;
 use App\Models\Bundle;
@@ -38,6 +39,8 @@ use App\Mail\PaidForMonthMail;
 use App\Mail\PaidForCourseMail;
 use App\Models\Notification;
 use App\Mail\NewMessageFromInstructorMail;
+use App\Models\Conversation;
+
 function staticMeta($id)
 {
     $meta = \App\Models\Meta::find($id);
@@ -367,27 +370,27 @@ function getVideoFile($file)
     return asset($file);
 }
 
-function send_payment_succeeded_email(Order $order ,$user){
+function send_payment_succeeded_email(Order $order, $user)
+{
     $data = [
-        'email_title'=>'Payment Received',
-        'user_name'=>$user->name,
+        'email_title' => 'Payment Received',
+        'user_name' => $user->name,
     ];
-    foreach($order->items as $item){
-        if($item->type == 4){
+    foreach ($order->items as $item) {
+        if ($item->type == 4) {
 
-            if($item->consultation_type == "hourly"){
+            if ($item->consultation_type == "hourly") {
                 Mail::to($user)->send(new PaidForNewConsultationMail($data));
-            }else{
+            } else {
                 $data['email_title'] .= ' - Monthly Follow-Up Services';
                 Mail::to($user)->send(new PaidForMonthMail($data));
             }
-        }else{
+        } else {
             $data['email_title'] .= ' - Tutorial Services';
             $data['course_slug'] = $item->course->slug;
             Mail::to($user)->send(new PaidForCourseMail($data));
         }
     }
-
 }
 
 function notificationForUser()
@@ -823,7 +826,7 @@ if (!function_exists('setEnrollment')) {
 if (!function_exists('getUserRoleRelation')) {
     function getUserRoleRelation($user)
     {
-        if(!$user){
+        if (!$user) {
             return 'student';
         }
         if ($user->role == USER_ROLE_INSTRUCTOR) {
@@ -1045,11 +1048,11 @@ if (!function_exists('getBeneficiaryAccountDetails')) {
         $returnData = '';
         if (!is_null($item)) {
             if ($item->type == BENEFICIARY_BANK) {
-                $returnData .= $item->bank_account_name.' - '.$item->bank_name.'['.$item->bank_account_number.']';
+                $returnData .= $item->bank_account_name . ' - ' . $item->bank_name . '[' . $item->bank_account_number . ']';
             } elseif ($item->type == BENEFICIARY_CARD) {
-                $returnData .= $item->card_holder_name.' - '.$item->card_number;
+                $returnData .= $item->card_holder_name . ' - ' . $item->card_number;
             } elseif ($item->type == BENEFICIARY_PAYPAL) {
-                $returnData .= 'Paypal - '.$item->paypal_email;
+                $returnData .= 'Paypal - ' . $item->paypal_email;
             }
         }
 
@@ -1061,7 +1064,7 @@ if (!function_exists('updateEnv')) {
     {
         if (count($values) > 0) {
             foreach ($values as $envKey => $envValue) {
-                setEnvironmentValue($envKey,$envValue);
+                setEnvironmentValue($envKey, $envValue);
             }
             return true;
         }
@@ -1074,7 +1077,7 @@ function setEnvironmentValue($envKey, $envValue)
         $str = file_get_contents($envFile);
         $str .= "\n"; // In case the searched variable is in the last line without \n
         $keyPosition = strpos($str, "{$envKey}=");
-        if($keyPosition) {
+        if ($keyPosition) {
             $endOfLinePosition = strpos($str, PHP_EOL, $keyPosition);
             $oldLine = substr($str, $keyPosition, $endOfLinePosition - $keyPosition);
             $envValue = str_replace(chr(92), "\\\\", $envValue);
@@ -1087,7 +1090,7 @@ function setEnvironmentValue($envKey, $envValue)
                 fwrite($fp, $str);
                 fclose($fp);
             }
-        }else if(strtoupper($envKey) == $envKey){
+        } else if (strtoupper($envKey) == $envKey) {
             $envValue = str_replace(chr(92), "\\\\", $envValue);
             $envValue = str_replace('"', '\"', $envValue);
             $newLine = "{$envKey}=\"{$envValue}\"\n";
@@ -1098,33 +1101,31 @@ function setEnvironmentValue($envKey, $envValue)
             fclose($fp);
         }
         return true;
-    }catch (\Exception $e){
+    } catch (\Exception $e) {
         return false;
     }
-
-
 }
 
-function createPhoneVerification($phone_number){
-            $twilio_sid = get_option("twilio_sid");
-            $token = get_option("twilio_auth_token");
-            $twilio_verify_sid = get_option("twilio_verify_sid");
-            $twilio = new Client($twilio_sid, $token);
-            return $twilio->verify->v2->services($twilio_verify_sid)
-            ->verifications
-            ->create($phone_number, "sms");
-
+function createPhoneVerification($phone_number)
+{
+    $twilio_sid = get_option("twilio_sid");
+    $token = get_option("twilio_auth_token");
+    $twilio_verify_sid = get_option("twilio_verify_sid");
+    $twilio = new Client($twilio_sid, $token);
+    return $twilio->verify->v2->services($twilio_verify_sid)
+        ->verifications
+        ->create($phone_number, "sms");
 }
 
-function notify_user_about_chat_message($conversation , $sender, $is_patient){
+function notify_user_about_chat_message($conversation, $sender, $is_patient)
+{
     $text = 'you have a new message from ' . $sender->name;
 
-    if ($is_patient){
+    if ($is_patient) {
         $url = route('instructor.messages', ['convo' => $conversation->id]);
         $reciever = $conversation->therapist_id;
         send($text, USER_ROLE_INSTRUCTOR, $url, $reciever);
-
-    }else{
+    } else {
         $url = route('student.messages', ['convo' => $conversation->id]);
         $reciever = $conversation->patient_id;
         send($text, USER_ROLE_STUDENT, $url, $reciever);
@@ -1137,9 +1138,9 @@ function notify_user_about_chat_message($conversation , $sender, $is_patient){
         'conversation_id' => $conversation->id,
     ];
 
-    if ($is_patient){
+    if ($is_patient) {
         Mail::to(User::find($reciever))->send(new NewMessageFromStudentMail($email_data));
-    }else {
+    } else {
         Mail::to(User::find($reciever))->send(new NewMessageFromInstructorMail($email_data));
     }
 }
@@ -1153,4 +1154,28 @@ function send($text, $user_type, $target_url = null, $user_id = null)
     $notification->user_type = $user_type;
     $notification->save();
     return $notification;
+}
+
+function create_conversation($booking)
+{
+    $conversation = Conversation::whereOrderId($booking->order_id)->first();
+    if (!$conversation) {
+        $conversation  = Conversation::create([
+            'patient_id' => $booking->student_user_id,
+            'therapist_id' => $booking->instructor_user_id,
+            'order_id' => $booking->order_id,
+        ]);
+    }else{
+        return;
+    }
+    $text = "Your Consultation booking request was approved by the instructor";
+    $target_url = route('student.my-consultation');
+    send($text, 3, $target_url, $booking->student_user_id);
+    $email_data = [
+        'email_title' => 'Consultation Approved by ' . $booking->instructorUser->name . ' on ' . get_option('app_name'),
+        'sender_name' => $booking->instructorUser->name,
+        'user_name' => $booking->user->name,
+        'conversation_id' => $conversation->id,
+    ];
+    Mail::to($booking->user)->send(new InstructorApprovedConsultationMail($email_data));
 }

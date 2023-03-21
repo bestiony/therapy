@@ -49,7 +49,7 @@
             </div>
         </div> --}}
 
-        {{-- <div class="search-instructor-price  align-items-center mb-15">
+        <div class="search-instructor-price  align-items-center mb-15">
             @if ($user->consultation_available == 1)
                 <div class="d-flex">
 
@@ -97,7 +97,7 @@
                     class="search-instructor-old-price text-decoration-line-through color-gray font-13 font-medium mx-1">
                 </div>
             @endif
-        </div> --}}
+        </div>
         <div class="search-instructor-price  align-items-center mb-15">
             @if ($user->instructor)
             @foreach($user->instructor->skills as $skill)

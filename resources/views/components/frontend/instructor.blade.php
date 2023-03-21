@@ -50,19 +50,19 @@
         </div> --}}
 
         <div class="search-instructor-price  align-items-center mb-15">
-            @if ($user->consultation_available == 1)
+            @if ($user->instructor->consultation_available == 1)
                 <div class="d-flex">
 
-                @if ($user->hourly_rate < $user->hourly_old_rate)
+                @if ($user->instructor->hourly_rate < $user->instructor->hourly_old_rate)
                     <div class="search-instructor-new-price font-medium mx-1">
-                        {{ $user->hourly_rate }}/{{ __('Session') }}
+                        {{ $user->instructor->hourly_rate }}/{{ __('Session') }}
                     </div>
                     <div
                         class="search-instructor-old-price text-decoration-line-through color-gray font-13 font-medium mx-1">
-                        {{ $user->hourly_old_rate }}</div>
+                        {{ $user->instructor->hourly_old_rate }}</div>
                 @else
                     <div class="search-instructor-new-price font-medium mx-1">
-                        {{ $user->hourly_rate }}/{{ __('Session') }}
+                        {{ $user->instructor->hourly_rate }}/{{ __('Session') }}
                     </div>
                     <div
                         class="search-instructor-old-price text-decoration-line-through color-gray font-13 font-medium mx-1">
@@ -72,23 +72,23 @@
 
                 <div class="d-flex">
 
-                @if ($user->monthly_rate < $user->monthly_old_rate)
+                @if ($user->instructor->monthly_rate < $user->instructor->monthly_old_rate)
                     <div class="search-instructor-new-price font-medium mx-1">
-                        {{ $user->monthly_rate }} {{get_currency_symbol()}}/{{ __('Month') }}
+                        {{ $user->instructor->monthly_rate }} {{get_currency_symbol()}}/{{ __('Month') }}
                     </div>
                     <div
                         class="search-instructor-old-price text-decoration-line-through color-gray font-13 font-medium mx-1">
-                        {{ $user->monthly_old_rate }} {{get_currency_symbol()}}</div>
+                        {{ $user->instructor->monthly_old_rate }} {{get_currency_symbol()}}</div>
                 @else
                     <div class="search-instructor-new-price font-medium mx-1">
-                        {{ $user->monthly_rate }}{{get_currency_symbol()}}/{{ __('Month') }}
+                        {{ $user->instructor->monthly_rate }}{{get_currency_symbol()}}/{{ __('Month') }}
                     </div>
                     <div
                         class="search-instructor-old-price text-decoration-line-through color-gray font-13 font-medium mx-1">
                     </div>
                 @endif
                 <div class="search-instructor-new-price font-medium mx-1">
-                    {{ $user->hours_per_month }} {{ __('Session') }} /{{ __('Month') }}
+                    {{ $user->instructor->hours_per_month }} {{ __('Session') }} /{{ __('Month') }}
                 </div>
             </div>
             @else

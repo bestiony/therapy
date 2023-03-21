@@ -277,7 +277,7 @@ $userRelation = getUserRoleRelation($user);
                                         <span class="iconify" data-icon="la:book-reader"></span>
                                         <span>{{ @$totalStudent }} {{ __('Students') }}</span>
                                     </li>
-                                    <li>
+                                    <li style="display:none;">
                                         <span class="iconify"
                                             data-icon="healthicons:i-exam-multiple-choice-outline"></span>
                                         <span>{{ @$total_quizzes }} {{ __('Quizzes') }}</span>
@@ -289,9 +289,9 @@ $userRelation = getUserRoleRelation($user);
                                     <li>
                                         <span class="iconify"
                                             data-icon="fluent:device-meeting-room-remote-24-regular"></span>
-                                        <span>{{ $totalMeeting }} {{ __(' Meetings') }}</span>
+                                        <span>{{ $totalMeeting }} {{ __(' Online Consultions') }}</span>
                                     </li>
-                                    <li>
+                                    <li style="display:none;">
                                         <span class="iconify" data-icon="bi:star"></span>
                                         <span>{{ $total_rating }} Reviews ({{ number_format(@$average_rating, 1) }}
                                             average)</span>

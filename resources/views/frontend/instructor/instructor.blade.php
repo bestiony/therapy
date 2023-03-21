@@ -51,6 +51,7 @@
                                         <option value="desc">{{ __('Oldest') }}</option>
                                     </select>
                                 </div>
+                                 <div class="hidden-lg filter-box-short-icon color-gray font-15"><p><a href="#filtteer">{{ __('Filter') }} </a></p></div>
                             </div>
                         </div>
 
@@ -59,9 +60,14 @@
                 </div>
             </div>
             <div class="row shop-content">
+                <!-- Show all Instructor area start-->
+                <div class="col-md-8 col-lg-9 col-xl-9 show-all-course-area-wrap" id="instructorParentBlock">
+                    @include('frontend.instructor.render_instructor')
+                    <!-- all courses grid End-->
+                </div>
                 <!-- instructor Sidebar start-->
                 <div class="col-md-4 col-lg-3 col-xl-3">
-                    <div class="courses-sidebar-area bg-light">
+                    <div class="courses-sidebar-area bg-light" id="filtteer">
 
                         <div class="accordion" id="accordionPanelsStayOpenExample">
 
@@ -125,7 +131,7 @@
                                 </div>
                             </div>
 
-                            <div class="accordion-item course-sidebar-accordion-item">
+                            <div style="display:none;" class="accordion-item course-sidebar-accordion-item">
                                 <h2 class="accordion-header course-sidebar-title" id="panelsStayOpen-headingEight">
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseEight" aria-expanded="false" aria-controls="panelsStayOpen-collapseEight">
                                         {{ __('Meeting Types') }}
@@ -164,7 +170,7 @@
                                 </div>
                             </div>
 
-                            <div class="accordion-item course-sidebar-accordion-item">
+                            <div style="display:none;" class="accordion-item course-sidebar-accordion-item">
                                 <h2 class="accordion-header course-sidebar-title" id="panelsStayOpen-headingThree">
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
                                         {{ __('Rating') }}
@@ -350,11 +356,7 @@
                 </div>
                 <!-- instructor Sidebar End-->
 
-                <!-- Show all Instructor area start-->
-                <div class="col-md-8 col-lg-9 col-xl-9 show-all-course-area-wrap" id="instructorParentBlock">
-                    @include('frontend.instructor.render_instructor')
-                    <!-- all courses grid End-->
-                </div>
+                
             </div>
             <!-- Show all Instructor area End-->
         </div>

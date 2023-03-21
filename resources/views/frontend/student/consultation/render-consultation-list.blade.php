@@ -109,8 +109,7 @@
                                         <h6 class="font-15">{{ __('Instructor Details') }}</h6>
                                         <hr>
                                         <p><h6 class="font-15 d-inline">{{ __('Name') }}</h6>: {{ @$orderItem->bookingHistory->instructorUser->instructor->full_name }}</p>
-                                        <p><h6 class="font-15 d-inline">{{ __('Email') }}</h6>: {{ @$orderItem->bookingHistory->instructorUser->email }}</p>
-                                        <p><h6 class="font-15 d-inline">{{ __('Phone Number') }}</h6>: {{ @$orderItem->bookingHistory->instructorUser->instructor->phone_number }}</p>
+                                       
                                     </div>
                                 </div>
 

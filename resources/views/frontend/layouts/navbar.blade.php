@@ -70,7 +70,7 @@
     <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id=""
                                 data-bs-toggle="dropdown">
-                                Our Therapists
+                               {{ __('Our Therapists') }}
                             </a>
                             <ul class="dropdown-menu {{$selectedLanguage->rtl == 1 ? 'dropdown-menu-end' : ''}}">
                                 @foreach($categories as $category)
@@ -84,7 +84,7 @@
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                                <li><a href="{{ route('instructor') }}">All Our Therapists</a></li>
+                                <li><a href="{{ route('instructor') }}"> {{ __('All Our Therapists') }}</a></li>
                             </ul>
                         </li>
                         <li style="display:none;" class="nav-item dropdown">
@@ -124,7 +124,7 @@
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                                <li><a href="{{ route('organizations') }}">All Our Organizations</a></li>
+                                <li><a href="{{ route('organizations') }}"> {{ __('All Our Organizations') }}</a></li>
                             </ul>
                         </li>
                         <li  class="nav-item dropdown">

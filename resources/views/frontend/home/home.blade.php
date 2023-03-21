@@ -6,14 +6,14 @@
     <header class="hero-area gradient-bg position-relative">
         <video id="video_background" preload="auto" autoplay="autoplay" loop="true" muted="muted"
             style="position: absolute;top:2%;bottom:0; right:-140px; z-index: 100; width: 1536px; height: 724px;">
-            <source src="https://cc.engwalaa.com//uploads_demo/home/video.mp4" type="video/mp4">
+            <source src="https://my-therapists.com/uploads_demo/home/video.mp4" type="video/mp4">
             <source src="video/video.ogg" type="video/ogg">
             <source src="video/video.webm" type="video/webm">bgvideo
         </video>
         <div class="section-overlay">
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-12 col-md-9">
+                    <div class="col-12 col-md-12">
                         <div class="hero-content" style="z-index: 100">
                             <h6 class="come-for-learn-text">
                                 @foreach (@$home->banner_mini_words_title ?? [] as $banner_mini_word)
@@ -43,10 +43,13 @@
                             @endif
                         </div>
                     </div>
-
-                    <div class="col-12 col-md-3 ">
-
-                    </div>
+<div class="hidden-lg">
+                       <video id="video_background" preload="auto" autoplay="autoplay" loop="true" muted="muted"
+            style=" z-index: 100; width: auto; height: 224px;">
+            <source src="http://theraphy.almustashar.net/uploads_demo/home/video2.mp4" type="video/mp4">
+            <source src="video/video2.ogg" type="video/ogg">
+            <source src="video/video2.webm" type="video/webm">bgvideo
+        </video></div>
                 </div>
             </div>
         </div>

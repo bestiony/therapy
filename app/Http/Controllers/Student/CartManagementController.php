@@ -743,6 +743,22 @@ class CartManagementController extends Controller
 
     public function goToCheckout(Request $request)
     {
+        $carts = CartManagement::whereUserId(@Auth::id())->get();
+        if ($carts->sum('price') == 0){
+            $order_data = $this->placeOrder('free');
+            $order = $order_data['status'] ? $order_data['data'] : null;
+            $order->payment_status = 'paid';
+            $order->save();
+            send_payment_succeeded_email($order, auth::user());
+            CartManagement::whereUserId(@Auth::id())->delete();
+            foreach($order->items as $item){
+                if ($item->consultation_slot_id){
+                    create_conversation($item->bookingHistory);
+                }
+            }
+            return redirect()->route('student.thank-you');
+
+        }
         if ($request->has('proceed_to_checkout')) {
             return redirect(route('student.checkout'));
         } elseif ($request->has('pay_from_lmszai_wallet')) {
@@ -1345,6 +1361,8 @@ class CartManagementController extends Controller
             } elseif ($payment_method == 'flutterwave') {
                 $payment_currency = get_option('flutterwave_currency');
                 $conversion_rate = get_option('flutterwave_conversion_rate') ? get_option('flutterwave_conversion_rate') : 0;
+            } elseif($payment_method == 'free'){
+                $conversion_rate = 1;
             }
 
             $order->payment_currency = $payment_currency;
@@ -1457,7 +1475,7 @@ class CartManagementController extends Controller
                     $booking->type = $cart->consultation_available_type;
                     $booking->status = 1; //Pending
                     $booking->save();
-
+                    create_conversation($booking);
                     //End:: Add Booking History
                 }
 

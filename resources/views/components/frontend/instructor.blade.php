@@ -17,7 +17,8 @@
         <p class="card-text instructor-designation font-medium mb-15">
             {{ @$user->professional_title }}
             @if (get_instructor_ranking_level($user->badges))
-                <span class="mx-2">||</span>{{ get_instructor_ranking_level($user->badges) }}
+                <span class="mx-2">
+                    {{-- ||</span>{{ get_instructor_ranking_level($user->badges) }} --}}
         </p>
         @endif
 
@@ -25,7 +26,7 @@
         $average_rating = $user->courses->where('average_rating', '>', 0)->avg('average_rating');
         $averate_percent = count($user->courses->where('average_rating', '>', 0)) ? (count($user->courses->where('average_rating', '>', 0)) / $user->courses->where('average_rating', '>', 0)->sum('average_rating')) * 100 : 0;
         ?>
-        <div
+        {{-- <div
             class="course-rating search-instructor-rating w-100 mb-15 d-inline-flex align-items-center justify-content-center">
             <span class="font-medium font-14 me-2">{{ number_format(@$average_rating, 1) }}</span>
             <div class="star-ratings">
@@ -38,17 +39,17 @@
             </div>
             <span
                 class="rating-count font-14 ms-2">({{ count(@$user->courses->where('average_rating', '>', 0)) }})</span>
-        </div>
-        <div class="search-instructor-bottom-item font-14 font-medium">
+        </div> --}}
+        {{-- <div class="search-instructor-bottom-item font-14 font-medium">
             <div class="search-instructor-award-img d-inline-flex flex-wrap justify-content-center">
                 @foreach ($user->badges as $badge)
                     <img src="{{ asset($badge->badge_image) }}" title="{{ $badge->name }}" alt="{{ $badge->name }}"
                         class="fit-image rounded-circle">
                 @endforeach
             </div>
-        </div>
+        </div> --}}
 
-        <div class="search-instructor-price  align-items-center mb-15">
+        {{-- <div class="search-instructor-price  align-items-center mb-15">
             @if ($user->consultation_available == 1)
                 <div class="d-flex">
 
@@ -96,6 +97,11 @@
                     class="search-instructor-old-price text-decoration-line-through color-gray font-13 font-medium mx-1">
                 </div>
             @endif
+        </div> --}}
+        <div class="search-instructor-price  align-items-center mb-15">
+            @foreach($user->instructor->skills as $skill)
+            <span class="badge text-bg-primary">{{$skill->title}}</span>
+            @endforeach
         </div>
         <div class="w-100">
             @if ($type == INSTRUCTOR_CARD_TYPE_ONE || $type == INSTRUCTOR_CARD_TYPE_THREE)

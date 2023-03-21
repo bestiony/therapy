@@ -50,14 +50,14 @@
         </div> --}}
 
         <div class="search-instructor-price  align-items-center mb-15">
-            @if ($user->instructor->consultation_available == 1)
+            @if ($user->instructor && $user->instructor->consultation_available == 1)
                 <div class="text-center">
 
                 @if ($user->instructor->hourly_rate < $user->instructor->hourly_old_rate)
                     <div class="search-instructor-new-price font-medium mx-1">
                         {{ $user->instructor->hourly_rate }} $ /{{ __('Session') }}
                     </div>
-                 {{--     <div 
+                 {{--     <div
                         class="search-instructor-old-price text-decoration-line-through color-gray font-13 font-medium mx-1">
                         {{ $user->instructor->hourly_old_rate }}</div> --}}
                 @else
@@ -81,13 +81,13 @@
                         {{ $user->instructor->monthly_old_rate }} {{get_currency_symbol()}}</div> --}}
                 @else
                     <div class="search-instructor-new-price font-medium mx-1">
-                        {{ $user->instructor->monthly_rate }}{{get_currency_symbol()}}/{{ __('Month') }} for  {{ $user->instructor->hours_per_month }} {{ __('Session') }} 
+                        {{ $user->instructor->monthly_rate }}{{get_currency_symbol()}}/{{ __('Month') }} for  {{ $user->instructor->hours_per_month }} {{ __('Session') }}
                     </div>
                     <div
                         class="search-instructor-old-price text-decoration-line-through color-gray font-13 font-medium mx-1">
                     </div>
                 @endif
-             
+
             </div>
             @else
                 <div class="search-instructor-new-price font-medium mx-1"></div>

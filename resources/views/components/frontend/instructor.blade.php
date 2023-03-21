@@ -99,9 +99,11 @@
             @endif
         </div> --}}
         <div class="search-instructor-price  align-items-center mb-15">
+            @if ($user->instructor)
             @foreach($user->instructor->skills as $skill)
             <span class="badge text-bg-primary">{{$skill->title}}</span>
             @endforeach
+            @endif
         </div>
         <div class="w-100">
             @if ($type == INSTRUCTOR_CARD_TYPE_ONE || $type == INSTRUCTOR_CARD_TYPE_THREE)

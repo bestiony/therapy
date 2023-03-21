@@ -237,6 +237,23 @@ header.hero-area.gradient-bg.position-relative .section-overlay {
     color: #aa53d2;
     font-size: 30px!important;
     padding: 7px 14px!important;
+}.search-instructor-new-price.font-medium.mx-1 {
+    color: #fff;
+    text-align: center;
+    border: 1px solid #e3e1e1;
+    margin: auto;
+    background: #7108c1;
+    padding: 6px;margin-bottom:5px;
+    border-radius: 9px;
+}.instructor-designation {
+    font-size: 17px;
+    line-height: 100%;
+    color: #7108c1;
+    margin-bottom: 15px;
+}.text-bg-primary {
+    color: #7108c1!important;
+    background-color: #fff!important;
+    border: 1px solid;
 }
     @media only screen and (max-width: 779px) {.hero-heading {
     font-weight: 300;

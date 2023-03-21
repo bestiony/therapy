@@ -15,12 +15,12 @@
         <h6 class="card-title"><a href="{{ route('userProfile', $user->id) }}">{{ $user->name }}</a>
         </h6>
         <p class="card-text instructor-designation font-medium mb-15">
-            {{ @$user->professional_title }}
-            @if (get_instructor_ranking_level($user->badges))
-                <span class="mx-2">
+            {{ @$user->instructor->professional_title }}
+            {{-- @if (get_instructor_ranking_level($user->badges)) --}}
+                {{-- <span class="mx-2"> --}}
                     {{-- ||</span>{{ get_instructor_ranking_level($user->badges) }} --}}
         </p>
-        @endif
+        {{-- @endif --}}
 
         <?php
         $average_rating = $user->courses->where('average_rating', '>', 0)->avg('average_rating');

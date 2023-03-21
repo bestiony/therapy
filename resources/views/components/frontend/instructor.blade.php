@@ -74,7 +74,7 @@
 
                 @if ($user->instructor->monthly_rate < $user->instructor->monthly_old_rate)
                     <div class="search-instructor-new-price font-medium mx-1">
-                        {{ $user->instructor->monthly_rate }} {{get_currency_symbol()}}/{{ __('Month') }}
+                        {{ $user->instructor->monthly_rate }} {{get_currency_symbol()}}/{{ __('Month') }} for  {{ $user->instructor->hours_per_month }} {{ __('Session') }}
                     </div>
                      {{--  <div
                         class="search-instructor-old-price text-decoration-line-through color-gray font-13 font-medium mx-1">

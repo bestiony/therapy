@@ -233,7 +233,7 @@
         @endforeach
     </script>
 @endif
-
+@stack('toastr_messages')
 </body>
 
 </html>

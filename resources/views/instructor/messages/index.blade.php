@@ -16,6 +16,11 @@
 
             }
         </style>
+
+     @livewireStyles
+    @endpush
+    @push('script')
+        @livewireScripts
     @endpush
     <div class="inner-container " style="height: 95% !important;">
         <div class="row flex-wrap vh-100">
@@ -58,7 +63,9 @@
                 @endforelse
 
             </section>
-            <section id="messages" class="chat col-12 col-sm-8  vh-100 align-items-end">
+            @livewire('messages-component', ['selected_conversation' => $selected_conversation ,'user_timezone'=>$user_timezone])
+
+            {{-- <section id="messages" class="chat col-12 col-sm-8  vh-100 align-items-end">
                 <div class="header-chat col-12 justify-content-between pr-6">
                     <div class="d-flex ">
 
@@ -133,7 +140,6 @@
                                 <div class="message">
                                     <div class="photo"
                                         style="background-image: url({{ asset($message->sender->image) }});">
-                                        {{-- <div class="online"></div> --}}
                                     </div>
                                     <p class="text"> {{ $message->content }} </p>
                                 </div>
@@ -189,7 +195,7 @@
                         </div>
                     @endif
                 @endif
-            </section>
+            </section> --}}
 
 
         </div>

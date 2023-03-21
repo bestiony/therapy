@@ -1116,18 +1116,32 @@ function createPhoneVerification($phone_number){
 
 }
 
-function notify_therapist_about_patient_message($conversation , $sender){
+function notify_user_about_chat_message($conversation , $sender, $is_patient){
     $text = 'you have a new message from ' . $sender->name;
-    $url = route('instructor.messages', ['convo' => $conversation->id]);
-    $reciever = $conversation->therapist_id;
-    send($text, USER_ROLE_INSTRUCTOR, $url, $reciever);
+
+    if ($is_patient){
+        $url = route('instructor.messages', ['convo' => $conversation->id]);
+        $reciever = $conversation->therapist_id;
+        send($text, USER_ROLE_INSTRUCTOR, $url, $reciever);
+
+    }else{
+        $url = route('student.messages', ['convo' => $conversation->id]);
+        $reciever = $conversation->patient_id;
+        send($text, USER_ROLE_STUDENT, $url, $reciever);
+    }
+
     $email_data = [
         'email_title' => 'New Message from ' . $sender->name . ' on ' . get_option('app_name'),
         'sender_name' => $sender->name,
         'user_name' => User::find($reciever)->name,
         'conversation_id' => $conversation->id,
     ];
-    Mail::to(User::find($reciever))->send(new NewMessageFromStudentMail($email_data));
+
+    if ($is_patient){
+        Mail::to(User::find($reciever))->send(new NewMessageFromStudentMail($email_data));
+    }else {
+        Mail::to(User::find($reciever))->send(new NewMessageFromInstructorMail($email_data));
+    }
 }
 
 function send($text, $user_type, $target_url = null, $user_id = null)

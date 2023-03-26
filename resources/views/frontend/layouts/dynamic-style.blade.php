@@ -276,10 +276,12 @@ video#video_background{display:none;}
     padding: 9px 19px;
 }}
 .instructor-social.mt-20,.search-instructor-award-img,.course-rating.search-instructor-rating.w-100.mb-15.d-inline-flex.align-items-center.justify-content-center{display:none;}
-section.insturctor-search-map-area {
+.achievement-area,section.insturctor-search-map-area {
     display: none;
+}.search-instructor-price.align-items-center.mb-15 {
+    height: 70px;
 }
 li.nav-item.dropdown.menu-round-btn.menu-language-btn.dropdown-top-space {
     display: block;
-}
+}.direction-rtl *{letter-spacing:0!important;}
 </style>

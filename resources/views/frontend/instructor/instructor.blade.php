@@ -81,7 +81,7 @@
                                     <div class="accordion-body">
 
                                         <div class="sidebar-switch-item d-flex justify-content-between mb-2">
-                                            <div class="switch-item-left-text">Available for meeting</div>
+                                            <div class="switch-item-left-text">   {{ __('Available for meeting') }}</div>
                                             <div class="radio-right-text mx-3">
                                                 <div class="form-check form-switch">
                                                     <input class="form-check-input" onchange="filterData()" type="checkbox" name="available_for_meeting" role="switch" id="flexSwitchCheckChecked1">
@@ -89,7 +89,7 @@
                                             </div>
                                         </div>
                                         <div class="sidebar-switch-item d-flex justify-content-between mb-2">
-                                            <div class="switch-item-left-text">Free Meeting</div>
+                                            <div class="switch-item-left-text">   {{ __('Free Meeting') }}</div>
                                             <div class="radio-right-text mx-3">
                                                 <div class="form-check form-switch">
                                                     <input class="form-check-input" onchange="filterData()" type="checkbox" name="free_meeting" role="switch" id="flexSwitchCheckChecked2">
@@ -97,7 +97,7 @@
                                             </div>
                                         </div>
                                         <div class="sidebar-switch-item d-flex justify-content-between mb-2">
-                                            <div class="switch-item-left-text">Discount</div>
+                                            <div class="switch-item-left-text">   {{ __('Discount') }}</div>
                                             <div class="radio-right-text mx-3">
                                                 <div class="form-check form-switch">
                                                     <input class="form-check-input" onchange="filterData()" type="checkbox" name="discount_meeting" role="switch" id="flexSwitchCheckChecked3">
@@ -121,7 +121,7 @@
                                             <div class="form-check">
                                                 <input class="form-check-input filterDifficultyLevel" type="checkbox" name="category_ids[]" onclick="filterData()" value="{{ $category->id }}" id="exampleRadios{{ $category->id }}">
                                                 <label class="form-check-label" for="exampleRadios{{ $category->id }}">
-                                                    {{ $category->name }}
+                                                    {{__( $category->name) }}
                                                 </label>
                                             </div>
                                             <div class="radio-right-text"></div>

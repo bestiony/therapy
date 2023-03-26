@@ -77,7 +77,8 @@
                                 <li>
                                     <a href="{{ route('instructor',['category_id'=> $category->id]) }}"
                                         class="dropdown-item">{{
-                                        $category->name }}</a>
+                                        __($category->name) }}
+                                       </a>
 
                                 </li>
                                 @endforeach
@@ -117,7 +118,7 @@
                                 <li>
                                     <a href="{{ route('organizations',['category_id'=> $category->id]) }}"
                                         class="dropdown-item">{{
-                                        $category->name }}</a>
+                                        __($category->name) }}</a>
 
                                 </li>
                                 @endforeach
@@ -136,12 +137,14 @@
                                 @foreach ($categories as $category)
                                     <li>
                                         <a href="{{ route('category-courses', $category->slug) }}"
-                                            class="dropdown-item @if (count($category->subcategories) > 0) dropdown-toggle @endif">{{ $category->name }}</a>
+                                            class="dropdown-item @if (count($category->subcategories) > 0) dropdown-toggle @endif">{{
+                                        __($category->name) }}</a>
                                         @if (count($category->subcategories) > 0)
                                             <ul class="submenu dropdown-menu">
                                                 @foreach ($category->subcategories as $subcategory)
                                                     <li><a class="dropdown-item"
-                                                            href="{{ route('subcategory-courses', $subcategory->slug) }}">{{ $subcategory->name }}</a>
+                                                            href="{{ route('subcategory-courses', $subcategory->slug) }}">{{
+                                        __($category->name) }}</a>
                                                     </li>
                                                 @endforeach
                                             </ul>

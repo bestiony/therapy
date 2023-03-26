@@ -118,7 +118,7 @@
         </div>
 
         <!-- Google Map Part Start-->
-        <div class="row google-map-area section-t-space">
+        <div class="row google-map-area section-t-space" style="display:none;">
             <div class="col-12">
                 <iframe src="{{ get_option('contact_us_map_link') }}" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
             </div>

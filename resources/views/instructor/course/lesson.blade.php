@@ -303,7 +303,8 @@
 
                                             <div class="add-more-section-wrap d-none">
                                                 <form method="POST" action="{{route('lesson.store', [$course->uuid])}}" class="row g-3 needs-validation" novalidate>
-                                                    @csrf
+                                                    @csrf 
+                                                    <input type="hidden" name="course_version_id" value="{{$course_version_id}}">
                                                     <div class="row mb-30">
                                                         <div class="col-md-12">
                                                             <label class="label-text-title color-heading font-medium font-16 mb-3">Section title of the course “ {{$course->title}}

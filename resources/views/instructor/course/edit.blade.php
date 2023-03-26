@@ -15,7 +15,7 @@
 </div>
 @endsection
 
-@section('content')
+@section('content') 
 <div class="instructor-profile-right-part instructor-upload-course-box-part">
     <div class="instructor-upload-course-box">
         <div class="row">

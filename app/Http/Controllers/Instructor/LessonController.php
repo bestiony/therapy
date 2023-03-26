@@ -8,6 +8,7 @@ use App\Models\Course;
 use App\Models\Course_lecture;
 use App\Models\Course_lecture_views;
 use App\Models\Course_lesson;
+use App\Models\CourseVersion;
 use App\Models\Enrollment;
 use App\Models\Order_item;
 use App\Tools\Repositories\Crud;
@@ -35,16 +36,21 @@ class LessonController extends Controller
         $this->lectureModel = new Crud($course_lecture);
     }
 
-    public function store(LessionRequest $request, $course_uuid)
+    public function store(LessionRequest $request, $course_uuid, $from_edit = false)
     {
+        $course_version = CourseVersion::findOrFail($request->course_version_id);
         $course = $this->courseModel->getRecordByUuid($course_uuid);
         $data = [
-            'course_id' => $course->id,
             'name' => $request->name,
             'short_description' => $request->short_description ?  : null,
         ];
-
-        $this->model->create($data);
+        if(!$from_edit){
+            $data['course_id'] = $course->id;
+        }
+        $outcome = $this->model->create($data);
+        $details = $course_version->details;
+        $details['lessons'][] = $outcome->id;
+        $course_version->update(['details'=>$details]);
         $this->showToastrMessage('success', __('Created successful.'));
         return redirect()->back();
 

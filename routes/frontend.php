@@ -46,6 +46,9 @@ Route::post('user/send_another_verification_code', [RegistrationController::clas
 // })->name('verify_phone');
 
 Route::group(['middleware' => 'private.mode'], function () {
+    // Route::get('/show_sth', function (Request $request) {
+    //     dd($request->outcome);
+    // })->name('show_sth');
     Route::get('/', [MainIndexController::class, 'index'])->name('main.index');
 
     Route::get('about-us', [MainIndexController::class, 'aboutUs'])->name('about');

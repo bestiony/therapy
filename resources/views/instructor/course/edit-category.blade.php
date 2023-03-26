@@ -36,6 +36,7 @@
                             <form method="POST" action="{{route('course.update.category', [$course->uuid])}}"
                                 enctype="multipart/form-data" class="row g-3 needs-validation" novalidate>
                                 @csrf
+                                <input type="hidden" name="course_version_id" value="{{$course_version_id}}">
                                 <div id="upload-course-overview-2">
 
                                     <div class="upload-course-item-block course-overview-step1 radius-8">

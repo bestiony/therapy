@@ -56,7 +56,6 @@
     </header>
     <!-- Header End -->
 
-
     <!-- Course Instructor and Support Area Start -->
     <section
         class="course-instructor-support-area bg-light section-t-space {{ @$home->instructor_support_area == 1 ? '' : 'd-none' }}">
@@ -153,11 +152,11 @@
         </div>
     </section>
     <!-- Special Feature Area End -->
-  
 
 
 
-   
+
+
 
 
 

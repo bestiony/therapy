@@ -161,8 +161,9 @@ class CourseController extends Controller
                 return redirect()->back();
             }
         }
-        $course_version_id = \request('course_version_id');
-        $data['course_version_id'] = $course_version_id;
+        if($course_version_id = \request('course_version_id')){
+            $data['course_version_id'] = $course_version_id;
+        }
         $data['keyPoints'] = LearnKeyPoint::whereCourseId($data['course']->id)->get();
         if (\request('step') == 'category') {
             $data['categories'] = Category::active()->orderBy('name', 'asc')->select('id', 'name')->get();
@@ -267,7 +268,7 @@ class CourseController extends Controller
             'course_id'=> $course->id,
             'instructor_id'=> $user_id,
             'version'=> $last_course_version ? $last_course_version->version + 1 : 1 ,
-            'status'=> PENDING_COURSE_VERSION,
+            'status'=> INCOMPLETED_COURSE_VERSION,
             'details'=>[],
         ]);
 
@@ -409,6 +410,7 @@ class CourseController extends Controller
         } else {
             $course->status = 2;
         }
+        // $course_version_id
         $course->save();
         return redirect(route('instructor.course'));
     }
@@ -476,7 +478,9 @@ class CourseController extends Controller
     public function storeInstructor(Request $request, $uuid)
     {
         $course = Course::where('user_id', auth()->id())->whereUuid($uuid)->firstOrFail();
-
+        $course_version_id = $request->course_version_id;
+        $course_version = CourseVersion::find($course_version_id);
+        $details = $course_version ? $course_version->details : [];
         if ($course->user_id == auth()->id()) {
             $request->validate([
                 'share.*' => 'bail|required|min:0|max:100'
@@ -493,21 +497,30 @@ class CourseController extends Controller
                 }
 
                 foreach ($data['instructor_id'] as $id => $instructor) {
-                    $courseInstructor = CourseInstructor::updateOrCreate([
-                        'instructor_id' => $id,
-                        'course_id' => $course->id,
-                    ], [
-                        'instructor_id' => $id,
-                        'course_id' => $course->id,
-                        'share' => $data['share'][$id],
-                    ]);
+                    if (!$course_version){
+                        $courseInstructor = CourseInstructor::updateOrCreate([
+                            'instructor_id' => $id,
+                            'course_id' => $course->id,
+                        ], [
+                            'instructor_id' => $id,
+                            'course_id' => $course->id,
+                            'share' => $data['share'][$id],
+                        ]);
 
-                    array_push($courseInstructorIds, $courseInstructor->id);
+                        array_push($courseInstructorIds, $courseInstructor->id);
+                    }else{
+                        $details['course_instructors'][$id] = [
+                            'instructor_id' => $id,
+                            'share' => $data['share'][$id],
+                        ];
+                    }
                 }
+
             }
             else{
                 $totalShare = 0;
             }
+            if (!$course_version){
 
             $courseInstructor = CourseInstructor::updateOrCreate([
                 'instructor_id' => $course->user_id,
@@ -518,13 +531,24 @@ class CourseController extends Controller
                 'share' => (100 - $totalShare),
                 'status' => STATUS_ACCEPTED
             ]);
-
-
             array_push($courseInstructorIds, $courseInstructor->id);
 
             CourseInstructor::whereNotIn('id', $courseInstructorIds)->where('course_id', $course->id)->delete();
+            } else{
+                $details['course_main_instructor'] = [
+                    'instructor_id' => $course->user_id,
+                    'course_id' => $course->id,
+                    'share' => (100 - $totalShare),
+                ];
+            }
 
-            return redirect(route('instructor.course.edit', [$course->uuid, 'step=submit']));
+            if ($course_version){
+                $course_version->details = $details;
+                $course_version->update();
+            }
+
+
+            return redirect(route('instructor.course.edit', [$course->uuid, 'step=submit', 'course_version_id'=> $course_version_id]));
         }
     }
 }

@@ -38,7 +38,7 @@ class LessonController extends Controller
 
     public function store(LessionRequest $request, $course_uuid)
     {
-        $course_version = CourseVersion::findOrFail($request->course_version_id);
+        $course_version = CourseVersion::find($request->course_version_id);
         $course = $this->courseModel->getRecordByUuid($course_uuid);
         $data = [
             'name' => $request->name,
@@ -48,9 +48,12 @@ class LessonController extends Controller
             $data['course_id'] = $course->id;
         }
         $outcome = $this->model->create($data);
-        $details = $course_version->details;
-        $details['lessons'][] = $outcome->id;
-        $course_version->update(['details'=>$details]);
+        if($course_version){
+            $details = $course_version->details;
+            $details['lessons'][] = $outcome->id;
+            $course_version->update(['details'=>$details]);
+        }
+
         $this->showToastrMessage('success', __('Created successful.'));
         return redirect()->back();
 

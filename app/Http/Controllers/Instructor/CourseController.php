@@ -161,7 +161,9 @@ class CourseController extends Controller
                 return redirect()->back();
             }
         }
-        if($course_version_id = \request('course_version_id')){
+        $data['course_version_id'] = null;
+        if(\request('course_version_id')){
+            $course_version_id = \request('course_version_id');
             $data['course_version_id'] = $course_version_id;
         }
         $data['keyPoints'] = LearnKeyPoint::whereCourseId($data['course']->id)->get();
@@ -322,20 +324,25 @@ class CourseController extends Controller
                 return redirect()->back();
             }
         }
-        $course_version = CourseVersion::findOrFail($request->course_version_id);
+        $course_version = CourseVersion::find($request->course_version_id);
 
         if ($request->image) {
             $request->validate([
                 'image' => 'dimensions:min_width=575,min_height=450,max_width=575,max_height=450'
             ]);
-            $this->deleteFile($course->image); // delete file from server
+            if(!$course_version){
+                $this->deleteFile($course->image); // delete file from server
+            }
+
             $image = $this->saveImage('course', $request->image, null, null); // new file upload into server
         } else {
             $image = $course->image;
         }
 
         if ($request->video) {
-            $this->deleteVideoFile($course->video); // delete file from server
+            if (!$course_version){
+                $this->deleteVideoFile($course->video); // delete file from server
+            }
             $file_details = $this->uploadFileWithDetails('course', $request->video);
             if (!$file_details['is_uploaded']) {
                 $this->showToastrMessage('error', __('Something went wrong! Failed to upload file'));
@@ -361,10 +368,12 @@ class CourseController extends Controller
             'intro_video_check' => $request->intro_video_check,
             'youtube_video_id' => $request->youtube_video_id ?? null,
         ];
-        $new_details = array_merge($course_version->details, $data);
-        $new_details['tags'] = $request->tag ? $request->tag : null;
-        $course_version->details = $new_details;
-        $course_version->update();
+        if($course_version){
+            $new_details = array_merge($course_version->details, $data);
+            $new_details['tags'] = $request->tag ? $request->tag : null;
+            $course_version->details = $new_details;
+            $course_version->update();
+        }
         // $this->model->updateByUuid($data, $uuid); // update category
 
         // if ($request->tag) {
@@ -378,7 +387,7 @@ class CourseController extends Controller
         }
 
 
-        return redirect(route('instructor.course.edit', [$course->uuid, 'step=lesson', 'course_version_id'=> $course_version->id]));
+        return redirect(route('instructor.course.edit', [$course->uuid, 'step=lesson', 'course_version_id'=>($course_version ?  $course_version->id : null)]));
     }
 
     public function uploadFinished($uuid, Request $request)

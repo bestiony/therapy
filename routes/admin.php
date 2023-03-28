@@ -114,11 +114,15 @@ Route::group(['prefix' => 'promotions', 'as' => 'promotion.'], function () {
 Route::prefix('course')->group(function () {
     Route::get('/', [CourseController::class, 'index'])->name('admin.course.index');
     Route::get('view/{uuid}', [CourseController::class, 'view'])->name('admin.course.view');
+    Route::get('version-view/{id}', [CourseController::class, 'versionView'])->name('admin.course.version-view');
     Route::get('approved', [CourseController::class, 'approved'])->name('admin.course.approved');
     Route::get('review-pending', [CourseController::class, 'reviewPending'])->name('admin.course.review_pending');
+    Route::get('edit-pending', [CourseController::class, 'editPending'])->name('admin.course.edit_pending');
     Route::get('hold', [CourseController::class, 'hold'])->name('admin.course.hold');
     Route::get('status-change/{uuid}/{status}', [CourseController::class, 'statusChange'])->name('admin.course.status-change')->middleware('isDemo');
+    Route::get('version-status-change/{id}/{status}', [CourseController::class, 'versionStatusChange'])->name('admin.course.version-status-change')->middleware('isDemo');
     Route::get('delete/{uuid}', [CourseController::class, 'delete'])->name('admin.course.delete')->middleware('isDemo');
+    Route::get('delete-version/{id}', [CourseController::class, 'deleteVersion'])->name('admin.course.delete-version')->middleware('isDemo');
 
 
     Route::get('enroll', [CourseController::class, 'courseEnroll'])->name('admin.course.enroll');

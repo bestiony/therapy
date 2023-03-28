@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('course_lessons', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->bigInteger('course_id');
+            $table->bigInteger('course_id')->nullable();
             $table->string('name');
             $table->mediumText('short_description')->nullable();
             $table->timestamps();

@@ -37,6 +37,12 @@
                                 <span>{{__('Review Pending')}}</span>
                             </a>
                         </li>
+                        <li class="{{ active_if_match('admin/course/edit-pending') }}">
+                            <a href="{{route('admin.course.edit_pending')}}">
+                                <i class="fa fa-circle"></i>
+                                <span>{{__('Edit Pending')}}</span>
+                            </a>
+                        </li>
                     @endcan
                     @can('hold_course')
                         <li class="{{ active_if_match('admin/course/hold') }}">
@@ -967,7 +973,7 @@
             </li>
         @endif
 
-        
+
     </ul>
 </div>
 

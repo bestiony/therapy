@@ -8,6 +8,7 @@ use App\Http\Requests\Instructor\StoreCourseRequest;
 use App\Models\CartManagement;
 use App\Models\Category;
 use App\Models\Course;
+use App\Models\CourseVersion;
 use App\Models\Course_language;
 use App\Models\Course_lecture;
 use App\Models\Course_lecture_views;
@@ -160,7 +161,8 @@ class CourseController extends Controller
                 return redirect()->back();
             }
         }
-
+        $course_version_id = \request('course_version_id');
+        $data['course_version_id'] = $course_version_id;
         $data['keyPoints'] = LearnKeyPoint::whereCourseId($data['course']->id)->get();
         if (\request('step') == 'category') {
             $data['categories'] = Category::active()->orderBy('name', 'asc')->select('id', 'name')->get();
@@ -191,6 +193,8 @@ class CourseController extends Controller
 
             return view('instructor.course.edit-category', $data);
         } elseif (\request('step') == 'lesson') {
+
+
             if ($data['course']->course_type == COURSE_TYPE_GENERAL) {
                 return view('instructor.course.lesson', $data);
             } else {
@@ -258,9 +262,17 @@ class CourseController extends Controller
                 return redirect()->back();
             }
         }
+        $last_course_version = CourseVersion::where('course_id',$course->id)->latest()->first();
+        $course_version = CourseVersion::create([
+            'course_id'=> $course->id,
+            'instructor_id'=> $user_id,
+            'version'=> $last_course_version ? $last_course_version->version + 1 : 1 ,
+            'status'=> PENDING_COURSE_VERSION,
+            'details'=>[],
+        ]);
 
-        $this->model->updateByUuid($data, $uuid); // update category
-
+        // $this->model->updateByUuid($data, $uuid); // update category
+        $new_learn_key_points = [];
         $now = now();
         if ($request['key_points']) {
             if (count(@$request['key_points']) > 0) {
@@ -271,26 +283,29 @@ class CourseController extends Controller
                         } else {
                             $key_point = new LearnKeyPoint();
                         }
-                        $key_point->course_id = $course->id;
+                        // $key_point->course_id = $course->id;
                         $key_point->name = @$item['name'];
                         $key_point->updated_at = $now;
                         $key_point->save();
+                        $new_learn_key_points[] = $key_point->id;
                     }
                 }
             }
         }
-
-        LearnKeyPoint::where('course_id', $course->id)->where('updated_at', '!=', $now)->get()->map(function ($q) {
-            $q->delete();
-        });
+        $data['new_learn_key_points'] = $new_learn_key_points;
+        $course_version->details = $data;
+        $course_version->update();
+        // LearnKeyPoint::where('course_id', $course->id)->where('updated_at', '!=', $now)->get()->map(function ($q) {
+        //     $q->delete();
+        // });
 
         if ($course->status != 0) {
-            $text = __("Course overview has been updated");
+            $text =__("Course"). " " . $course->title . " ". __("Course overview has been updated");
             $target_url = route('admin.course.index');
             $this->send($text, 1, $target_url, null);
         }
 
-        return redirect(route('instructor.course.edit', [$course->uuid, 'step=category']));
+        return redirect(route('instructor.course.edit', [$course->uuid, 'step=category', "course_version_id"=>$course_version]));
     }
 
     public function updateCategory(Request $request, $uuid)
@@ -306,6 +321,7 @@ class CourseController extends Controller
                 return redirect()->back();
             }
         }
+        $course_version = CourseVersion::findOrFail($request->course_version_id);
 
         if ($request->image) {
             $request->validate([
@@ -344,21 +360,24 @@ class CourseController extends Controller
             'intro_video_check' => $request->intro_video_check,
             'youtube_video_id' => $request->youtube_video_id ?? null,
         ];
+        $new_details = array_merge($course_version->details, $data);
+        $new_details['tags'] = $request->tag ? $request->tag : null;
+        $course_version->details = $new_details;
+        $course_version->update();
+        // $this->model->updateByUuid($data, $uuid); // update category
 
-        $this->model->updateByUuid($data, $uuid); // update category
-
-        if ($request->tag) {
-            $course->tags()->sync($request->tag);
-        }
+        // if ($request->tag) {
+        //     $course->tags()->sync($request->tag);
+        // }
 
         if ($course->status != 0) {
-            $text = __("Course category has been updated");
+            $text = __("Course") . " " . $course->title . " " . __("Course category has been updated");
             $target_url = route('admin.course.index');
             $this->send($text, 1, $target_url, null);
         }
 
 
-        return redirect(route('instructor.course.edit', [$course->uuid, 'step=lesson']));
+        return redirect(route('instructor.course.edit', [$course->uuid, 'step=lesson', 'course_version_id'=> $course_version->id]));
     }
 
     public function uploadFinished($uuid)

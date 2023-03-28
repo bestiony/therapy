@@ -381,8 +381,9 @@ class CourseController extends Controller
         return redirect(route('instructor.course.edit', [$course->uuid, 'step=lesson', 'course_version_id'=> $course_version->id]));
     }
 
-    public function uploadFinished($uuid)
+    public function uploadFinished($uuid, Request $request)
     {
+
         $course = Course::where('courses.uuid', $uuid)->first();
         $user_id = auth()->id();
 
@@ -394,23 +395,30 @@ class CourseController extends Controller
                 return redirect()->back();
             }
         }
+        $course_version_id = $request->course_version_id;
+        if($course_version_id){
+            $course_version = CourseVersion::find($course_version_id);
+            $course_version->status = PENDING_COURSE_VERSION;
+            $course_version->update();
+        }
 
         if ($course->status == 1) {
+            if(!$course_version_id){
 
-            if ($course->user_id != auth()->id()) {
-                //TODO: notify from here to multi instructor;
-                $text = __("You have selected as co-instructor");
-                $target_url = route('instructor.multi_instructor');
-                $courseInstructors = $course->course_instructors->where('status', STATUS_PENDING)->where('instructor_id', '!=', $course->user_id);
+                if ($course->user_id != auth()->id()) {
+                    //TODO: notify from here to multi instructor;
+                    $text = __("You have selected as co-instructor");
+                    $target_url = route('instructor.multi_instructor');
+                    $courseInstructors = $course->course_instructors->where('status', STATUS_PENDING)->where('instructor_id', '!=', $course->user_id);
 
-                foreach ($courseInstructors as $courseInstructor) {
-                    $this->send($text, 2, $target_url, $courseInstructor->instructor->user_id);
+                    foreach ($courseInstructors as $courseInstructor) {
+                        $this->send($text, 2, $target_url, $courseInstructor->instructor->user_id);
+                    }
                 }
             }
         } else {
             $course->status = 2;
         }
-        // $course_version_id
         $course->save();
         return redirect(route('instructor.course'));
     }

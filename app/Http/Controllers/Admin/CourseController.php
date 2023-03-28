@@ -3,17 +3,20 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Course;
 use App\Models\Course_lecture;
 use App\Models\Course_lecture_views;
 use App\Models\Course_lesson;
 use App\Models\CourseInstructor;
 use App\Models\CourseUploadRule;
+use App\Models\CourseVersion;
 use App\Models\Enrollment;
 use App\Models\Order;
 use App\Models\Order_item;
 use App\Models\Setting;
 use App\Models\Student;
+use App\Models\Subcategory;
 use App\Models\User;
 use App\Tools\Repositories\Crud;
 use App\Traits\General;
@@ -56,6 +59,9 @@ class CourseController extends Controller
 
         return view('admin.course.view', $data);
     }
+    public function versionView($id){
+
+    }
 
     public function approved()
     {
@@ -77,6 +83,18 @@ class CourseController extends Controller
         $data['title'] = 'Review Pending Courses';
         $data['courses'] = Course::where('status', 2)->paginate(25);
         return view('admin.course.review-pending', $data);
+    }
+    public function editPending(){
+        if (!Auth::user()->can('pending_course')) {
+            abort('403');
+        } // end permission checking
+
+        $data['title'] = 'Pending Course Edits';
+        $data['versions'] = CourseVersion::with('course')->whereNot('status', INCOMPLETED_COURSE_VERSION)->paginate(25);
+        // $data['categories'] = Category::select('id', 'name')->get()->toArray();
+        $data['categories'] = Category::all()->pluck( 'name', 'id')->toArray();
+        $data['subcategories'] = Subcategory::all()->pluck( 'name', 'id')->toArray();
+        return view('admin.course.edit-pending', $data);
     }
 
     public function hold()
@@ -121,6 +139,9 @@ class CourseController extends Controller
 
         $this->showToastrMessage('success', __('Status has been changed'));
         return redirect()->back();
+
+    }
+    public function versionStatusChange($id, $status){
 
     }
 
@@ -178,6 +199,10 @@ class CourseController extends Controller
         $course->delete();
         $this->showToastrMessage('success', __('Course has been deleted.'));
         return redirect()->back();
+    }
+
+    public function deleteVersion($id){
+        
     }
 
     public function courseUploadRuleIndex()
@@ -292,10 +317,10 @@ class CourseController extends Controller
         $order_item->owner_balance = 0;
         $order_item->sell_commission = 0;
         $order_item->save();
-       
-        
+
+
         set_instructor_ranking_level($course->user_id);
-        
+
         /** ====== Send notification =========*/
         $text = __("New student enrolled");
         $target_url = route('instructor.all-student');
@@ -305,7 +330,7 @@ class CourseController extends Controller
             {
                 $this->send($text, 2, $target_url, $item->course->user_id);
             }
-            
+
             setEnrollment($item);
         }
 

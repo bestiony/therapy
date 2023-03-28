@@ -18,4 +18,7 @@ class CourseVersion extends Model
     protected $casts = [
         'details'=>'array',
     ];
+    public function course(){
+        return $this->belongsTo(Course::class);
+    }
 }

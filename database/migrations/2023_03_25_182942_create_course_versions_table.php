@@ -19,10 +19,17 @@ return new class extends Migration
             $table->unsignedBigInteger('instructor_id');
             $table->integer('version');
 <<<<<<< HEAD
+<<<<<<< HEAD
             $table->integer('status')->default(1)->comment('1 = pending, 2 = refused, 3 = apporved ');
 =======
             $table->integer('status')->default(0)->comment('0 = incompleteed 1 = pending, 2 = refused, 3 = apporved ');
 >>>>>>> refs/remotes/origin/temporary
+=======
+            $table->integer('status')->default(0)->comment('0 = incompleteed 1 = pending, 2 = refused, 3 = apporved ');
+=======
+            $table->integer('status')->default(1)->comment('1 = pending, 2 = refused, 3 = apporved ');
+>>>>>>> 0116a5f (merge)
+>>>>>>> 76a5563 (yet another merge)
             $table->json('details');
             $table->timestamps();
             $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');

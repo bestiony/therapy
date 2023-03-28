@@ -39,15 +39,23 @@ class LessonController extends Controller
     public function store(LessionRequest $request, $course_uuid, $from_edit = false)
     {
 <<<<<<< HEAD
+<<<<<<< HEAD
         $course_version = CourseVersion::findOrFail($request->course_version_id);
 =======
         $course_version = CourseVersion::find($request->course_version_id);
 >>>>>>> refs/remotes/origin/temporary
+=======
+        $course_version = CourseVersion::find($request->course_version_id);
+=======
+        $course_version = CourseVersion::findOrFail($request->course_version_id);
+>>>>>>> 0116a5f (merge)
+>>>>>>> 76a5563 (yet another merge)
         $course = $this->courseModel->getRecordByUuid($course_uuid);
         $data = [
             'name' => $request->name,
             'short_description' => $request->short_description ?  : null,
         ];
+<<<<<<< HEAD
 <<<<<<< HEAD
         if(!$from_edit){
             $data['course_id'] = $course->id;
@@ -57,6 +65,8 @@ class LessonController extends Controller
         $details['lessons'][] = $outcome->id;
         $course_version->update(['details'=>$details]);
 =======
+=======
+>>>>>>> 76a5563 (yet another merge)
         if(!$course_version){
             $data['course_id'] = $course->id;
         }
@@ -67,7 +77,19 @@ class LessonController extends Controller
             $course_version->update(['details'=>$details]);
         }
 
+<<<<<<< HEAD
 >>>>>>> refs/remotes/origin/temporary
+=======
+=======
+        if(!$from_edit){
+            $data['course_id'] = $course->id;
+        }
+        $outcome = $this->model->create($data);
+        $details = $course_version->details;
+        $details['lessons'][] = $outcome->id;
+        $course_version->update(['details'=>$details]);
+>>>>>>> 0116a5f (merge)
+>>>>>>> 76a5563 (yet another merge)
         $this->showToastrMessage('success', __('Created successful.'));
         return redirect()->back();
 

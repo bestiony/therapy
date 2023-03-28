@@ -162,15 +162,25 @@ class CourseController extends Controller
             }
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
         $course_version_id = \request('course_version_id');
         $data['course_version_id'] = $course_version_id;
 =======
+=======
+>>>>>>> 76a5563 (yet another merge)
         $data['course_version_id'] = null;
         if(\request('course_version_id')){
             $course_version_id = \request('course_version_id');
             $data['course_version_id'] = $course_version_id;
         }
+<<<<<<< HEAD
 >>>>>>> refs/remotes/origin/temporary
+=======
+=======
+        $course_version_id = \request('course_version_id');
+        $data['course_version_id'] = $course_version_id;
+>>>>>>> 0116a5f (merge)
+>>>>>>> 76a5563 (yet another merge)
         $data['keyPoints'] = LearnKeyPoint::whereCourseId($data['course']->id)->get();
         if (\request('step') == 'category') {
             $data['categories'] = Category::active()->orderBy('name', 'asc')->select('id', 'name')->get();
@@ -276,10 +286,17 @@ class CourseController extends Controller
             'instructor_id'=> $user_id,
             'version'=> $last_course_version ? $last_course_version->version + 1 : 1 ,
 <<<<<<< HEAD
+<<<<<<< HEAD
             'status'=> PENDING_COURSE_VERSION,
 =======
             'status'=> INCOMPLETED_COURSE_VERSION,
 >>>>>>> refs/remotes/origin/temporary
+=======
+            'status'=> INCOMPLETED_COURSE_VERSION,
+=======
+            'status'=> PENDING_COURSE_VERSION,
+>>>>>>> 0116a5f (merge)
+>>>>>>> 76a5563 (yet another merge)
             'details'=>[],
         ]);
 
@@ -334,10 +351,17 @@ class CourseController extends Controller
             }
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
         $course_version = CourseVersion::findOrFail($request->course_version_id);
 =======
         $course_version = CourseVersion::find($request->course_version_id);
 >>>>>>> refs/remotes/origin/temporary
+=======
+        $course_version = CourseVersion::find($request->course_version_id);
+=======
+        $course_version = CourseVersion::findOrFail($request->course_version_id);
+>>>>>>> 0116a5f (merge)
+>>>>>>> 76a5563 (yet another merge)
 
         if ($request->image) {
             $request->validate([
@@ -382,18 +406,30 @@ class CourseController extends Controller
             'youtube_video_id' => $request->youtube_video_id ?? null,
         ];
 <<<<<<< HEAD
+<<<<<<< HEAD
         $new_details = array_merge($course_version->details, $data);
         $new_details['tags'] = $request->tag ? $request->tag : null;
         $course_version->details = $new_details;
         $course_version->update();
 =======
+=======
+>>>>>>> 76a5563 (yet another merge)
         if($course_version){
             $new_details = array_merge($course_version->details, $data);
             $new_details['tags'] = $request->tag ? $request->tag : null;
             $course_version->details = $new_details;
             $course_version->update();
         }
+<<<<<<< HEAD
 >>>>>>> refs/remotes/origin/temporary
+=======
+=======
+        $new_details = array_merge($course_version->details, $data);
+        $new_details['tags'] = $request->tag ? $request->tag : null;
+        $course_version->details = $new_details;
+        $course_version->update();
+>>>>>>> 0116a5f (merge)
+>>>>>>> 76a5563 (yet another merge)
         // $this->model->updateByUuid($data, $uuid); // update category
 
         // if ($request->tag) {
@@ -408,10 +444,17 @@ class CourseController extends Controller
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         return redirect(route('instructor.course.edit', [$course->uuid, 'step=lesson', 'course_version_id'=> $course_version->id]));
 =======
         return redirect(route('instructor.course.edit', [$course->uuid, 'step=lesson', 'course_version_id'=>($course_version ?  $course_version->id : null)]));
 >>>>>>> refs/remotes/origin/temporary
+=======
+        return redirect(route('instructor.course.edit', [$course->uuid, 'step=lesson', 'course_version_id'=>($course_version ?  $course_version->id : null)]));
+=======
+        return redirect(route('instructor.course.edit', [$course->uuid, 'step=lesson', 'course_version_id'=> $course_version->id]));
+>>>>>>> 0116a5f (merge)
+>>>>>>> 76a5563 (yet another merge)
     }
 
     public function uploadFinished($uuid, Request $request)

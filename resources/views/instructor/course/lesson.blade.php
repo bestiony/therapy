@@ -431,10 +431,13 @@
 
                                             <div class="add-more-section-wrap d-none">
 <<<<<<< HEAD
+<<<<<<< HEAD
                                                 <form method="POST" action="{{route('lesson.store', [$course->uuid])}}" class="row g-3 needs-validation" novalidate>
                                                     @csrf 
                                                     <input type="hidden" name="course_version_id" value="{{$course_version_id}}">
 =======
+=======
+>>>>>>> 76a5563 (yet another merge)
                                                 <form method="POST"
                                                     action="{{ route('lesson.store', [$course->uuid]) }}"
                                                     class="row g-3 needs-validation" novalidate>
@@ -443,7 +446,15 @@
                                                         <input type="hidden" name="course_version_id"
                                                             value="{{ $course_version_id }}">
                                                     @endif
+<<<<<<< HEAD
 >>>>>>> refs/remotes/origin/temporary
+=======
+=======
+                                                <form method="POST" action="{{route('lesson.store', [$course->uuid])}}" class="row g-3 needs-validation" novalidate>
+                                                    @csrf 
+                                                    <input type="hidden" name="course_version_id" value="{{$course_version_id}}">
+>>>>>>> 0116a5f (merge)
+>>>>>>> 76a5563 (yet another merge)
                                                     <div class="row mb-30">
                                                         <div class="col-md-12">
                                                             <label

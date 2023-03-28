@@ -171,12 +171,23 @@ const ITEM_TYPE_CONSULTATION = 4;
 /** COURSE VERSION */
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 const PENDING_COURSE_VERSION = 1;
 const REFUSED_COURSE_VERSION = 2;
 const APPROVED_COURSE_VERSION = 3; 
 =======
+=======
+>>>>>>> 76a5563 (yet another merge)
 const INCOMPLETED_COURSE_VERSION = 0;
 const PENDING_COURSE_VERSION = 1;
 const REFUSED_COURSE_VERSION = 2;
 const APPROVED_COURSE_VERSION = 3;
+<<<<<<< HEAD
 >>>>>>> refs/remotes/origin/temporary
+=======
+=======
+const PENDING_COURSE_VERSION = 1;
+const REFUSED_COURSE_VERSION = 2;
+const APPROVED_COURSE_VERSION = 3; 
+>>>>>>> 0116a5f (merge)
+>>>>>>> 76a5563 (yet another merge)

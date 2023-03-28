@@ -18,4 +18,10 @@ class CourseVersion extends Model
     protected $casts = [
         'details'=>'array',
     ];
+<<<<<<< HEAD
+=======
+    public function course(){
+        return $this->belongsTo(Course::class);
+    }
+>>>>>>> refs/remotes/origin/temporary
 }

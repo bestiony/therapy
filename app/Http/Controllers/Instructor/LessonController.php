@@ -38,12 +38,17 @@ class LessonController extends Controller
 
     public function store(LessionRequest $request, $course_uuid, $from_edit = false)
     {
+<<<<<<< HEAD
         $course_version = CourseVersion::findOrFail($request->course_version_id);
+=======
+        $course_version = CourseVersion::find($request->course_version_id);
+>>>>>>> refs/remotes/origin/temporary
         $course = $this->courseModel->getRecordByUuid($course_uuid);
         $data = [
             'name' => $request->name,
             'short_description' => $request->short_description ?  : null,
         ];
+<<<<<<< HEAD
         if(!$from_edit){
             $data['course_id'] = $course->id;
         }
@@ -51,6 +56,18 @@ class LessonController extends Controller
         $details = $course_version->details;
         $details['lessons'][] = $outcome->id;
         $course_version->update(['details'=>$details]);
+=======
+        if(!$course_version){
+            $data['course_id'] = $course->id;
+        }
+        $outcome = $this->model->create($data);
+        if($course_version){
+            $details = $course_version->details;
+            $details['lessons'][] = $outcome->id;
+            $course_version->update(['details'=>$details]);
+        }
+
+>>>>>>> refs/remotes/origin/temporary
         $this->showToastrMessage('success', __('Created successful.'));
         return redirect()->back();
 
@@ -82,6 +99,7 @@ class LessonController extends Controller
 
     public function uploadLecture($course_uuid, $lesson_uuid)
     {
+        $data['course_version_id'] = \request('course_version_id');
         $data['title'] = 'Upload Lecture';
         $data['navCourseUploadActiveClass'] = 'active';
         $data['course'] = $this->courseModel->getRecordByUuid($course_uuid);
@@ -157,8 +175,11 @@ class LessonController extends Controller
         $lecture = new Course_lecture();
         $lecture->fill($request->all());
         $lecture->pre_ids = ($lecture->pre_ids) ? json_encode($lecture->pre_ids) : NULL;
-        $lecture->course_id = $course->id;
         $lecture->lesson_id = $lesson->id;
+        $course_version_id = $request->course_version_id;
+        if(!$course_version_id){
+            $lecture->course_id = $course->id;
+        }
 
         if ($request->video_file && $request->type == 'video') {
             $this->saveLectureVideo($request, $lecture); // Save Video File, Path, Size, Duration
@@ -228,7 +249,13 @@ class LessonController extends Controller
         }
 
         $lecture->save();
-
+        if($course_version_id){
+            $course_version = CourseVersion::find($course_version_id);
+            $details = $course_version->details;
+            $details['lectures'][] = $lecture->id;
+            $course_version->details = $details;
+            $course_version->update();
+        }
 
         if ($course->status == 1) {
             /** ====== send notification to student ===== */
@@ -249,7 +276,7 @@ class LessonController extends Controller
         }
 
 
-        return redirect(route('instructor.course.edit', [$course->uuid, 'step=lesson']));
+        return redirect(route('instructor.course.edit', [$course->uuid, 'step=lesson', "course_version_id"=> $course_version_id]));
     }
 
     public function editLecture($course_uuid, $lesson_uuid, $lecture_uuid)

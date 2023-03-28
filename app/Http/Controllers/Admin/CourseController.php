@@ -3,17 +3,21 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Course;
 use App\Models\Course_lecture;
 use App\Models\Course_lecture_views;
 use App\Models\Course_lesson;
 use App\Models\CourseInstructor;
 use App\Models\CourseUploadRule;
+use App\Models\CourseVersion;
 use App\Models\Enrollment;
+use App\Models\LearnKeyPoint;
 use App\Models\Order;
 use App\Models\Order_item;
 use App\Models\Setting;
 use App\Models\Student;
+use App\Models\Subcategory;
 use App\Models\User;
 use App\Tools\Repositories\Crud;
 use App\Traits\General;
@@ -25,6 +29,7 @@ use Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 
 class CourseController extends Controller
 {
@@ -56,6 +61,9 @@ class CourseController extends Controller
 
         return view('admin.course.view', $data);
     }
+    public function versionView($id)
+    {
+    }
 
     public function approved()
     {
@@ -77,6 +85,19 @@ class CourseController extends Controller
         $data['title'] = 'Review Pending Courses';
         $data['courses'] = Course::where('status', 2)->paginate(25);
         return view('admin.course.review-pending', $data);
+    }
+    public function editPending()
+    {
+        if (!Auth::user()->can('pending_course')) {
+            abort('403');
+        } // end permission checking
+
+        $data['title'] = 'Pending Course Edits';
+        $data['versions'] = CourseVersion::with('course')->where('status', PENDING_COURSE_VERSION)->paginate(25);
+        // $data['categories'] = Category::select('id', 'name')->get()->toArray();
+        $data['categories'] = Category::all()->pluck('name', 'id')->toArray();
+        $data['subcategories'] = Subcategory::all()->pluck('name', 'id')->toArray();
+        return view('admin.course.edit-pending', $data);
     }
 
     public function hold()
@@ -121,7 +142,89 @@ class CourseController extends Controller
 
         $this->showToastrMessage('success', __('Status has been changed'));
         return redirect()->back();
+    }
+    public function versionStatusChange($id, $status)
+    {
+        $course_version = CourseVersion::findOrFail($id);
+        $course = Course::find($course_version->course_id);
+        /**
+         * update order data
+         * link learning points to course
+         * delete old learning points that are not in details['learning_points']
+         * delete video and image if they are different
+         * synch tags
+         */
+        DB::transaction(function () use ($status, $course_version, $course) {
+            if ($status == APPROVED_COURSE_VERSION) {
+                $details = $course_version->details;
+                LearnKeyPoint::
+                whereIn('id', $details['new_learn_key_points'])
+                ->update(['course_id' => $course->id]);
+                LearnKeyPoint::whereNotIn('id', $details['new_learn_key_points'])->where('course_id', $course->id)->delete();
 
+                if ($course->image != $details['image']) {
+                    $this->deleteFile($course->image);
+                }
+                if ($course->video != $details['video']) {
+                    $this->deleteVideoFile($course->video);
+                }
+                if ($details['tags']) {
+                    $course->tags()->sync($details['tags']);
+                }
+                if (isset($details['lessons'])) {
+                    Course_lesson::whereIn('id', $details['lessons'])->update(['course_id' => $course->id]);
+                }
+                if (isset($details['course_instructors'])) {
+                    foreach ($details['course_instructors'] as $instructor) {
+                        CourseInstructor::updateOrCreate([
+                            'instructor_id' => $instructor['instructor_id'],
+                            'course_id' => $course->id,
+                        ], [
+                            'instructor_id' => $instructor['instructor_id'],
+                            'course_id' => $course->id,
+                            'share' => $instructor['share'],
+                        ]);
+                    }
+                    $instructors_ids = array_keys($details['course_instructors']);
+                    CourseInstructor::whereNotIn('id', $instructors_ids)->where('course_id', $course->id)->delete();
+                }
+                if (isset($details['course_main_instructor'])){
+                    CourseInstructor::updateOrCreate([
+                        'instructor_id' => $course->user_id,
+                        'course_id' => $course->id,
+                    ], [
+                        'instructor_id' =>$course->user_id,
+                        'course_id' =>$course->id,
+                        'share' => $details['course_main_instructor']['share'],
+                        'status' => STATUS_ACCEPTED ,
+                    ]);
+                }
+                $data = [
+                    'title' => $details['title'],
+                    'course_type' => $details['course_type'],
+                    'subtitle' => $details['subtitle'],
+                    'slug' => $details['slug'],
+                    'description' => $details['description'],
+                    'category_id' => $details['category_id'],
+                    'subcategory_id' => $details['subcategory_id'],
+                    'price' => $details['price'],
+                    'old_price' => $details['old_price'],
+                    'drip_content' => $details['drip_content'],
+                    'access_period' => $details['access_period'],
+                    'course_language_id' => $details['course_language_id'],
+                    'difficulty_level_id' => $details['difficulty_level_id'],
+                    'learner_accessibility' => $details['learner_accessibility'],
+                    'image' => $details['image'],
+                    'video' => $details['video'],
+                    'intro_video_check' => $details['intro_video_check'],
+                    'youtube_video_id' => $details['youtube_video_id'],
+                ];
+                $course->update($data);
+                $course_version->update(['status' => APPROVED_COURSE_VERSION]);
+            }
+        });
+        $this->showToastrMessage('success', __('Course Has Been Updated.'));
+        return back();
     }
 
     public function delete($uuid)
@@ -129,32 +232,24 @@ class CourseController extends Controller
         $course = $this->model->getRecordByUuid($uuid);
         $order_item = Order_item::whereCourseId($course->id)->first();
 
-        if ($order_item)
-        {
+        if ($order_item) {
             $this->showToastrMessage('error', __('You can not deleted. Because already student purchased this course!'));
             return redirect()->back();
         }
         //start:: Course lesson delete
         $lessons = Course_lesson::where('course_id', $course->id)->get();
-        if (count($lessons) > 0)
-        {
-            foreach ($lessons as $lesson)
-            {
+        if (count($lessons) > 0) {
+            foreach ($lessons as $lesson) {
                 //start:: lecture delete
                 $lectures = Course_lecture::where('lesson_id', $lesson->id)->get();
-                if (count($lectures) > 0)
-                {
-                    foreach ($lectures as $lecture)
-                    {
+                if (count($lectures) > 0) {
+                    foreach ($lectures as $lecture) {
                         $lecture = Course_lecture::find($lecture->id);
-                        if ($lecture)
-                        {
+                        if ($lecture) {
                             $this->deleteFile($lecture->file_path); // delete file from server
 
-                            if ($lecture->type == 'vimeo')
-                            {
-                                if ($lecture->url_path)
-                                {
+                            if ($lecture->type == 'vimeo') {
+                                if ($lecture->url_path) {
                                     $this->deleteVimeoVideoFile($lecture->url_path);
                                 }
                             }
@@ -178,6 +273,10 @@ class CourseController extends Controller
         $course->delete();
         $this->showToastrMessage('success', __('Course has been deleted.'));
         return redirect()->back();
+    }
+
+    public function deleteVersion($id)
+    {
     }
 
     public function courseUploadRuleIndex()
@@ -236,7 +335,7 @@ class CourseController extends Controller
     public function courseEnroll()
     {
         $data['title'] = 'Course Enroll';
-        $data['users'] = User::where('role','!=', 1)->get();
+        $data['users'] = User::where('role', '!=', 1)->get();
         $data['courses'] = Course::all();
 
         return view('admin.course.enroll-student', $data);
@@ -292,20 +391,18 @@ class CourseController extends Controller
         $order_item->owner_balance = 0;
         $order_item->sell_commission = 0;
         $order_item->save();
-       
-        
+
+
         set_instructor_ranking_level($course->user_id);
-        
+
         /** ====== Send notification =========*/
         $text = __("New student enrolled");
         $target_url = route('instructor.all-student');
-        foreach ($order->items as $item)
-        {
-            if ($item->course)
-            {
+        foreach ($order->items as $item) {
+            if ($item->course) {
                 $this->send($text, 2, $target_url, $item->course->user_id);
             }
-            
+
             setEnrollment($item);
         }
 

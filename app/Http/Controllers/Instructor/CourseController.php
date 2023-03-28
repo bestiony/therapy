@@ -161,8 +161,16 @@ class CourseController extends Controller
                 return redirect()->back();
             }
         }
+<<<<<<< HEAD
         $course_version_id = \request('course_version_id');
         $data['course_version_id'] = $course_version_id;
+=======
+        $data['course_version_id'] = null;
+        if(\request('course_version_id')){
+            $course_version_id = \request('course_version_id');
+            $data['course_version_id'] = $course_version_id;
+        }
+>>>>>>> refs/remotes/origin/temporary
         $data['keyPoints'] = LearnKeyPoint::whereCourseId($data['course']->id)->get();
         if (\request('step') == 'category') {
             $data['categories'] = Category::active()->orderBy('name', 'asc')->select('id', 'name')->get();
@@ -267,7 +275,11 @@ class CourseController extends Controller
             'course_id'=> $course->id,
             'instructor_id'=> $user_id,
             'version'=> $last_course_version ? $last_course_version->version + 1 : 1 ,
+<<<<<<< HEAD
             'status'=> PENDING_COURSE_VERSION,
+=======
+            'status'=> INCOMPLETED_COURSE_VERSION,
+>>>>>>> refs/remotes/origin/temporary
             'details'=>[],
         ]);
 
@@ -321,20 +333,29 @@ class CourseController extends Controller
                 return redirect()->back();
             }
         }
+<<<<<<< HEAD
         $course_version = CourseVersion::findOrFail($request->course_version_id);
+=======
+        $course_version = CourseVersion::find($request->course_version_id);
+>>>>>>> refs/remotes/origin/temporary
 
         if ($request->image) {
             $request->validate([
                 'image' => 'dimensions:min_width=575,min_height=450,max_width=575,max_height=450'
             ]);
-            $this->deleteFile($course->image); // delete file from server
+            if(!$course_version){
+                $this->deleteFile($course->image); // delete file from server
+            }
+
             $image = $this->saveImage('course', $request->image, null, null); // new file upload into server
         } else {
             $image = $course->image;
         }
 
         if ($request->video) {
-            $this->deleteVideoFile($course->video); // delete file from server
+            if (!$course_version){
+                $this->deleteVideoFile($course->video); // delete file from server
+            }
             $file_details = $this->uploadFileWithDetails('course', $request->video);
             if (!$file_details['is_uploaded']) {
                 $this->showToastrMessage('error', __('Something went wrong! Failed to upload file'));
@@ -360,10 +381,19 @@ class CourseController extends Controller
             'intro_video_check' => $request->intro_video_check,
             'youtube_video_id' => $request->youtube_video_id ?? null,
         ];
+<<<<<<< HEAD
         $new_details = array_merge($course_version->details, $data);
         $new_details['tags'] = $request->tag ? $request->tag : null;
         $course_version->details = $new_details;
         $course_version->update();
+=======
+        if($course_version){
+            $new_details = array_merge($course_version->details, $data);
+            $new_details['tags'] = $request->tag ? $request->tag : null;
+            $course_version->details = $new_details;
+            $course_version->update();
+        }
+>>>>>>> refs/remotes/origin/temporary
         // $this->model->updateByUuid($data, $uuid); // update category
 
         // if ($request->tag) {
@@ -377,11 +407,16 @@ class CourseController extends Controller
         }
 
 
+<<<<<<< HEAD
         return redirect(route('instructor.course.edit', [$course->uuid, 'step=lesson', 'course_version_id'=> $course_version->id]));
+=======
+        return redirect(route('instructor.course.edit', [$course->uuid, 'step=lesson', 'course_version_id'=>($course_version ?  $course_version->id : null)]));
+>>>>>>> refs/remotes/origin/temporary
     }
 
-    public function uploadFinished($uuid)
+    public function uploadFinished($uuid, Request $request)
     {
+
         $course = Course::where('courses.uuid', $uuid)->first();
         $user_id = auth()->id();
 
@@ -393,17 +428,25 @@ class CourseController extends Controller
                 return redirect()->back();
             }
         }
+        $course_version_id = $request->course_version_id;
+        if($course_version_id){
+            $course_version = CourseVersion::find($course_version_id);
+            $course_version->status = PENDING_COURSE_VERSION;
+            $course_version->update();
+        }
 
         if ($course->status == 1) {
+            if(!$course_version_id){
 
-            if ($course->user_id != auth()->id()) {
-                //TODO: notify from here to multi instructor;
-                $text = __("You have selected as co-instructor");
-                $target_url = route('instructor.multi_instructor');
-                $courseInstructors = $course->course_instructors->where('status', STATUS_PENDING)->where('instructor_id', '!=', $course->user_id);
+                if ($course->user_id != auth()->id()) {
+                    //TODO: notify from here to multi instructor;
+                    $text = __("You have selected as co-instructor");
+                    $target_url = route('instructor.multi_instructor');
+                    $courseInstructors = $course->course_instructors->where('status', STATUS_PENDING)->where('instructor_id', '!=', $course->user_id);
 
-                foreach ($courseInstructors as $courseInstructor) {
-                    $this->send($text, 2, $target_url, $courseInstructor->instructor->user_id);
+                    foreach ($courseInstructors as $courseInstructor) {
+                        $this->send($text, 2, $target_url, $courseInstructor->instructor->user_id);
+                    }
                 }
             }
         } else {
@@ -476,7 +519,9 @@ class CourseController extends Controller
     public function storeInstructor(Request $request, $uuid)
     {
         $course = Course::where('user_id', auth()->id())->whereUuid($uuid)->firstOrFail();
-
+        $course_version_id = $request->course_version_id;
+        $course_version = CourseVersion::find($course_version_id);
+        $details = $course_version ? $course_version->details : [];
         if ($course->user_id == auth()->id()) {
             $request->validate([
                 'share.*' => 'bail|required|min:0|max:100'
@@ -493,21 +538,30 @@ class CourseController extends Controller
                 }
 
                 foreach ($data['instructor_id'] as $id => $instructor) {
-                    $courseInstructor = CourseInstructor::updateOrCreate([
-                        'instructor_id' => $id,
-                        'course_id' => $course->id,
-                    ], [
-                        'instructor_id' => $id,
-                        'course_id' => $course->id,
-                        'share' => $data['share'][$id],
-                    ]);
+                    if (!$course_version){
+                        $courseInstructor = CourseInstructor::updateOrCreate([
+                            'instructor_id' => $id,
+                            'course_id' => $course->id,
+                        ], [
+                            'instructor_id' => $id,
+                            'course_id' => $course->id,
+                            'share' => $data['share'][$id],
+                        ]);
 
-                    array_push($courseInstructorIds, $courseInstructor->id);
+                        array_push($courseInstructorIds, $courseInstructor->id);
+                    }else{
+                        $details['course_instructors'][$id] = [
+                            'instructor_id' => $id,
+                            'share' => $data['share'][$id],
+                        ];
+                    }
                 }
+
             }
             else{
                 $totalShare = 0;
             }
+            if (!$course_version){
 
             $courseInstructor = CourseInstructor::updateOrCreate([
                 'instructor_id' => $course->user_id,
@@ -518,13 +572,24 @@ class CourseController extends Controller
                 'share' => (100 - $totalShare),
                 'status' => STATUS_ACCEPTED
             ]);
-
-
             array_push($courseInstructorIds, $courseInstructor->id);
 
             CourseInstructor::whereNotIn('id', $courseInstructorIds)->where('course_id', $course->id)->delete();
+            } else{
+                $details['course_main_instructor'] = [
+                    'instructor_id' => $course->user_id,
+                    'course_id' => $course->id,
+                    'share' => (100 - $totalShare),
+                ];
+            }
 
-            return redirect(route('instructor.course.edit', [$course->uuid, 'step=submit']));
+            if ($course_version){
+                $course_version->details = $details;
+                $course_version->update();
+            }
+
+
+            return redirect(route('instructor.course.edit', [$course->uuid, 'step=submit', 'course_version_id'=> $course_version_id]));
         }
     }
 }

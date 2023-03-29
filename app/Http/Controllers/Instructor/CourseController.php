@@ -373,12 +373,13 @@ class CourseController extends Controller
             $new_details['tags'] = $request->tag ? $request->tag : null;
             $course_version->details = $new_details;
             $course_version->update();
+        }else{
+            $this->model->updateByUuid($data, $uuid); // update category
+            if ($request->tag) {
+                $course->tags()->sync($request->tag);
+            }
         }
-        // $this->model->updateByUuid($data, $uuid); // update category
 
-        // if ($request->tag) {
-        //     $course->tags()->sync($request->tag);
-        // }
 
         if ($course->status != 0) {
             $text = __("Course") . " " . $course->title . " " . __("Course category has been updated");

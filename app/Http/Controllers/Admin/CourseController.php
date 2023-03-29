@@ -63,6 +63,10 @@ class CourseController extends Controller
     }
     public function versionView($id)
     {
+        $data['course_version'] = CourseVersion::findOrFail($id);
+        $data['course'] = Course::with(['keyPoints'])->findOrFail($data['course_version']->course_id);
+        
+        return view('admin.course.version-view', $data);
     }
 
     public function approved()

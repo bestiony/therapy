@@ -1179,3 +1179,14 @@ function create_conversation($booking)
     ];
     Mail::to($booking->user)->send(new InstructorApprovedConsultationMail($email_data));
 }
+
+
+function get_names($type, $array){
+    $names =   implode(", ", MODELS[$type]::whereIn('id', $array)->select('name')->first()->toArray());
+
+    return $names;
+}
+
+function get_instructor_share(Course $course, User $instructor){
+    return CourseInstructor::where('course_id', $course->id)->where('instructor_id', $instructor->id)->first()->share;
+}

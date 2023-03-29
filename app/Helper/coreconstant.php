@@ -174,3 +174,15 @@ const INCOMPLETED_COURSE_VERSION = 0;
 const PENDING_COURSE_VERSION = 1;
 const REFUSED_COURSE_VERSION = 2;
 const APPROVED_COURSE_VERSION = 3;
+
+
+const MODELS = [
+    'key_point' => 'App\Models\LearnKeyPoint',
+    'category' => 'App\Models\Category',
+    'subcategory' => 'App\Models\Subcategory',
+    'tag' => 'App\Models\Tag',
+    'course_langauge' => 'App\Models\Course_language',
+    'difficulty_level' => 'App\Models\Difficulty_level',
+    'lesson' => 'App\Models\Course_lesson',
+    'user' => 'App\Models\User',
+];

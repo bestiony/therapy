@@ -15,3 +15,5 @@ yarn-error.log
 /public/scorm
 composer.lock
 11-3.zip
+resources/lang/ar.json
+resources/lang/en.json

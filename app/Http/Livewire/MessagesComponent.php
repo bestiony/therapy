@@ -27,15 +27,15 @@ class MessagesComponent extends Component
 
         $this->selected_conversation = $selected_conversation;
         $this->user_timezone = $user_timezone;
-        if ($this->is_patient) {
-            $this->conversation = Conversation::where('id', $this->selected_conversation)
-                ->wherePatientId($this->user->id)
-                ->first();
-        } else {
-            $this->conversation = Conversation::where('id', $this->selected_conversation)
-                ->whereTherapistId($this->user->id)
-                ->first();
-        }
+        $this->conversation = Conversation::where('id', $this->selected_conversation)
+        ->first();
+        // if ($this->is_patient) {
+        //         ->wherePatientId($this->user->id)
+        // } else {
+        //     $this->conversation = Conversation::where('id', $this->selected_conversation)
+        //         ->whereTherapistId($this->user->id)
+        //         ->first();
+        // }
     }
     public function send_message()
     {
@@ -50,7 +50,7 @@ class MessagesComponent extends Component
         }
 
 
-        $last_message = $this->conversation->messages->last();
+        $last_message = $this->conversation->messages ? $this->conversation->messages->last() : null;
         $user_timezone = session('timezone');
         $now = Carbon::now($user_timezone);
         $online_since = $now->diffInSeconds($this->conversation->therapist->last_activity);

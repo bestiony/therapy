@@ -21,12 +21,21 @@ class MessagesController extends Controller
 
     public function patient_index(Request $request){
         $selected_conversation = $request->convo;
+
         $user = auth()->user();
-        if($user->role != USER_ROLE_STUDENT){
+        if(!in_array($user->role , [USER_ROLE_STUDENT , USER_ROLE_INSTRUCTOR])){
             return back();
+        }
+        $conversation = Conversation::find($selected_conversation);
+        if ($conversation) {
+            if ($conversation->patient_id != $user->id) {
+                $this->showToastrMessage('warning', 'you are not a part of this conversation');
+                return back();
+            }
         }
         $data['conversations'] = Conversation::with(['messages','therapist','patient','order'])->wherePatientId($user->id)->orderBy('id','desc')->get();
         $data['selected_conversation'] = $selected_conversation;
+
         // $data['current_conversation'] = Conversation::find($selected_conversation);
         // $data['messages'] = Messages::whereConversationId($selected_conversation)->get();
         // $data['messages']->each(function($item, $key) use($user){
@@ -63,8 +72,8 @@ class MessagesController extends Controller
             $fileName = 'storage/'. CONVERSATIONS_FILES_STORAGE . $fileName;
         }
         $last_message = $conversation->messages->last();
-            if(!$last_message || $last_message->is_seen){ 
-            notify_therapist_about_patient_message($conversation, $user);
+            if(!$last_message || $last_message->is_seen){
+            notify_user_about_chat_message($conversation, $user, true);
                 // $text = 'you have a new message from ' . $user->name ;
                 // $url = route('instructor.messages',['convo'=>$conversation->id]);
                 // $reciever = $conversation->therapist_id;
@@ -91,6 +100,13 @@ class MessagesController extends Controller
         $user = auth()->user();
         if( !in_array( $user->role ,[USER_ROLE_INSTRUCTOR, USER_ROLE_ORGANIZATION] )){
             return back();
+        }
+        $conversation = Conversation::where('id', $request->conversation_id)->wherePatientId($user->id)->whereStatus('active')->first();
+        if ($conversation) {
+            if ($conversation->therapist_id != $user->id) {
+                $this->showToastrMessage('warning', 'you are not a part of this conversation');
+                return back();
+            }
         }
         $data['conversations'] = Conversation::with(['messages','therapist','patient','order'])->whereTherapistId($user->id)->orderBy('id','desc')->get();
         $data['selected_conversation'] = $selected_conversation;
@@ -202,3 +218,4 @@ class MessagesController extends Controller
         return view('admin.messages.index',$data);
     }
 }
+

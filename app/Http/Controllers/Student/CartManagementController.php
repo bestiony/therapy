@@ -773,7 +773,7 @@ class CartManagementController extends Controller
             } else {
                 DB::beginTransaction();
                 try {
-                    $order = $this->placeOrder('buy');
+                    $order = $this->placeOrder('buy')['data'];
                     $order->payment_status = 'paid';
                     $order->save();
 

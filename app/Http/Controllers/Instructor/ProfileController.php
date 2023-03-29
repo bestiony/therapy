@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Instructor\ProfileRequest;
 use App\Models\City;
 use App\Models\Country;
+use App\Models\Course_language;
 use App\Models\Instructor;
 use App\Models\Instructor_awards;
 use App\Models\Instructor_certificate;
@@ -39,6 +40,7 @@ class ProfileController extends Controller
         $data['user'] = Auth::user();
         $data['instructor'] = Auth::user()->instructor;
         $data['skills'] = Skill::where('status',1)->get();
+        $data['languages'] = Course_language::all();
         return view('instructor.profile', $data);
     }
 
@@ -62,9 +64,10 @@ class ProfileController extends Controller
         } else {
             $image = $user->image;
         }
-
+        
         $user->name = $request->first_name . ' ' . $request->last_name;
         $user->image = $image;
+        $user->languages = $request->languages;
         $user->save();
 
         $instructor_date = [

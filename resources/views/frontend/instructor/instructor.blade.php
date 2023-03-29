@@ -131,6 +131,29 @@
                                 </div>
                             </div>
 
+                            <div class="accordion-item course-sidebar-accordion-item">
+                                <h2 class="accordion-header course-sidebar-title" id="panelsStayOpen-headingOne">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="false" aria-controls="panelsStayOpen-collapseOne">
+                                        {{ __('Languages') }}
+                                    </button>
+                                </h2>
+                                <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
+                                    <div class="accordion-body">
+                                        @foreach ($languages as $language)
+                                        <div class="sidebar-radio-item">
+                                            <div class="form-check">
+                                                <input class="form-check-input filterDifficultyLevel" type="checkbox" name="language_ids[]" onclick="filterData()" value="{{ $language->id }}" id="exampleRadios{{ $language->id }}">
+                                                <label class="form-check-label" for="exampleRadios{{ $language->id }}">
+                                                    {{__( $language->name) }}
+                                                </label>
+                                            </div>
+                                            <div class="radio-right-text"></div>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+
                             <div style="display:none;" class="accordion-item course-sidebar-accordion-item">
                                 <h2 class="accordion-header course-sidebar-title" id="panelsStayOpen-headingEight">
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseEight" aria-expanded="false" aria-controls="panelsStayOpen-collapseEight">
@@ -356,7 +379,7 @@
                 </div>
                 <!-- instructor Sidebar End-->
 
-                
+
             </div>
             <!-- Show all Instructor area End-->
         </div>

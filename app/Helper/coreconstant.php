@@ -116,8 +116,8 @@ const PACKAGE_RULE_PRODUCT = 7;
 const PACKAGE_RULE_DEVICE = 8;
 
 //Subscription Type
-const SUBSCRIPTION_TYPE_MONTHLY=1;
-const SUBSCRIPTION_TYPE_YEARLY=2;
+const SUBSCRIPTION_TYPE_MONTHLY = 1;
+const SUBSCRIPTION_TYPE_YEARLY = 2;
 
 //Booking History
 const PAYPAL = 'paypal';
@@ -181,7 +181,7 @@ const MODELS = [
     'category' => 'App\Models\Category',
     'subcategory' => 'App\Models\Subcategory',
     'tag' => 'App\Models\Tag',
-    'course_langauge' => 'App\Models\Course_language',
+    'course_language' => 'App\Models\Course_language',
     'difficulty_level' => 'App\Models\Difficulty_level',
     'lesson' => 'App\Models\Course_lesson',
     'user' => 'App\Models\User',

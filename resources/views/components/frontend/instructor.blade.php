@@ -14,11 +14,11 @@
     <div class="card-body p-0">
         <h6 class="card-title"><a href="{{ route('userProfile', $user->id) }}">{{ $user->name }}</a>
         </h6>
-        <p class="card-text instructor-designation font-medium mb-15">
+        <p class="card-text instructor-designation font-medium m-4">
             {{ @$user->instructor->professional_title }}
             {{-- @if (get_instructor_ranking_level($user->badges)) --}}
-                {{-- <span class="mx-2"> --}}
-                    {{-- ||</span>{{ get_instructor_ranking_level($user->badges) }} --}}
+            {{-- <span class="mx-2"> --}}
+            {{-- ||</span>{{ get_instructor_ranking_level($user->badges) }} --}}
         </p>
         {{-- @endif --}}
 
@@ -49,46 +49,48 @@
             </div>
         </div> --}}
 
-        <div class="search-instructor-price  align-items-center mb-15">
+        <div class="search-instructor-price  align-items-center m-4">
             @if ($user->instructor && $user->instructor->consultation_available == 1)
                 <div class="text-center">
 
-                @if ($user->instructor->hourly_rate < $user->instructor->hourly_old_rate)
-                    <div class="search-instructor-new-price font-medium mx-1">
-                        {{ $user->instructor->hourly_rate }} $ /{{ __('Session') }}
-                    </div>
-                 {{--     <div
+                    @if ($user->instructor->hourly_rate < $user->instructor->hourly_old_rate)
+                        <div class="search-instructor-new-price font-medium mx-1">
+                            {{ $user->instructor->hourly_rate }} $ /{{ __('Session') }}
+                        </div>
+                        {{--     <div
                         class="search-instructor-old-price text-decoration-line-through color-gray font-13 font-medium mx-1">
                         {{ $user->instructor->hourly_old_rate }}</div> --}}
-                @else
-                    <div class="search-instructor-new-price font-medium mx-1">
-                        {{ $user->instructor->hourly_rate }} $ /{{ __('Session') }}
-                    </div>
-                    <div
-                        class="search-instructor-old-price text-decoration-line-through color-gray font-13 font-medium mx-1">
-                    </div>
-                @endif
-            </div>
+                    @else
+                        <div class="search-instructor-new-price font-medium mx-1">
+                            {{ $user->instructor->hourly_rate }} $ /{{ __('Session') }}
+                        </div>
+                        <div
+                            class="search-instructor-old-price text-decoration-line-through color-gray font-13 font-medium mx-1">
+                        </div>
+                    @endif
+                </div>
 
                 <div class="text-center">
 
-                @if ($user->instructor->monthly_rate < $user->instructor->monthly_old_rate)
-                    <div class="search-instructor-new-price font-medium mx-1">
-                        {{ $user->instructor->monthly_rate }} {{get_currency_symbol()}}/{{ __('Month') }} for  {{ $user->instructor->hours_per_month }} {{ __('Session') }}
-                    </div>
-                     {{--  <div
+                    @if ($user->instructor->monthly_rate < $user->instructor->monthly_old_rate)
+                        <div class="search-instructor-new-price font-medium mx-1">
+                            {{ $user->instructor->monthly_rate }} {{ get_currency_symbol() }}/{{ __('Month') }} for
+                            {{ $user->instructor->hours_per_month }} {{ __('Session') }}
+                        </div>
+                        {{--  <div
                         class="search-instructor-old-price text-decoration-line-through color-gray font-13 font-medium mx-1">
                         {{ $user->instructor->monthly_old_rate }} {{get_currency_symbol()}}</div> --}}
-                @else
-                    <div class="search-instructor-new-price font-medium mx-1">
-                        {{ $user->instructor->monthly_rate }}{{get_currency_symbol()}}/{{ __('Month') }} for  {{ $user->instructor->hours_per_month }} {{ __('Session') }}
-                    </div>
-                    <div
-                        class="search-instructor-old-price text-decoration-line-through color-gray font-13 font-medium mx-1">
-                    </div>
-                @endif
+                    @else
+                        <div class="search-instructor-new-price font-medium mx-1">
+                            {{ $user->instructor->monthly_rate }}{{ get_currency_symbol() }}/{{ __('Month') }} for
+                            {{ $user->instructor->hours_per_month }} {{ __('Session') }}
+                        </div>
+                        <div
+                            class="search-instructor-old-price text-decoration-line-through color-gray font-13 font-medium mx-1">
+                        </div>
+                    @endif
 
-            </div>
+                </div>
             @else
                 <div class="search-instructor-new-price font-medium mx-1"></div>
                 <div
@@ -96,13 +98,23 @@
                 </div>
             @endif
         </div>
-        <div class="search-instructor-price  align-items-center mb-15">
+        <div class="search-instructor-price  align-items-center mb-4">
             @if ($user->instructor)
-            @foreach($user->instructor->skills as $skill)
-            <span class="badge text-bg-primary">{{$skill->title}}</span>
-            @endforeach
+                @foreach ($user->instructor->skills as $skill)
+                    <span class="badge text-bg-primary">{{ $skill->title }}</span>
+                @endforeach
             @endif
         </div>
+        @if ($user->languages)
+            <div class="search-instructor-price  align-items-center m-4">
+                @php
+                    $user_languages =  explode(", ", get_all_names('course_language', $user->languages));
+                @endphp
+                @foreach ($user_languages as $language)
+                    <span class="badge text-bg-primary">{{ $language }}</span>
+                @endforeach
+            </div>
+        @endif
         <div class="w-100">
             @if ($type == INSTRUCTOR_CARD_TYPE_ONE || $type == INSTRUCTOR_CARD_TYPE_THREE)
                 <a {{ $type == INSTRUCTOR_CARD_TYPE_THREE ? 'target=_blank' : '' }}

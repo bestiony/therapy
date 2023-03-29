@@ -117,8 +117,11 @@
                                                 </label>
                                                 <select name="tag[]" class="select2" multiple>
                                                     @foreach($tags as $tag)
-                                                    <option value="{{$tag->id}}" @if(in_array($tag->id, $selected_tags))
-                                                        selected @endif>{{$tag->name}}</option>
+                                                    <option value="{{$tag->id}}"
+                                                        @if(in_array($tag->id, $selected_tags))
+                                                        selected
+                                                        @endif
+                                                        >{{$tag->name}}</option>
                                                     @endforeach
                                                 </select>
 

@@ -73,6 +73,16 @@ $userRelation = getUserRoleRelation($user);
                                     @endforelse
                                 </ul>
                             </div>
+                            <div class="instructor-skills-box mt-25">
+                                <h5 class="instructor-details-inner-title">{{ __('Languages') }}</h5>
+                                <ul class="instructor-skills-tag d-inline-flex align-items-center flex-wrap">
+                                    @forelse ($user_langauges as $language)
+                                    <li class="bg-page instructor-skills-tag-item">{{ $language }}</li>
+                                    @empty
+                                    <li class="font-15"><span class="color-gray2">{{ __('No Languages to show') }}</li>
+                                    @endforelse
+                                </ul>
+                            </div>
                         </div>
 
                         <!-- Certificate and awards -->

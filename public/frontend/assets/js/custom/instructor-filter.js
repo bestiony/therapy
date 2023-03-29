@@ -140,6 +140,7 @@ function requestData(){
         "country_id": $(':input[name=country]').val(),
         "state_id": $(':input[name=state]').val(),
         "city_id": $(':input[name=city]').val(),
+        "city_id": $(':input[name=city]').val(),
         "price_min" : $(':input[name=price_min]').val(),
         "price_max" : $(':input[name=price_max]').val(),
         "sort_by" : $(':input[name=sort_by]').val(),
@@ -150,6 +151,11 @@ function requestData(){
             }
         }).get(),
         "category_ids[]" : $("input[name^='category_ids']").map(function() {
+            if($(this).is(':checked')){
+                return this.value;
+            }
+        }).get(),
+        "language_ids[]" : $("input[name^='language_ids']").map(function() {
             if($(this).is(':checked')){
                 return this.value;
             }

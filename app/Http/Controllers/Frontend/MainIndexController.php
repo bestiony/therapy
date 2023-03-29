@@ -13,6 +13,7 @@ use App\Models\ContactUs;
 use App\Models\ContactUsIssue;
 use App\Models\Country;
 use App\Models\Course;
+use App\Models\Course_language;
 use App\Models\Course_lecture;
 use App\Models\Enrollment;
 use App\Models\Exam;
@@ -197,6 +198,7 @@ class MainIndexController extends Controller
         $data['average_rating'] = getUserAverageRating($user->id);
         $courseIds = Course::where('private_mode', '!=', 1)->where('user_id', $user->id)->where('status', 1)->select('id')->pluck('id')->toArray();
         $data['total_rating'] = Review::whereIn('course_id', $courseIds)->count();
+        $data['user_langauges'] = Course_language::whereIn('id', $user->languages)->pluck('name')->toArray();
         $data['totalStudent'] = Enrollment::where('owner_user_id', $user->id)->groupBy('user_id')->count();
         $data['totalMeeting'] = Enrollment::where('owner_user_id', $user->id)->whereNull('consultation_slot_id')->count();
         $data['total_assignments'] = Assignment::whereIn('course_id', $courseIds)->count();
@@ -315,6 +317,7 @@ class MainIndexController extends Controller
         $data['countries'] = Country::all();
         $data['states'] = State::all();
         $data['cities'] = City::all();
+        $data['languages'] = Course_language::all();
         $data['users'] = $users;
         $data['mapData'] = $mapArray;
 
@@ -458,6 +461,10 @@ class MainIndexController extends Controller
             // $users->leftJoin('courses', 'courses.user_id', '=', 'users.id')->leftJoin('instructors','instructors.user_id','=','users.id');
             $users->whereIn('ins.user_category_id',$request->category_ids);
         }
+        if($request->language_ids && is_array($request->language_ids)){
+            // $users->leftJoin('courses', 'courses.user_id', '=', 'users.id')->leftJoin('instructors','instructors.user_id','=','users.id');
+            $users->whereJsonContains('languages',$request->language_ids);
+        }
         if($request->sort_by){
             $users->orderBy('users.created_at', $request->sort_by);
         }
@@ -469,6 +476,7 @@ class MainIndexController extends Controller
         $users = $users->select(
             'users.id',
             'users.name',
+            'users.languages',
             'users.email',
             'users.area_code',
             'users.mobile_number',

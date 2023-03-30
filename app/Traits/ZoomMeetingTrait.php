@@ -70,7 +70,7 @@ trait ZoomMeetingTrait
         $c = new Client(['base_uri' => 'https://api.zoom.us',]);
         $j =  $this->generateZoomToken();
         // $path = 'users/me/meetings';
-        $path = '/v2/users/me/meetings';
+        $path = 'v2/users/me/meetings';
         $url = $this->retrieveZoomUrl();
 
         $body = [

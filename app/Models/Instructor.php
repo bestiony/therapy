@@ -50,7 +50,7 @@ class Instructor extends Model
 
     public function getFullNameAttribute($value)
     {
-        return $this->first_name.' '.$this->last_name;
+        return $this->first_name . ' ' . $this->last_name;
     }
 
     public function courses()
@@ -110,7 +110,7 @@ class Instructor extends Model
 
     public function getNameAttribute()
     {
-        return $this->first_name .' '. $this->last_name;
+        return $this->first_name . ' ' . $this->last_name;
     }
 
     public function scopePending($query)
@@ -138,17 +138,27 @@ class Instructor extends Model
         return $this->belongsToMany(Skill::class);
     }
 
-    protected static function boot()
+    protected static function booted()
     {
-        parent::boot();
-        self::creating(function($model){
+        parent::booted();
+        self::creating(function ($model) {
             $model->uuid =  Str::uuid()->toString();
         });
+        static::created(function ($model) {
+            ZoomSetting::create([
+                'user_id'=> $model->user->id,
+                'api_key'=> "000000",
+                'api_secret'=> "000000",
+                'timezone'=> session('timezone') ?? config('timezone'),
+                'host_video'=> 1,
+                'participant_video'=> 1,
+                'waiting_room'=> 1,
+                'status'=> 1,
+            ]);
+        });
     }
-    public function category(){
+    public function category()
+    {
         return $this->hasOne(Category::class, 'id', 'user_category_id');
     }
-
-
-
 }

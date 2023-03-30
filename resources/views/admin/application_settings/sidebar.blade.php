@@ -27,6 +27,12 @@
                     <span>{{__('Google Meet Settings')}}</span>
                 </a>
             </li>
+            {{-- <li>
+                <a href="{{ route('settings.zoom_settings') }}" class="list-item {{ @$zoomSettingsActiveClass }}">
+                    <img src="{{ asset('admin/images/heroicon/outline/cog.svg') }}" alt="icon">
+                    <span>{{__('Zoom Settings')}}</span>
+                </a>
+            </li> --}}
             <li>
                 <a href="{{ route('settings.social-login-settings') }}" class="list-item {{ @$socialLoginSettingsActiveClass }}">
                     <img src="{{ asset('admin/images/heroicon/outline/cog.svg') }}" alt="icon">

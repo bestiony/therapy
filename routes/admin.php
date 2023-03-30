@@ -430,6 +430,9 @@ Route::group(['prefix' => 'settings', 'as' => 'settings.'], function () {
     Route::get('gmeet-settings', [SettingController::class, 'gMeetSettings'])->name('gmeet_settings');
     Route::post('gmeet-settings-update', [SettingController::class, 'gMeetSettingsUpdate'])->name('gmeet_settings.update')->middleware('isDemo');
 
+    // Route::get('zoom-settings', [SettingController::class, 'zoomSettings'])->name('zoom_settings');
+    // Route::post('zoom-settings-update', [SettingController::class, 'zoomSettingsUpdate'])->name('zoom_settings.update')->middleware('isDemo');
+
     //Start:: Social Login Settings
     Route::get('social-login-settings', [SettingController::class, 'socialLoginSettings'])->name('social-login-settings');
     Route::post('social-settings-update', [SettingController::class, 'socialLoginSettingsUpdate'])->name('social-login-settings.update')->middleware('isDemo');

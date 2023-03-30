@@ -343,6 +343,17 @@ class SettingController extends Controller
         return view('admin.application_settings.general.gmeet_settings', $data);
     }
 
+    public function zoomSettings(){
+        $data['title'] = 'Google Meet Setting';
+        $data['navApplicationSettingParentActiveClass'] = 'mm-active';
+        $data['subNavGlobalSettingsActiveClass'] = 'mm-active';
+        $data['zoomSettingsActiveClass'] = 'active';
+        return view('admin.application_settings.general.zoom_settings', $data);
+    }
+
+    public function zoomSettingsUpdate(Request $request){
+        $values = $request->validate([]);
+    }
     public function gMeetSettingsUpdate(Request $request)
     {
         $inputs = Arr::except($request->all(), ['_token']);

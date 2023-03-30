@@ -34,6 +34,9 @@ trait ZoomMeetingTrait
 
         $key = @$zoom->api_key ?? '';
         $secret = @$zoom->api_secret ?? '';
+        // $key = env('ZOOM_API_KEY','');
+        // $secret = env('ZOOM_API_SECRET', '');
+
         $payload = [
             'iss' => $key,
             'exp' => strtotime('+1 minute'),
@@ -64,9 +67,10 @@ trait ZoomMeetingTrait
     {
         $zoom = ZoomSetting::find(Auth::id());
 
-        $c = new Client();
+        $c = new Client(['base_uri' => 'https://api.zoom.us',]);
         $j =  $this->generateZoomToken();
-        $path = 'users/me/meetings';
+        // $path = 'users/me/meetings';
+        $path = '/v2/users/me/meetings';
         $url = $this->retrieveZoomUrl();
 
         $body = [
@@ -91,7 +95,7 @@ trait ZoomMeetingTrait
         ];
 
         $response = $c->post($url.$path, $body);
-        return ['data'=>['start_url'=>'234234','join_url'=>'asdsad']];
+        // return ['data'=>['start_url'=>'234234','join_url'=>'asdsad']];
 
 
         return [

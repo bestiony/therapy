@@ -114,8 +114,8 @@ class LiveClassController extends Controller
             $class->class_topic = $request->class_topic;
             $class->date = $request->date;
             $class->duration = $request->duration;
-            $class->start_url = $request->start_url;
-            $class->join_url = $request->join_url;
+            $class->start_url = $request->start_url ;
+            $class->join_url = $request->join_url ?? $request->start_url;
             $class->meeting_host_name = $request->meeting_host_name;
             $class->meeting_id = $request->meeting_host_name == 'jitsi' ? $request->jitsi_meeting_id : $class->id . rand();
             $class->moderator_pw = $request->moderator_pw;

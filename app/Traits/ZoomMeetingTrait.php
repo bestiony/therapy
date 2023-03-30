@@ -67,10 +67,10 @@ trait ZoomMeetingTrait
     {
         $zoom = ZoomSetting::find(Auth::id());
 
-        $c = new Client(['base_uri' => 'https://api.zoom.us',]);
+        $c = new Client(['base_uri' => 'https://api.zoom.us/v2/',]);
         $j =  $this->generateZoomToken();
         // $path = 'users/me/meetings';
-        $path = 'v2/users/me/meetings';
+        $path = 'users/me/meetings';
         $url = $this->retrieveZoomUrl();
 
         $body = [

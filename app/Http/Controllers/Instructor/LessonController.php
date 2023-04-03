@@ -42,21 +42,24 @@ class LessonController extends Controller
         $course = $this->courseModel->getRecordByUuid($course_uuid);
         $data = [
             'name' => $request->name,
-            'short_description' => $request->short_description ?  : null,
+            'short_description' => $request->short_description ?: null,
         ];
-        if(!$course_version){
+        if (!$course_version) {
             $data['course_id'] = $course->id;
         }
         $outcome = $this->model->create($data);
-        if($course_version){
+        $edited_lessons = [];
+        if ($course_version) {
+
             $details = $course_version->details;
             $details['lessons'][] = $outcome->id;
-            $course_version->update(['details'=>$details]);
+            $course_version->update(['details' => $details]);
+            $edited_lessons = Course_lesson::whereIn('id', $details['lessons'])->get();
         }
 
         $this->showToastrMessage('success', __('Created successful.'));
-        return redirect()->back();
-
+        // dd($returned_data);
+        return redirect()->back()->with('edited_lessons', $edited_lessons);
     }
 
     public function updateLesson(LessionRequest $request, $course_uuid, $lesson_uuid)
@@ -64,15 +67,16 @@ class LessonController extends Controller
         $lesson = $this->model->getRecordByUuid($lesson_uuid);
         $course = $this->courseModel->getRecordByUuid($course_uuid);
         $data = [
-            'course_id' => $course->id,
             'name' => $request->name,
-            'short_description' => $request->short_description ?  : null,
+            'short_description' => $request->short_description ?: null,
         ];
+        if ($lesson->course_id){
+            $data['course_id'] = $course->id;
+        }
 
         $this->model->update($data, $lesson->id);
         $this->showToastrMessage('success', __('Updated successful.'));
         return redirect()->back();
-
     }
 
     public function deleteLesson($lesson_uuid)
@@ -105,25 +109,23 @@ class LessonController extends Controller
                 'youtube_url_path' => ['required'],
             ]);
 
-            if ($request->youtube_file_duration){
-                if(preg_match('/^([0-9][0-9]):[0-5][0-9]$/',$request->youtube_file_duration)) {
-
+            if ($request->youtube_file_duration) {
+                if (preg_match('/^([0-9][0-9]):[0-5][0-9]$/', $request->youtube_file_duration)) {
                 } else {
                     $request->validate([
                         'youtube_file_duration' => 'date_format:H:i'
                     ]);
                 }
             }
-        } elseif($request->type == 'vimeo') {
-            if(env('VIMEO_STATUS') == 'active') {
+        } elseif ($request->type == 'vimeo') {
+            if (env('VIMEO_STATUS') == 'active') {
                 $request->validate([
                     'vimeo_url_path' => 'exclude_unless:vimeo_upload_type,1|required',
                     'vimeo_url_uploaded_path' => 'exclude_unless:vimeo_upload_type,2|required',
                 ]);
 
-                if ($request->vimeo_file_duration && ($request->vimeo_upload_type == 2)){
-                    if(preg_match('/^([0-9][0-9]):[0-5][0-9]$/',$request->vimeo_file_duration)) {
-
+                if ($request->vimeo_file_duration && ($request->vimeo_upload_type == 2)) {
+                    if (preg_match('/^([0-9][0-9]):[0-5][0-9]$/', $request->vimeo_file_duration)) {
                     } else {
                         $request->validate([
                             'vimeo_file_duration' => 'date_format:H:i'
@@ -163,7 +165,7 @@ class LessonController extends Controller
         $lecture->pre_ids = ($lecture->pre_ids) ? json_encode($lecture->pre_ids) : NULL;
         $lecture->lesson_id = $lesson->id;
         $course_version_id = $request->course_version_id;
-        if(!$course_version_id){
+        if (!$course_version_id) {
             $lecture->course_id = $course->id;
         }
 
@@ -187,7 +189,7 @@ class LessonController extends Controller
                 $file_duration_second = $request->file_duration;
                 $lecture->file_duration_second = (int)$file_duration_second;
                 $lecture->vimeo_upload_type = $request->vimeo_upload_type;
-            }  elseif ($request->vimeo_url_uploaded_path && ($request->vimeo_upload_type == 2)) {
+            } elseif ($request->vimeo_url_uploaded_path && ($request->vimeo_upload_type == 2)) {
                 $lecture->vimeo_upload_type = $request->vimeo_upload_type;
                 $lecture->url_path = $request->vimeo_url_uploaded_path;
                 $lecture->file_duration = $request->vimeo_file_duration;
@@ -205,7 +207,7 @@ class LessonController extends Controller
         }
 
         if ($request->type == 'pdf') {
-//            $lecture->pdf = $request->pdf ? $this->uploadFile('lecture', $request->pdf, null, null) :   null;
+            //            $lecture->pdf = $request->pdf ? $this->uploadFile('lecture', $request->pdf, null, null) :   null;
             $file_details = $this->uploadFileWithDetails('lecture', $request->pdf);
             if ($file_details['is_uploaded']) {
                 $lecture->pdf = $file_details['path'];
@@ -221,33 +223,38 @@ class LessonController extends Controller
             if ($file_details['is_uploaded']) {
                 $lecture->audio = $file_details['path'];
             }
-//            $lecture->audio = $request->audio ? $this->uploadFile('lecture', $request->audio) :   null;
+            //            $lecture->audio = $request->audio ? $this->uploadFile('lecture', $request->audio) :   null;
             try {
                 $duration = gmdate("i:s", $request->file_duration);
                 $lecture->file_duration = $duration;
 
                 $file_duration_second = $request->file_duration;
                 $lecture->file_duration_second = (int)$file_duration_second;
-            } catch (\Exception $exception)
-            {
+            } catch (\Exception $exception) {
                 //
             }
         }
 
         $lecture->save();
-        if($course_version_id){
+        $data = [
+            $course->uuid,
+            'step=lesson',
+            "course_version_id" => $course_version_id
+        ];
+        if ($course_version_id) {
             $course_version = CourseVersion::find($course_version_id);
             $details = $course_version->details;
             $details['lectures'][] = $lecture->id;
             $course_version->details = $details;
+            $edited_lessons = Course_lesson::whereIn('id', $details['lessons'])->get();
+            $data['edited_lessons'] = $edited_lessons;
             $course_version->update();
         }
 
         if ($course->status == 1) {
             /** ====== send notification to student ===== */
             $students = Enrollment::where('course_id', $course->id)->select('user_id')->get();
-            foreach ($students as $student)
-            {
+            foreach ($students as $student) {
                 $text = __("New lesson has been added");
                 $target_url = route('student.my-course.show', $course->slug);
                 $this->send($text, 3, $target_url, $student->user_id);
@@ -262,17 +269,20 @@ class LessonController extends Controller
         }
 
 
-        return redirect(route('instructor.course.edit', [$course->uuid, 'step=lesson', "course_version_id"=> $course_version_id]));
+        return redirect(route('instructor.course.edit', $data));
     }
 
-    public function editLecture($course_uuid, $lesson_uuid, $lecture_uuid)
+    public function editLecture($course_uuid, $lesson_uuid, $lecture_uuid, Request $request)
     {
+        $course_version_id = $request->validate(['course_version_id' => 'required'])['course_version_id'];
+        dd($course_version_id);
         $data['title'] = 'Edit Lecture';
         $data['navCourseActiveClass'] = 'active';
+
         $data['course'] = $this->courseModel->getRecordByUuid($course_uuid);
         $data['lesson'] = $this->model->getRecordByUuid($lesson_uuid);
         $data['lecture'] = $this->lectureModel->getRecordByUuid($lecture_uuid);
-        $data['lessons'] = Course_lesson::where('course_id', $data['course']->id)->with(['lectures' => function($q) use($lecture_uuid){
+        $data['lessons'] = Course_lesson::where('course_id', $data['course']->id)->with(['lectures' => function ($q) use ($lecture_uuid) {
             $q->where('uuid', '!=', $lecture_uuid);
         }])->get();
         return view('instructor.course.edit-lecture', $data);
@@ -285,9 +295,8 @@ class LessonController extends Controller
                 'youtube_url_path' => ['required'],
             ]);
 
-            if ($request->youtube_file_duration){
-                if(preg_match('/^([0-9][0-9]):[0-5][0-9]$/',$request->youtube_file_duration)) {
-
+            if ($request->youtube_file_duration) {
+                if (preg_match('/^([0-9][0-9]):[0-5][0-9]$/', $request->youtube_file_duration)) {
                 } else {
                     $request->validate([
                         'youtube_file_duration' => 'date_format:H:i'
@@ -307,9 +316,8 @@ class LessonController extends Controller
                 'vimeo_url_uploaded_path' => 'exclude_unless:vimeo_upload_type,2|required',
             ]);
 
-            if ($request->vimeo_file_duration && ($request->vimeo_upload_type == 2)){
-                if(preg_match('/^([0-9][0-9]):[0-5][0-9]$/',$request->vimeo_file_duration)) {
-
+            if ($request->vimeo_file_duration && ($request->vimeo_upload_type == 2)) {
+                if (preg_match('/^([0-9][0-9]):[0-5][0-9]$/', $request->vimeo_file_duration)) {
                 } else {
                     $request->validate([
                         'vimeo_file_duration' => 'date_format:H:i'
@@ -317,6 +325,7 @@ class LessonController extends Controller
                 }
             }
         }
+        dd($request->all());
 
         $lecture = Course_lecture::whereUuid($lecture_uuid)->firstOrFail();
         $lecture->fill($request->all());
@@ -335,29 +344,29 @@ class LessonController extends Controller
         }
 
         if ($request->type == 'vimeo') {
-           if ($request->file('vimeo_url_path') && ($request->vimeo_upload_type == 1)) {
-               if(env('VIMEO_STATUS') == 'active') {
-                   if ($lecture->url_path) {
-                       $this->deleteVimeoVideoFile('https://vimeo.com/' . $lecture->url_path);
-                   }
+            if ($request->file('vimeo_url_path') && ($request->vimeo_upload_type == 1)) {
+                if (env('VIMEO_STATUS') == 'active') {
+                    if ($lecture->url_path) {
+                        $this->deleteVimeoVideoFile('https://vimeo.com/' . $lecture->url_path);
+                    }
 
-                   $path = $this->uploadVimeoVideoFile($request->title, $request->file('vimeo_url_path'));
-                   $lecture->url_path = $path;
-                   $lecture->file_duration = gmdate("i:s", $request->file_duration);
-                   $file_duration_second = $request->file_duration;
-                   $lecture->file_duration_second = (int)$file_duration_second;
-                   $lecture->vimeo_upload_type = $request->vimeo_upload_type;
-               } else {
-                   $this->showToastrMessage('success', __('At present, upload new video in vimeo service is off. Please try other way.'));
-               }
-           } elseif ($request->vimeo_url_uploaded_path && ($request->vimeo_upload_type == 2)) {
-               $lecture->vimeo_upload_type = $request->vimeo_upload_type;
-               $lecture->url_path = $request->vimeo_url_uploaded_path;
-               $lecture->file_duration = $request->vimeo_file_duration;
-               $lecture->file_duration_second = $this->timeToSeconds($request->vimeo_file_duration);
-           }
+                    $path = $this->uploadVimeoVideoFile($request->title, $request->file('vimeo_url_path'));
+                    $lecture->url_path = $path;
+                    $lecture->file_duration = gmdate("i:s", $request->file_duration);
+                    $file_duration_second = $request->file_duration;
+                    $lecture->file_duration_second = (int)$file_duration_second;
+                    $lecture->vimeo_upload_type = $request->vimeo_upload_type;
+                } else {
+                    $this->showToastrMessage('success', __('At present, upload new video in vimeo service is off. Please try other way.'));
+                }
+            } elseif ($request->vimeo_url_uploaded_path && ($request->vimeo_upload_type == 2)) {
+                $lecture->vimeo_upload_type = $request->vimeo_upload_type;
+                $lecture->url_path = $request->vimeo_url_uploaded_path;
+                $lecture->file_duration = $request->vimeo_file_duration;
+                $lecture->file_duration_second = $this->timeToSeconds($request->vimeo_file_duration);
+            }
 
-           $lecture->file_path = null;
+            $lecture->file_path = null;
         }
 
         if ($request->type == 'text') {
@@ -371,7 +380,7 @@ class LessonController extends Controller
 
         if ($request->type == 'pdf' && $request->pdf) {
             $this->deleteFile($lecture->pdf); // delete file from server
-//            $lecture->pdf = $request->pdf ? $this->uploadFile('lecture', $request->pdf) :   null;
+            //            $lecture->pdf = $request->pdf ? $this->uploadFile('lecture', $request->pdf) :   null;
             $file_details = $this->uploadFileWithDetails('lecture', $request->pdf);
             if ($file_details['is_uploaded']) {
                 $lecture->pdf = $file_details['path'];
@@ -388,14 +397,13 @@ class LessonController extends Controller
             if ($file_details['is_uploaded']) {
                 $lecture->audio = $file_details['path'];
             }
-//            $lecture->audio = $request->audio ? $this->uploadFile('lecture', $request->audio) :   null;
+            //            $lecture->audio = $request->audio ? $this->uploadFile('lecture', $request->audio) :   null;
             try {
                 $duration = gmdate("i:s", $request->file_duration);
                 $lecture->file_duration = $duration;
                 $file_duration_second = $request->file_duration;
                 $lecture->file_duration_second = (int)$file_duration_second;
-            } catch (\Exception $exception)
-            {
+            } catch (\Exception $exception) {
                 //
             }
         }
@@ -404,16 +412,14 @@ class LessonController extends Controller
 
         /** ====== send notification to student ===== */
         $students = Order_item::where('course_id', $lecture->course->id)->select('user_id')->get();
-        foreach ($students as $student)
-        {
+        foreach ($students as $student) {
             $text = __("Lesson has been updated");
             $target_url = route('student.my-course.show', $lecture->course->slug);
             $this->send($text, 3, $target_url, $student->user_id);
         }
         /** ====== send notification to student ===== */
 
-        if ($lecture->course->status != 0)
-        {
+        if ($lecture->course->status != 0) {
             $text = __("New lesson has been added");
             $target_url = route('admin.course.index');
             $this->send($text, 1, $target_url, null);
@@ -427,10 +433,8 @@ class LessonController extends Controller
         $lecture = $this->lectureModel->getRecordByUuid($lecture_uuid);
         $this->deleteFile($lecture->file_path); // delete file from server
 
-        if ($lecture->type == 'vimeo')
-        {
-            if ($lecture->url_path)
-            {
+        if ($lecture->type == 'vimeo') {
+            if ($lecture->url_path) {
                 $this->deleteVimeoVideoFile($lecture->url_path);
             }
         }
@@ -448,23 +452,21 @@ class LessonController extends Controller
 
     private function saveLectureVideo($request, $lecture)
     {
-//        $lecture->file_path = $this->uploadFile('video', $request->video_file); // new file upload into server;
+        //        $lecture->file_path = $this->uploadFile('video', $request->video_file); // new file upload into server;
         $file_details = $this->uploadFileWithDetails('video', $request->video_file);
         if ($file_details['is_uploaded']) {
             $lecture->file_path = $file_details['path'];
         }
-//        $lecture->file_size = number_format(File::size($lecture->file_path) / 1048576, 2);
-            try {
-                $duration = gmdate("i:s", $request->file_duration);
-                $lecture->file_duration = $duration;
+        //        $lecture->file_size = number_format(File::size($lecture->file_path) / 1048576, 2);
+        try {
+            $duration = gmdate("i:s", $request->file_duration);
+            $lecture->file_duration = $duration;
 
-                $file_duration_second = $request->file_duration;
-                $lecture->file_duration_second =(int)$file_duration_second;
-            } catch (\Exception $exception)
-            {
-                //
-            }
-
+            $file_duration_second = $request->file_duration;
+            $lecture->file_duration_second = (int)$file_duration_second;
+        } catch (\Exception $exception) {
+            //
+        }
     }
 
     function timeToSeconds(string $time): int
@@ -475,7 +477,4 @@ class LessonController extends Controller
         }
         return $arr[0] * 60 + $arr[1];
     }
-
-
-
 }

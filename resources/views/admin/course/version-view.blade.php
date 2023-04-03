@@ -77,11 +77,14 @@
                                         <td>{{ __(get_names('subcategory', [$course_version->details['subcategory_id']])) }}
                                         </td>
                                     </tr>
+                                    @if(isset($course_version->details['tags']) && $course_version->details['tags'])
                                     <tr>
                                         <td>{{ _('Tags') }}</td>
                                         <td>{{ implode(', ', $course->tags->pluck('name')->toArray()) }}</td>
                                         <td>{{ get_names('tag', $course_version->details['tags']) }}</td>
                                     </tr>
+                                    @endif
+
                                     <tr>
                                         <td>{{ _('Drip Content') }}</td>
                                         <td>{{ dripType($course->drip_content) }}</td>
@@ -176,13 +179,17 @@
                                             @endif
                                         </td>
                                     </tr>
+                                    @isset( $course_version->details['lessons'])
+
                                     <tr>
                                         <td>{{ _('Lessons') }}</td>
                                         <td style="max-width: 200px">
                                             {{ implode(', ', $course->lessons->pluck('name')->toArray()) }}</td>
                                         <td style="max-width: 200px">
-                                            {{ get_names('lesson', $course_version->details['tags']) }}</td>
+                                            {{ get_names('lesson', $course_version->details['lessons']) }}</td>
                                     </tr>
+                                    @endisset
+
                                     <tr>
                                         <td>{{ _('Course Instructors') }}</td>
                                         <td>

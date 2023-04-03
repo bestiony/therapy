@@ -373,7 +373,7 @@
                                                                 class="col-md-12 main-upload-video-processing-item-btns">
                                                                 <button type="submit"
                                                                     class="theme-btn upload-video-processing-item-save-btn">{{__('Save')}}</button>
-                                                                <a href="{{route('instructor.course.edit', [$course->uuid, 'step=lesson'])}}"
+                                                                <a href="{{route('instructor.course.edit', [$course->uuid, 'step=lesson', "course_version_id"=> $course_version_id ?? ""])}}"
                                                                     class="theme-btn default-hover-btn default-back-btn theme-button3">{{__('Back')}}</a>
                                                             </div>
                                                         </div>

@@ -37,20 +37,22 @@
                                 <!-- Upload Course Step-2 Item Start -->
                                 <div class="upload-course-step-item upload-course-video-step-item">
 
-
                                     @if ($course->lessons->count() > 0)
                                         <!-- Upload Course Video-2 start -->
 
                                         <div id="upload-course-video-2">
                                             <div class="upload-course-item-block course-overview-step1 radius-8">
                                                 <div class="upload-course-item-block-title mb-3">
-                                                    <p class="color-para">Section list of <span
+                                                    <p class="color-para">{{ _('Section list of') }} <span
                                                             class="color-heading">“{{ $course->title }}”</span></p>
                                                 </div>
                                                 @if ($course->lectures->count() > 0)
                                                     <div id="upload-course-video-6" class="upload-course-video-6">
                                                         <div class="accordion mb-30" id="video-upload-done-phase">
-                                                            @foreach ($course->lessons as $key => $lesson)
+                                                            @foreach ($course->lessons as $lesson)
+                                                                @php
+                                                                    $key = $lesson->id;
+                                                                @endphp
                                                                 <div class="accordion-item video-upload-final-item mb-2">
                                                                     <div class="accordion-header mb-0" id="headingOne">
                                                                         <button
@@ -287,7 +289,7 @@
                                                                                         <div class="flex-shrink-0">
                                                                                             <div
                                                                                                 class="video-upload-done-phase-action-btns font-14 color-heading text-center font-medium">
-                                                                                                <a href="{{ route('edit.lecture', [$course->uuid, $lesson->uuid, $lecture->uuid]) }}"
+                                                                                                <a href="{{ route('edit.lecture', [$course->uuid, $lesson->uuid, $lecture->uuid, 'course_version_id'=>$course_version_id]) }}"
                                                                                                     type="button"
                                                                                                     class="upload-course-video-edit-btn upload-course-video-main-edit-btn font-14 color-para font-medium bg-transparent border-0 mx-2"><span
                                                                                                         class="iconify"
@@ -352,6 +354,328 @@
                                                                 </div>
                                                             @endforeach
 
+                                                        </div>
+                                                        @if (session('edited_lessons') || isset($edited_lessons))
+                                                        @if(count($edited_lessons))
+                                                        <div class="upload-course-item-block-title mb-3">
+                                                            <p class="color-para">{{ _('New Section list of') }} <span
+                                                                    class="color-heading">“{{ $course->title }}”</span>
+                                                            </p>
+                                                        </div>
+                                                        @endif
+                                                        @endif
+                                                        <div class="accordion mb-30" id="video-upload-done-phase">
+                                                            @if (session('edited_lessons') || isset($edited_lessons))
+                                                                @php
+                                                                    $edited_lessons = session('edited_lessons') ?? $edited_lessons;
+                                                                @endphp
+                                                                @foreach ($edited_lessons as $lesson)
+                                                                    @php
+                                                                        $key = $lesson->id;
+                                                                    @endphp
+                                                                    <div
+                                                                        class="accordion-item video-upload-final-item mb-2">
+                                                                        <div class="accordion-header mb-0"
+                                                                            id="headingOne">
+                                                                            <button
+                                                                                class="accordion-button upload-introduction-title-box d-flex align-items-center justify-content-between collapsed"
+                                                                                type="button" data-bs-toggle="collapse"
+                                                                                data-bs-target="#collapse{{ $key }}"
+                                                                                aria-expanded="false"
+                                                                                aria-controls="collapse{{ $key }}">
+                                                                                <span
+                                                                                    class="font-16 ps-4">{{ $lesson->name }}</span>
+                                                                                <span
+                                                                                    class="d-flex upload-course-video-6-duration-count">
+                                                                                    <span
+                                                                                        class="upload-course-duration-text font-14 color-para font-medium"><span
+                                                                                            class="iconify"
+                                                                                            data-icon="octicon:device-desktop-24"></span>{{ __('Video') }}
+                                                                                        <span
+                                                                                            class="color-heading">({{ $lesson->lectures->count() }})</span></span>
+                                                                                    <span
+                                                                                        class="upload-course-duration-text font-14 color-para font-medium"><span
+                                                                                            class="iconify"
+                                                                                            data-icon="ant-design:clock-circle-outlined"></span>{{ __('Duration') }}
+                                                                                        <span
+                                                                                            class="color-heading">({{ @$lesson->lectures->count() > 0 ? lessonVideoDuration($course->id, $lesson->id) : '0 min' }})</span></span>
+                                                                                </span>
+                                                                            </button>
+                                                                        </div>
+                                                                        <div id="collapse{{ $key }}"
+                                                                            class="accordion-collapse collapse {{ $key == 0 ? 'show' : '' }} "
+                                                                            aria-labelledby="heading{{ $key }}"
+                                                                            data-bs-parent="#video-upload-done-phase">
+                                                                            <div class="accordion-body">
+                                                                                @forelse($lesson->lectures as $lecture)
+                                                                                    <div
+                                                                                        class="main-upload-video-processing-item removable-item">
+
+                                                                                        <div
+                                                                                            class="main-upload-video-processing-img-wrap-edit-img">
+
+                                                                                            @if ($lecture->type == 'video')
+                                                                                                <a data-normal_video="{{ getVideoFile($lecture->file_path) }}"
+                                                                                                    title="See video preview"
+                                                                                                    class="normalVideo edit-lecture-preview-show d-flex align-items-center justify-content-between color-heading font-medium font-16 mb-3"
+                                                                                                    data-bs-toggle="modal"
+                                                                                                    href="#html5VideoPlayerModal">
+                                                                                                    <div
+                                                                                                        class="d-flex flex-grow-1">
+                                                                                                        <div><img
+                                                                                                                src="{{ asset('frontend/assets/img/courses-img/play.svg') }}"
+                                                                                                                alt="play">
+                                                                                                        </div>
+                                                                                                        <div
+                                                                                                            class="font-medium font-16 lecture-edit-title">
+                                                                                                            {{ $lecture->title }}
+                                                                                                        </div>
+                                                                                                    </div>
+
+                                                                                                    <div
+                                                                                                        class="upload-course-video-6-text flex-shrink-0">
+                                                                                                        <span
+                                                                                                            class="see-preview-video font-medium font-16">{{ __('Preview Video') }}</span>
+                                                                                                    </div>
+                                                                                                </a>
+                                                                                            @elseif($lecture->type == 'youtube')
+                                                                                                <a class="edit-lecture-preview-show d-flex align-items-center justify-content-between color-heading font-medium font-16 mb-3 venobox"
+                                                                                                    data-autoplay="true"
+                                                                                                    data-maxwidth="800px"
+                                                                                                    data-vbtype="video"
+                                                                                                    data-href="https://www.youtube.com/embed/{{ $lecture->url_path }}">
+                                                                                                    <div
+                                                                                                        class="d-flex flex-grow-1">
+                                                                                                        <div><img
+                                                                                                                src="{{ asset('frontend/assets/img/courses-img/play.svg') }}"
+                                                                                                                alt="play">
+                                                                                                        </div>
+                                                                                                        <div
+                                                                                                            class="font-medium font-16 lecture-edit-title">
+                                                                                                            {{ $lecture->title }}
+                                                                                                        </div>
+                                                                                                    </div>
+
+                                                                                                    <div
+                                                                                                        class="upload-course-video-6-text flex-shrink-0">
+                                                                                                        <span
+                                                                                                            class="see-preview-video font-medium font-16">{{ __('Preview Video') }}</span>
+                                                                                                    </div>
+                                                                                                </a>
+                                                                                            @elseif($lecture->type == 'vimeo')
+                                                                                                <a class="edit-lecture-preview-show d-flex align-items-center justify-content-between color-heading font-medium font-16 mb-3 venobox"
+                                                                                                    data-autoplay="true"
+                                                                                                    data-maxwidth="800px"
+                                                                                                    data-vbtype="video"
+                                                                                                    data-href="https://vimeo.com/{{ $lecture->url_path }}">
+                                                                                                    <div
+                                                                                                        class="d-flex flex-grow-1">
+                                                                                                        <div><img
+                                                                                                                src="{{ asset('frontend/assets/img/courses-img/play.svg') }}"
+                                                                                                                alt="play">
+                                                                                                        </div>
+                                                                                                        <div
+                                                                                                            class="font-medium font-16 lecture-edit-title">
+                                                                                                            {{ $lecture->title }}
+                                                                                                        </div>
+                                                                                                    </div>
+
+                                                                                                    <div
+                                                                                                        class="upload-course-video-6-text flex-shrink-0">
+                                                                                                        <span
+                                                                                                            class="see-preview-video font-medium font-16">{{ __('Preview Video') }}</span>
+                                                                                                    </div>
+                                                                                                </a>
+                                                                                            @elseif($lecture->type == 'text')
+                                                                                                <a type="button"
+                                                                                                    data-lecture_text="{{ $lecture->text }}"
+                                                                                                    class="lectureText edit-lecture-preview-show d-flex align-items-center justify-content-between color-heading font-medium font-16 mb-3"
+                                                                                                    data-bs-toggle="modal"
+                                                                                                    href="#textUploadModal">
+                                                                                                    <div
+                                                                                                        class="d-flex flex-grow-1">
+                                                                                                        <div><img
+                                                                                                                src="{{ asset('frontend/assets/img/courses-img/text.svg') }}"
+                                                                                                                alt="text">
+                                                                                                        </div>
+                                                                                                        <div
+                                                                                                            class="font-medium font-16 lecture-edit-title">
+                                                                                                            {{ $lecture->title }}
+                                                                                                        </div>
+                                                                                                    </div>
+
+                                                                                                    <div
+                                                                                                        class="upload-course-video-6-text flex-shrink-0">
+                                                                                                        <span
+                                                                                                            class="see-preview-video font-medium font-16">{{ __('Preview') }}</span>
+                                                                                                    </div>
+                                                                                                </a>
+                                                                                            @elseif($lecture->type == 'image')
+                                                                                                <a data-lecture_image="{{ getImageFile($lecture->image) }}"
+                                                                                                    class="lectureImage edit-lecture-preview-show d-flex align-items-center justify-content-between color-heading font-medium font-16 mb-3"
+                                                                                                    data-bs-toggle="modal"
+                                                                                                    href="#imageUploadModal">
+                                                                                                    <div
+                                                                                                        class="d-flex flex-grow-1">
+                                                                                                        <div><img
+                                                                                                                src="{{ asset('frontend/assets/img/courses-img/preview-image.svg') }}"
+                                                                                                                alt="image">
+                                                                                                        </div>
+                                                                                                        <div
+                                                                                                            class="font-medium font-16 lecture-edit-title">
+                                                                                                            {{ $lecture->title }}
+                                                                                                        </div>
+                                                                                                    </div>
+
+                                                                                                    <div
+                                                                                                        class="upload-course-video-6-text flex-shrink-0">
+                                                                                                        <span
+                                                                                                            class="see-preview-video font-medium font-16">{{ __('Preview Image') }}
+                                                                                                        </span>
+                                                                                                    </div>
+                                                                                                </a>
+                                                                                            @elseif($lecture->type == 'pdf')
+                                                                                                <a class="edit-lecture-preview-show d-flex align-items-center justify-content-between color-heading font-medium font-16 mb-3"
+                                                                                                    data-bs-toggle="modal"
+                                                                                                    href="#pdfModal">
+                                                                                                    <div
+                                                                                                        class="d-flex flex-grow-1">
+                                                                                                        <div><img
+                                                                                                                src="{{ asset('frontend/assets/img/courses-img/file-pdf.svg') }}"
+                                                                                                                alt="PDF">
+                                                                                                        </div>
+                                                                                                        <div
+                                                                                                            class="font-medium font-16 lecture-edit-title">
+                                                                                                            {{ $lecture->title }}
+                                                                                                        </div>
+                                                                                                    </div>
+
+                                                                                                    <div
+                                                                                                        class="upload-course-video-6-text flex-shrink-0">
+                                                                                                        <span
+                                                                                                            class="see-preview-video font-medium font-16">{{ __('Preview PDF') }}</span>
+                                                                                                    </div>
+                                                                                                </a>
+                                                                                            @elseif($lecture->type == 'slide_document')
+                                                                                                <a data-lecture_slide="{{ $lecture->slide_document }}"
+                                                                                                    class="lectureSlide edit-lecture-preview-show d-flex align-items-center justify-content-between color-heading font-medium font-16 mb-3"
+                                                                                                    data-bs-toggle="modal"
+                                                                                                    href="#slideModal">
+                                                                                                    <div
+                                                                                                        class="d-flex flex-grow-1">
+                                                                                                        <div><img
+                                                                                                                src="{{ asset('frontend/assets/img/courses-img/slide-preview.svg') }}"
+                                                                                                                alt="Slide Doc">
+                                                                                                        </div>
+                                                                                                        <div
+                                                                                                            class="font-medium font-16 lecture-edit-title">
+                                                                                                            {{ $lecture->title }}
+                                                                                                        </div>
+                                                                                                    </div>
+
+                                                                                                    <div
+                                                                                                        class="upload-course-video-6-text flex-shrink-0">
+                                                                                                        <span
+                                                                                                            class="see-preview-video font-medium font-16">{{ __('Preview Slide') }}</span>
+                                                                                                    </div>
+                                                                                                </a>
+                                                                                            @elseif($lecture->type == 'audio')
+                                                                                                <a data-lecture_audio="{{ getVideoFile($lecture->audio) }}"
+                                                                                                    class=" lectureAudio edit-lecture-preview-show d-flex align-items-center justify-content-between color-heading font-medium font-16 mb-3"
+                                                                                                    data-bs-toggle="modal"
+                                                                                                    href="#audioPlayerModal">
+                                                                                                    <div
+                                                                                                        class="d-flex flex-grow-1">
+                                                                                                        <div>
+                                                                                                            <img src="{{ asset('frontend/assets/img/courses-img/preview-audio-o.svg') }}"
+                                                                                                                alt="play">
+                                                                                                        </div>
+                                                                                                        <div
+                                                                                                            class="font-medium font-16 lecture-edit-title">
+                                                                                                            {{ $lecture->title }}
+                                                                                                        </div>
+                                                                                                    </div>
+
+                                                                                                    <div
+                                                                                                        class="upload-course-video-6-text flex-shrink-0">
+                                                                                                        <span
+                                                                                                            class="see-preview-video font-medium font-16">{{ __('Preview') }}</span>
+                                                                                                    </div>
+                                                                                                </a>
+                                                                                            @endif
+
+
+                                                                                        </div>
+
+                                                                                        <div class="d-flex">
+                                                                                            <div class="flex-shrink-0">
+                                                                                                <div
+                                                                                                    class="video-upload-done-phase-action-btns font-14 color-heading text-center font-medium">
+                                                                                                    <a href="{{ route('edit.lecture', [$course->uuid, $lesson->uuid, $lecture->uuid , 'course_version_id'=>$course_version_id]) }}"
+                                                                                                        type="button"
+                                                                                                        class="upload-course-video-edit-btn upload-course-video-main-edit-btn font-14 color-para font-medium bg-transparent border-0 mx-2"><span
+                                                                                                            class="iconify"
+                                                                                                            data-icon="clarity:note-edit-line"></span>{{ __('Edit') }}</a>
+                                                                                                    <a href="javascript:void(0);"
+                                                                                                        data-url="{{ route('delete.lecture', [$course->uuid, $lecture->uuid]) }}"
+                                                                                                        class="upload-course-video-edit-btn font-14 color-para font-medium bg-transparent border-0 mx-2 delete"><span
+                                                                                                            class="iconify"
+                                                                                                            data-icon="ant-design:delete-outlined"></span>{{ __('Delete') }}</a>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+
+                                                                                    </div>
+                                                                                @empty
+                                                                                    <div
+                                                                                        class="d-flex justify-content-between align-items-center">
+                                                                                        <div
+                                                                                            class="upload-introduction-box-content-img">
+                                                                                            <img src="{{ asset('frontend/assets/img/instructor-img/upload-lesson-icon.png') }}"
+                                                                                                alt="upload">
+                                                                                        </div>
+
+                                                                                        <div>
+                                                                                            <button type="button"
+                                                                                                data-name="{{ $lesson->name }}"
+                                                                                                data-route="{{ route('lesson.update', [$course->uuid, $lesson->uuid]) }}"
+                                                                                                class=" upload-course-video-edit-btn font-14 color-para font-medium bg-transparent border-0 editLesson"
+                                                                                                data-bs-toggle="modal"
+                                                                                                data-bs-target="#becomeAnInstructor">
+                                                                                                <span class="iconify"
+                                                                                                    data-icon="clarity:note-edit-line"></span>{{ __('Edit') }}
+                                                                                            </button>
+                                                                                            <button
+                                                                                                class="upload-course-video-edit-btn font-14 color-para font-medium bg-transparent border-0 deleteItem"
+                                                                                                data-formid="delete_row_form_{{ $lesson->uuid }}">
+                                                                                                <span class="iconify"
+                                                                                                    data-icon="ant-design:delete-outlined"></span>{{ __('Delete') }}
+                                                                                            </button>
+                                                                                            <form
+                                                                                                action="{{ route('lesson.delete', [$lesson->uuid]) }}"
+                                                                                                method="post"
+                                                                                                id="delete_row_form_{{ $lesson->uuid }}">
+                                                                                                {{ method_field('DELETE') }}
+                                                                                                <input type="hidden"
+                                                                                                    name="_token"
+                                                                                                    value="{{ csrf_token() }}">
+                                                                                            </form>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                @endforelse
+
+
+                                                                                <div class="mt-3 lecture-edit-upload-btn">
+                                                                                    <a href="{{ route('upload.lecture', [$course->uuid, $lesson->uuid, 'course_version_id' => $course_version_id]) }}"
+                                                                                        class="common-upload-video-btn color-heading font-13 font-medium ms-0 mt-4">
+                                                                                        <span class="iconify"
+                                                                                            data-icon="feather:upload-cloud"></span>{{ __('Upload lesson') }}</a>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                @endforeach
+                                                            @endif
                                                         </div>
                                                     </div>
                                                 @else
@@ -425,8 +749,83 @@
 
                                                         </div>
                                                     @endforeach
-                                                @endif
+                                                    @if (session('edited_lessons'))
+                                                        @php
+                                                            $edited_lessons = session('edited_lessons');
+                                                        @endphp
+                                                        @foreach ($edited_lessons as $lesson)
+                                                            <div class="upload-video-introduction-box-wrap">
 
+                                                                <!-- upload-video-introduction-box -->
+                                                                <div class="upload-video-introduction-box">
+
+                                                                    <div
+                                                                        class="upload-introduction-title-box d-flex align-items-center justify-content-between">
+                                                                        <h6 class="font-16">{{ $lesson->name }}</h6>
+                                                                        <div
+                                                                            class="d-flex upload-course-video-6-duration-count">
+                                                                            <div
+                                                                                class="upload-course-duration-text font-14 color-para font-medium">
+                                                                                <span class="iconify"
+                                                                                    data-icon="octicon:device-desktop-24"></span>Video<span
+                                                                                    class="color-heading">(0)</span>
+                                                                            </div>
+                                                                            <div
+                                                                                class="upload-course-duration-text font-14 color-para font-medium">
+                                                                                <span class="iconify"
+                                                                                    data-icon="ant-design:clock-circle-outlined"></span>Duration<span
+                                                                                    class="color-heading">(0)</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div
+                                                                        class="upload-introduction-box-content d-flex align-items-center justify-content-between">
+                                                                        <div
+                                                                            class="upload-introduction-box-content-left d-flex align-items-center">
+                                                                            <div
+                                                                                class="upload-introduction-box-content-img">
+                                                                                <img src="{{ asset('frontend/assets/img/instructor-img/upload-lesson-icon.png') }}"
+                                                                                    alt="upload">
+                                                                            </div>
+                                                                            <a href="{{ route('upload.lecture', [$course->uuid, $lesson->uuid]) }}"
+                                                                                class="common-upload-lesson-btn font-13 font-medium">
+                                                                                <span class="iconify"
+                                                                                    data-icon="feather:upload-cloud"></span>{{ __('Upload lesson') }}</a>
+                                                                        </div>
+                                                                        <div class="d-flex">
+                                                                            <button type="button"
+                                                                                data-name="{{ $lesson->name }}"
+                                                                                data-route="{{ route('lesson.update', [$course->uuid, $lesson->uuid]) }}"
+                                                                                class="upload-course-video-edit-btn font-14 color-para font-medium bg-transparent border-0 editLesson"
+                                                                                data-bs-toggle="modal"
+                                                                                data-bs-target="#becomeAnInstructor">
+                                                                                <span class="iconify"
+                                                                                    data-icon="clarity:note-edit-line"></span>{{ __('Edit') }}</button>
+                                                                            <button
+                                                                                class="upload-course-video-edit-btn font-14 color-para font-medium bg-transparent border-0 deleteItem"
+                                                                                data-formid="delete_row_form_{{ $lesson->uuid }}">
+                                                                                <span class="iconify"
+                                                                                    data-icon="ant-design:delete-outlined"></span>{{ __('Delete') }}</button>
+
+                                                                            <form
+                                                                                action="{{ route('lesson.delete', [$lesson->uuid]) }}"
+                                                                                method="post"
+                                                                                id="delete_row_form_{{ $lesson->uuid }}">
+                                                                                {{ method_field('DELETE') }}
+                                                                                <input type="hidden" name="_token"
+                                                                                    value="{{ csrf_token() }}">
+                                                                            </form>
+                                                                        </div>
+
+                                                                    </div>
+
+                                                                </div>
+
+                                                            </div>
+                                                        @endforeach
+                                                    @endif
+                                                @endif
                                             </div>
 
                                             <div class="add-more-section-wrap d-none">
@@ -445,8 +844,8 @@
                                                                 title of the course “ {{ $course->title }}
                                                                 ”</label>
                                                             <input type="text" name="name"
-                                                                value="{{ old('name') }}" required class="form-control"
-                                                                placeholder="Section title">
+                                                                value="{{ old('name') }}" required
+                                                                class="form-control" placeholder="Section title">
                                                             @if ($errors->has('name'))
                                                                 <span class="text-danger"><i
                                                                         class="fas fa-exclamation-triangle"></i>
@@ -531,7 +930,7 @@
                                                 </div>
 
                                                 <div class="stepper-action-btns">
-                                                    <a href="{{ route('instructor.course.edit', [$course->uuid, 'step=category', "course_version_id"=>$course_version_id]) }}"
+                                                    <a href="{{ route('instructor.course.edit', [$course->uuid, 'step=category', 'course_version_id' => $course_version_id]) }}"
                                                         class="theme-btn theme-button3">{{ __('Back') }}</a>
                                                     <button type="submit"
                                                         class="theme-btn default-hover-btn theme-button1">{{ __('Save and continue') }}</button>

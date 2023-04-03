@@ -65,7 +65,7 @@ class CourseController extends Controller
     {
         $data['course_version'] = CourseVersion::findOrFail($id);
         $data['course'] = Course::with(['keyPoints'])->findOrFail($data['course_version']->course_id);
-        
+
         return view('admin.course.version-view', $data);
     }
 
@@ -177,6 +177,9 @@ class CourseController extends Controller
                 }
                 if (isset($details['lessons'])) {
                     Course_lesson::whereIn('id', $details['lessons'])->update(['course_id' => $course->id]);
+                }
+                if (isset($details['lectures'])){
+                    Course_lecture::whereIn('id', $details['lectures'])->update(['course_id' => $course->id]);
                 }
                 if (isset($details['course_instructors'])) {
                     foreach ($details['course_instructors'] as $instructor) {

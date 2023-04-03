@@ -15,7 +15,7 @@
 </div>
 @endsection
 
-@section('content') 
+@section('content')
 <div class="instructor-profile-right-part instructor-upload-course-box-part">
     <div class="instructor-upload-course-box">
         <div class="row">
@@ -39,6 +39,10 @@
                                 <form method="POST" action="{{route('course.update.overview', [$course->uuid])}}"
                                     id="step1" class="row g-3 needs-validation" novalidate>
                                     @csrf
+                                    @if ($course_version_id)
+                                    <input type="hidden" name="course_version_id" value="{{$course_version_id}}">
+
+                                    @endif
                                     @if(get_option('courseUploadRuleTitle'))
                                     <div class="upload-course-item-block course-overview-step1 radius-8 mb-30">
                                         <div class="upload-course-item-block-title mb-3">

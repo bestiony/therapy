@@ -1195,3 +1195,5 @@ function get_all_names($type, $array){
 function get_instructor_share(Course $course, User $instructor){
     return CourseInstructor::where('course_id', $course->id)->where('instructor_id', $instructor->id)->first()->share;
 }
+
+// function 

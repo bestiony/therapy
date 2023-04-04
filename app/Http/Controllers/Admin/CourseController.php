@@ -99,7 +99,7 @@ class CourseController extends Controller
             abort('403');
         } // end permission checking
 
-        $data['title'] = 'Pending Course Edits';
+        $data['title'] = _('Pending Course Edits');
         $data['versions'] = CourseVersion::with('course')->where('status', PENDING_COURSE_VERSION)->paginate(25);
         // $data['categories'] = Category::select('id', 'name')->get()->toArray();
         $data['categories'] = Category::all()->pluck('name', 'id')->toArray();

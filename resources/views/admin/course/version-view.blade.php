@@ -189,7 +189,7 @@
                                             {{ get_names('lesson', $course_version->details['lessons']) }}</td>
                                     </tr>
                                     @endisset
-
+                                    @if(isset($course_version->details['course_instructors']))
                                     <tr>
                                         <td>{{ _('Course Instructors') }}</td>
                                         <td>
@@ -205,6 +205,7 @@
                                             @endforeach
                                         </td>
                                     </tr>
+                                    @endif
                                 </tbody>
                             </table>
                             <div class="mt-3">

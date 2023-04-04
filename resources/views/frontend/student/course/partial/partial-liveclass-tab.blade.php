@@ -38,9 +38,12 @@
                                     </tr>
                                     </thead>
                                     <tbody>
+                                        @php
+                                            $user_timezone = session('timezone') ?? config('app.timezone');
+                                        @endphp
                                     @forelse($upcoming_live_classes as $upcoming_live_class)
                                     <tr>
-                                        <td>{{ $upcoming_live_class->date }}</td>
+                                        <td>{{ $upcoming_live_class->date }} | {{ Carbon\Carbon::parse($upcoming_live_class->time)->timezone($user_timezone)->format('H:i')  }}</td>
                                         <td>{{ $upcoming_live_class->duration }} {{ __('minutes') }}</td>
                                         <td><div class="course-watch-live-class-topic">{{ Str::limit($upcoming_live_class->class_topic, 50) }}</div></td>
                                         <td>

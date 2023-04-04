@@ -12,6 +12,7 @@ use App\Tools\Repositories\Crud;
 use App\Traits\General;
 use App\Traits\SendNotification;
 use App\Traits\ZoomMeetingTrait;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -113,6 +114,7 @@ class LiveClassController extends Controller
             $class->course_id = $course->id;
             $class->class_topic = $request->class_topic;
             $class->date = $request->date;
+            $class->time = Carbon::parse($request->date)->format('H:i') ;
             $class->duration = $request->duration;
             $class->start_url = $request->start_url ;
             $class->join_url = $request->join_url ?? $request->start_url;
@@ -121,7 +123,6 @@ class LiveClassController extends Controller
             $class->moderator_pw = $request->moderator_pw;
             $class->attendee_pw = $request->attendee_pw;
             $class->save();
-
             /** ====== Start:: BigBlueButton create meeting ===== */
             if ($class->meeting_host_name == 'bbb') {
                 Bigbluebutton::create([

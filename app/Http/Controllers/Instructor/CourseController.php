@@ -509,6 +509,7 @@ class CourseController extends Controller
                 }
 
                 foreach ($data['instructor_id'] as $id => $instructor) {
+
                     if (!$course_version) {
                         $courseInstructor = CourseInstructor::updateOrCreate([
                             'instructor_id' => $id,
@@ -530,6 +531,8 @@ class CourseController extends Controller
             } else {
                 $totalShare = 0;
             }
+
+
             if (!$course_version) {
 
                 $courseInstructor = CourseInstructor::updateOrCreate([

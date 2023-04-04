@@ -36,8 +36,8 @@
                             <p>{{ __(@$home->banner_subtitle) }} </p>
                             @if (!get_option('private_mode') || !auth()->guest())
                                 <div class="hero-btns">
-                                    <a href="{{ route('courses') }}"
-                                        class="theme-btn theme-button1">{{ __('Browse Course') }} <i
+                                    <a href="/instructor"
+                                        class="theme-btn theme-button1">{{ __('Browse instructors') }} <i
                                             data-feather="arrow-right"></i></a>
                                 </div>
                             @endif
@@ -417,7 +417,7 @@
     <!-- Customers Says/ testimonial Area End -->
 
     <!-- Course Instructor and Support Area Start -->
-    <section
+    <section style="display:none;"
         class="course-instructor-support-area bg-light section-t-space {{ @$home->instructor_support_area == 1 ? '' : 'd-none' }}">
         <div class="container">
 

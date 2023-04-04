@@ -17,6 +17,13 @@
 @endsection
 
 @section('content')
+    @php
+        $deleted_lessons = $deleted_lessons ?? (session('deleted_lessons') ?? []);
+        $deleted_lectures = $deleted_lectures ?? [];
+    @endphp
+    {{-- @if($deleted_lessons)
+        @dd($deleted_lessons)
+    @endif --}}
     <div class="instructor-profile-right-part instructor-upload-course-box-part">
         <div class="instructor-upload-course-box">
             <div class="row">
@@ -50,6 +57,10 @@
                                                     <div id="upload-course-video-6" class="upload-course-video-6">
                                                         <div class="accordion mb-30" id="video-upload-done-phase">
                                                             @foreach ($course->lessons as $lesson)
+                                                            @if(in_array($lesson->uuid, $deleted_lessons))
+                                                            {{-- <p> deleted-- {{$lesson->uuid}}</p> --}}
+                                                            @continue
+                                                            @endif
                                                                 @php
                                                                     $key = $lesson->id;
                                                                 @endphp
@@ -85,7 +96,11 @@
                                                                         aria-labelledby="heading{{ $key }}"
                                                                         data-bs-parent="#video-upload-done-phase">
                                                                         <div class="accordion-body">
-                                                                            @forelse($lesson->lectures as $lecture)
+                                                                            @foreach($lesson->lectures as $lecture)
+                                                                                @if(in_array($lecture->uuid, $deleted_lectures))
+                                                                                {{-- <p> deleted lecture --- {{$lecture->uuid}}</p> --}}
+                                                                                @continue
+                                                                                @endif
                                                                                 <div
                                                                                     class="main-upload-video-processing-item removable-item">
 
@@ -289,13 +304,13 @@
                                                                                         <div class="flex-shrink-0">
                                                                                             <div
                                                                                                 class="video-upload-done-phase-action-btns font-14 color-heading text-center font-medium">
-                                                                                                <a href="{{ route('edit.lecture', [$course->uuid, $lesson->uuid, $lecture->uuid, 'course_version_id'=>$course_version_id]) }}"
+                                                                                                <a href="{{ route('edit.lecture', [$course->uuid, $lesson->uuid, $lecture->uuid, 'course_version_id' => ($course_version_id ?? null)]) }}"
                                                                                                     type="button"
                                                                                                     class="upload-course-video-edit-btn upload-course-video-main-edit-btn font-14 color-para font-medium bg-transparent border-0 mx-2"><span
                                                                                                         class="iconify"
                                                                                                         data-icon="clarity:note-edit-line"></span>{{ __('Edit') }}</a>
                                                                                                 <a href="javascript:void(0);"
-                                                                                                    data-url="{{ route('delete.lecture', [$course->uuid, $lecture->uuid]) }}"
+                                                                                                    data-url="{{ route('delete.lecture', [$course->uuid, $lecture->uuid, 'course_version_id' => ($course_version_id ?? null)]) }}"
                                                                                                     class="upload-course-video-edit-btn font-14 color-para font-medium bg-transparent border-0 mx-2 delete"><span
                                                                                                         class="iconify"
                                                                                                         data-icon="ant-design:delete-outlined"></span>{{ __('Delete') }}</a>
@@ -304,7 +319,7 @@
                                                                                     </div>
 
                                                                                 </div>
-                                                                            @empty
+                                                                            @endforeach
                                                                                 <div
                                                                                     class="d-flex justify-content-between align-items-center">
                                                                                     <div
@@ -337,10 +352,15 @@
                                                                                             <input type="hidden"
                                                                                                 name="_token"
                                                                                                 value="{{ csrf_token() }}">
+                                                                                            @if ($course_version_id)
+                                                                                                <input type="hidden"
+                                                                                                    name="course_version_id"
+                                                                                                    value="{{ $course_version_id }}">
+                                                                                            @endif
                                                                                         </form>
                                                                                     </div>
                                                                                 </div>
-                                                                            @endforelse
+
 
 
                                                                             <div class="mt-3 lecture-edit-upload-btn">
@@ -356,13 +376,14 @@
 
                                                         </div>
                                                         @if (session('edited_lessons') || isset($edited_lessons))
-                                                        @if(count($edited_lessons))
-                                                        <div class="upload-course-item-block-title mb-3">
-                                                            <p class="color-para">{{ _('New Section list of') }} <span
-                                                                    class="color-heading">“{{ $course->title }}”</span>
-                                                            </p>
-                                                        </div>
-                                                        @endif
+                                                            @if (count($edited_lessons))
+                                                                <div class="upload-course-item-block-title mb-3">
+                                                                    <p class="color-para">{{ _('New Section list of') }}
+                                                                        <span
+                                                                            class="color-heading">“{{ $course->title }}”</span>
+                                                                    </p>
+                                                                </div>
+                                                            @endif
                                                         @endif
                                                         <div class="accordion mb-30" id="video-upload-done-phase">
                                                             @if (session('edited_lessons') || isset($edited_lessons))
@@ -407,7 +428,7 @@
                                                                             aria-labelledby="heading{{ $key }}"
                                                                             data-bs-parent="#video-upload-done-phase">
                                                                             <div class="accordion-body">
-                                                                                @forelse($lesson->lectures as $lecture)
+                                                                                @foreach($lesson->lectures as $lecture)
                                                                                     <div
                                                                                         class="main-upload-video-processing-item removable-item">
 
@@ -611,13 +632,13 @@
                                                                                             <div class="flex-shrink-0">
                                                                                                 <div
                                                                                                     class="video-upload-done-phase-action-btns font-14 color-heading text-center font-medium">
-                                                                                                    <a href="{{ route('edit.lecture', [$course->uuid, $lesson->uuid, $lecture->uuid , 'course_version_id'=>$course_version_id]) }}"
+                                                                                                    <a href="{{ route('edit.lecture', [$course->uuid, $lesson->uuid, $lecture->uuid, 'course_version_id' => $course_version_id]) }}"
                                                                                                         type="button"
                                                                                                         class="upload-course-video-edit-btn upload-course-video-main-edit-btn font-14 color-para font-medium bg-transparent border-0 mx-2"><span
                                                                                                             class="iconify"
                                                                                                             data-icon="clarity:note-edit-line"></span>{{ __('Edit') }}</a>
                                                                                                     <a href="javascript:void(0);"
-                                                                                                        data-url="{{ route('delete.lecture', [$course->uuid, $lecture->uuid]) }}"
+                                                                                                        data-url="{{ route('delete.lecture', [$course->uuid, $lecture->uuid, 'course_version_id'=>($course_version_id ?? null)]) }}"
                                                                                                         class="upload-course-video-edit-btn font-14 color-para font-medium bg-transparent border-0 mx-2 delete"><span
                                                                                                             class="iconify"
                                                                                                             data-icon="ant-design:delete-outlined"></span>{{ __('Delete') }}</a>
@@ -626,7 +647,7 @@
                                                                                         </div>
 
                                                                                     </div>
-                                                                                @empty
+                                                                                @endforeach
                                                                                     <div
                                                                                         class="d-flex justify-content-between align-items-center">
                                                                                         <div
@@ -659,10 +680,14 @@
                                                                                                 <input type="hidden"
                                                                                                     name="_token"
                                                                                                     value="{{ csrf_token() }}">
+                                                                                                @if ($course_version_id)
+                                                                                                    <input type="hidden"
+                                                                                                        name="course_version_id"
+                                                                                                        value="{{ $course_version_id }}">
+                                                                                                @endif
                                                                                             </form>
                                                                                         </div>
                                                                                     </div>
-                                                                                @endforelse
 
 
                                                                                 <div class="mt-3 lecture-edit-upload-btn">
@@ -740,6 +765,11 @@
                                                                             {{ method_field('DELETE') }}
                                                                             <input type="hidden" name="_token"
                                                                                 value="{{ csrf_token() }}">
+                                                                            @if ($course_version_id)
+                                                                                <input type="hidden"
+                                                                                    name="course_version_id"
+                                                                                    value="{{ $course_version_id }}">
+                                                                            @endif
                                                                         </form>
                                                                     </div>
 
@@ -815,6 +845,11 @@
                                                                                 {{ method_field('DELETE') }}
                                                                                 <input type="hidden" name="_token"
                                                                                     value="{{ csrf_token() }}">
+                                                                                @if ($course_version_id)
+                                                                                    <input type="hidden"
+                                                                                        name="course_version_id"
+                                                                                        value="{{ $course_version_id }}">
+                                                                                @endif
                                                                             </form>
                                                                         </div>
 

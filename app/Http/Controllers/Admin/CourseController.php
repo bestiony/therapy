@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CartManagement;
 use App\Models\Category;
 use App\Models\Course;
 use App\Models\Course_lecture;
 use App\Models\Course_lecture_views;
 use App\Models\Course_lesson;
+use App\Models\CourseDelete;
 use App\Models\CourseInstructor;
 use App\Models\CourseUploadRule;
 use App\Models\CourseVersion;
@@ -19,6 +21,7 @@ use App\Models\Setting;
 use App\Models\Student;
 use App\Models\Subcategory;
 use App\Models\User;
+use App\Models\Wishlist;
 use App\Tools\Repositories\Crud;
 use App\Traits\General;
 use App\Traits\ImageSaveTrait;
@@ -101,6 +104,7 @@ class CourseController extends Controller
         // $data['categories'] = Category::select('id', 'name')->get()->toArray();
         $data['categories'] = Category::all()->pluck('name', 'id')->toArray();
         $data['subcategories'] = Subcategory::all()->pluck('name', 'id')->toArray();
+        $data['course_deletes'] = CourseDelete::with('course')->get();
         return view('admin.course.edit-pending', $data);
     }
 
@@ -179,7 +183,37 @@ class CourseController extends Controller
                     Course_lesson::whereIn('id', $details['lessons'])->update(['course_id' => $course->id]);
                 }
                 if (isset($details['lectures'])){
-                    Course_lecture::whereIn('id', $details['lectures'])->update(['course_id' => $course->id]);
+                    foreach($details['lectures'] as $added_lecture => $related_lesson){
+
+                        $added_lecture_model = Course_lecture::find($added_lecture);
+                        if ($added_lecture_model){
+
+                            $added_lecture_model->update([
+                                'course_id' => $course->id,
+                                'lesson_id' => $related_lesson,
+                            ]);
+                        }
+                    }
+                }
+                if (isset($details['updated_lessons'])){
+                    foreach($details['updated_lessons'] as $id => $content){
+                        $updated_lesson = Course_lecture::findOrFail($id);
+                        foreach($content['deleted_files'] as $file){
+                            $this->deleteFile($file);
+                        }
+                        if (isset($content['delete_vimeo']) && strlen($content['delete_vimeo']) > 0){
+                            $this->deleteVimeoVideoFile($content['delete_vimeo']);
+                        }
+                        $updated_lesson->update($content['model']);
+                    }
+
+                }
+
+                if (isset($details['updated_course_lessons'])){
+                    foreach($details['updated_course_lessons'] as $updated_course_lesson_id => $updated_course_lesson_content){
+                        $updated_course_lesson = Course_lesson::findOrFail($updated_course_lesson_id);
+                        $updated_course_lesson->update($updated_course_lesson_content);
+                    }
                 }
                 if (isset($details['course_instructors'])) {
                     foreach ($details['course_instructors'] as $instructor) {
@@ -206,6 +240,25 @@ class CourseController extends Controller
                         'status' => STATUS_ACCEPTED ,
                     ]);
                 }
+                if (isset($details['deleted_lessons'])){
+                    Course_lesson::whereIn('id', $details['deleted_lessons'])->delete();
+                }
+                if (isset($details['deleted_lectures'])) {
+                    foreach($details['deleted_lectures'] as $delete_lecture_id){
+                        $delete_lecture = Course_lecture::find($delete_lecture_id);
+                        $this->deleteFile($delete_lecture->file_path);
+                        if ($delete_lecture->type == 'vimeo') {
+                            if ($delete_lecture->url_path) {
+                                $this->deleteVimeoVideoFile($delete_lecture->url_path);
+                            }
+                        }
+                        Course_lecture_views::where('course_lecture_id', $delete_lecture->id)->get()->map(function ($q) {
+                            $q->delete();
+                        });
+                        $delete_lecture->delete();
+                    }
+                }
+
                 $data = [
                     'title' => $details['title'],
                     'course_type' => $details['course_type'],
@@ -282,8 +335,11 @@ class CourseController extends Controller
         return redirect()->back();
     }
 
-    public function deleteVersion($id)
+    public function deleteVersion(CourseVersion $course_version)
     {
+        $course_version->delete();
+        $this->showToastrMessage('success', __('Course Version Update was removed'));
+        return redirect()->back();
     }
 
     public function courseUploadRuleIndex()
@@ -423,6 +479,63 @@ class CourseController extends Controller
         /** ====== Send notification =========*/
 
         $this->showToastrMessage('success', __('Student enroll in course'));
+        return redirect()->back();
+    }
+    public function approveCourseDelete(CourseDelete $course_delete){
+        $course = Course::where('id', $course_delete->course_id)->firstOrFail();
+        $order_item = Order_item::whereCourseId($course->id)->first();
+        if ($order_item) {
+            $this->showToastrMessage('error', __('You can not delete this course. Because student have already purchased it !'));
+            return redirect()->back();
+        }
+        $lessons = Course_lesson::where('course_id', $course->id)->get();
+        if (count($lessons) > 0) {
+            foreach ($lessons as $lesson) {
+                //start:: lecture delete
+                $lectures = Course_lecture::where('lesson_id', $lesson->id)->get();
+                if (count($lectures) > 0) {
+                    foreach ($lectures as $lecture) {
+                        $lecture = Course_lecture::find($lecture->id);
+                        if ($lecture) {
+                            $this->deleteFile($lecture->file_path); // delete file from server
+
+                            if ($lecture->type == 'vimeo') {
+                                if ($lecture->url_path) {
+                                    $this->deleteVimeoVideoFile($lecture->url_path);
+                                }
+                            }
+
+                            Course_lecture_views::where('course_lecture_id', $lecture->id)->get()->map(function ($q) {
+                                $q->delete();
+                            });
+
+                            $this->lectureModel->delete($lecture->id); // delete record
+                        }
+                    }
+                }
+                //end:: lecture delete
+                $this->lessonModel->delete($lesson->id);
+            }
+        }
+        //end: lesson delete
+
+        //Start:: Delete this course Wishlist, CartManagement
+        Wishlist::where('course_id', $course->id)->delete();
+        CartManagement::where('course_id', $course->id)->delete();
+        CourseInstructor::where('course_id', $course->id)->delete();
+        //End:: Delete this course wishList and addToCart
+
+        $this->deleteFile($course->image);
+        $this->deleteVideoFile($course->video);
+        $course->delete();
+
+
+        $this->showToastrMessage('success', __('Course was deleted'));
+        return redirect()->back();
+    }
+    public function removeCourseDelete( CourseDelete $course_delete){
+        $course_delete->delete();
+        $this->showToastrMessage('success', __('Course deletion request was removed'));
         return redirect()->back();
     }
 }

@@ -181,7 +181,7 @@
                                                     <span class="font-12 color-gray2 mx-2"><span
                                                             class="iconify font-16 color-orange me-1"
                                                             data-icon="akar-icons:clock"></span>{{
-                                                        count($lesson->lectures) }} lectures</span>
+                                                        count($lesson->lectures->whereNotNull('course_id')) }} lectures</span>
                                                     <span class="font-12 color-gray2 mx-2"><span
                                                             class="iconify font-16 color-orange me-1"
                                                             data-icon="carbon:video"></span>
@@ -199,6 +199,9 @@
 
                                                     @forelse($lesson->lectures as $lecture)
                                                     <!-- Play List Item Start-->
+                                                    @if(!$lecture->course_id)
+                                                    @continue
+                                                    @endif
                                                     @php
                                                     $lock = checkStudentCourseIsLock($course_lecture_views, $course, $lecture, $enrollment, $loop->first);
                                                     @endphp

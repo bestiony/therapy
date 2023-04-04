@@ -48,7 +48,7 @@ class CourseController extends Controller
             if( $data['courses']->lastPage() == $request->page){
                 $lastPage = true;
             }
-    
+
             $data['lastPage'] = $lastPage;
             $data['html'] = View::make('frontend.course.render-course-list-only', $data)->render();
             $data['status'] = true;
@@ -106,7 +106,7 @@ class CourseController extends Controller
 
         $authUser = auth()->user();
         $relation = ($authUser) ? getUserRoleRelation($authUser) : NULL;
-        
+
         if($data['course']->private_mode == 1 && (is_null($authUser) || ($authUser->$relation->organization_id != $data['course']->organization_id && $authUser->id != $data['course']->user_id))){
             abort(403);
         }
@@ -181,7 +181,6 @@ class CourseController extends Controller
 
         $data['total_course_students'] = Enrollment::where('course_id', $data['course']->id)->count();
         //End:: Course students
-
         return view('frontend.course.course-details', $data);
     }
 

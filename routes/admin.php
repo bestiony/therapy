@@ -122,7 +122,9 @@ Route::prefix('course')->group(function () {
     Route::get('status-change/{uuid}/{status}', [CourseController::class, 'statusChange'])->name('admin.course.status-change')->middleware('isDemo');
     Route::get('version-status-change/{id}/{status}', [CourseController::class, 'versionStatusChange'])->name('admin.course.version-status-change')->middleware('isDemo');
     Route::get('delete/{uuid}', [CourseController::class, 'delete'])->name('admin.course.delete')->middleware('isDemo');
-    Route::get('delete-version/{id}', [CourseController::class, 'deleteVersion'])->name('admin.course.delete-version')->middleware('isDemo');
+    Route::get('delete-version/{course_version}', [CourseController::class, 'deleteVersion'])->name('admin.course.delete-version')->middleware('isDemo');
+    Route::get('approve-delete/{course_delete}', [CourseController::class, 'approveCourseDelete'])->name('admin.course.approve-course-delete')->middleware('isDemo');
+    Route::get('remove-delete/{course_delete}', [CourseController::class, 'removeCourseDelete'])->name('admin.course.remove-course-delete')->middleware('isDemo');
 
 
     Route::get('enroll', [CourseController::class, 'courseEnroll'])->name('admin.course.enroll');

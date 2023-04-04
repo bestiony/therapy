@@ -8,6 +8,7 @@ use App\Http\Requests\Instructor\StoreCourseRequest;
 use App\Models\CartManagement;
 use App\Models\Category;
 use App\Models\Course;
+use App\Models\CourseDelete;
 use App\Models\CourseVersion;
 use App\Models\Course_language;
 use App\Models\Course_lecture;
@@ -160,7 +161,7 @@ class CourseController extends Controller
             }
         }
         $pending_course_version = CourseVersion::where('course_id', $data['course']->id)->where('status', PENDING_COURSE_VERSION)->first();
-        if($pending_course_version){
+        if ($pending_course_version) {
             $this->showToastrMessage('error', __('You have a pending edit. wait for the admin response !'));
             return redirect()->back();
         }
@@ -172,14 +173,22 @@ class CourseController extends Controller
             $data['course_version_id'] = $course_version_id;
             $course_version = CourseVersion::find($course_version_id);
             $details = $course_version->details;
-            if(isset($details['lessons'])){
+            if (isset($details['lessons'])) {
 
                 $edited_lessons = Course_lesson::whereIn('id', $details['lessons'])->get();
                 $data['edited_lessons'] = $edited_lessons;
             }
+            if (isset($details['deleted_lectures'])) {
+                $data['deleted_lectures'] = Course_lecture::whereIn('id', $details['deleted_lectures'])->pluck('uuid')->toArray();
+            }
+            if (isset($details['deleted_lessons'])) {
+                $data['deleted_lessons'] = Course_lesson::whereIn('id', $details['deleted_lessons'])->pluck('uuid')->toArray();
+            }
         }
         $data['keyPoints'] = LearnKeyPoint::whereCourseId($data['course']->id)->get();
+
         if (\request('step') == 'category') {
+
             $data['categories'] = Category::active()->orderBy('name', 'asc')->select('id', 'name')->get();
             $data['tags'] = Tag::orderBy('name', 'asc')->select('id', 'name')->get();
             $data['course_languages'] = Course_language::orderBy('name', 'asc')->select('id', 'name')->get();
@@ -191,9 +200,7 @@ class CourseController extends Controller
             } else {
                 $data['subcategories'] = [];
             }
-
             $selected_tags = [];
-
             if (old('tag')) {
                 $selected_tags = old('tag');
             } elseif ($data['course']->tags->count() > 0) {
@@ -203,14 +210,9 @@ class CourseController extends Controller
             } else {
                 $selected_tags = [];
             }
-
             $data['selected_tags'] = $selected_tags;
-
             return view('instructor.course.edit-category', $data);
         } elseif (\request('step') == 'lesson') {
-
-
-
 
             if ($data['course']->course_type == COURSE_TYPE_GENERAL) {
                 return view('instructor.course.lesson', $data);
@@ -218,13 +220,14 @@ class CourseController extends Controller
                 return view('instructor.course.scorm_upload', $data);
             }
         } elseif (\request('step') == 'instructors') {
+
             if ($data['course']->user_id != auth()->id()) {
                 return view('instructor.course.submit-lesson', $data);
             }
-
             $data['instructors'] = User::where('role', USER_ROLE_INSTRUCTOR)->where('id', '!=', $data['course']->user_id)->where('id', '!=', auth()->id())->select('id', 'name')->get();
             return view('instructor.course.instructors', $data);
         } elseif (\request('step') == 'submit') {
+
             return view('instructor.course.submit-lesson', $data);
         } else {
             // dd($data);
@@ -462,52 +465,25 @@ class CourseController extends Controller
         $course = Course::where('user_id', auth()->id())->whereUuid($uuid)->firstOrFail();
         $order_item = Order_item::whereCourseId($course->id)->first();
         if ($order_item) {
-            $this->showToastrMessage('error', __('You can not deleted. Because already student purchased this course!'));
+            $this->showToastrMessage('error', __('You can not deleted. Because already student purchased this course !'));
             return redirect()->back();
         }
+        $course_delete = CourseDelete::where('course_id', $course->id)->first();
+        if($course_delete){
+            $this->showToastrMessage('error', __('You already have a deletion request pending. wait for admin apporval !'));
+            return redirect()->back();
+        }else{
+            $course_delete = CourseDelete::create([
+                'course_id'=> $course->id,
+                'instructor_id'=> auth()->id(),
+                'reason'=>'',
+            ]);
+        }
+
 
         //start:: Course lesson delete
-        $lessons = Course_lesson::where('course_id', $course->id)->get();
-        if (count($lessons) > 0) {
-            foreach ($lessons as $lesson) {
-                //start:: lecture delete
-                $lectures = Course_lecture::where('lesson_id', $lesson->id)->get();
-                if (count($lectures) > 0) {
-                    foreach ($lectures as $lecture) {
-                        $lecture = Course_lecture::find($lecture->id);
-                        if ($lecture) {
-                            $this->deleteFile($lecture->file_path); // delete file from server
 
-                            if ($lecture->type == 'vimeo') {
-                                if ($lecture->url_path) {
-                                    $this->deleteVimeoVideoFile($lecture->url_path);
-                                }
-                            }
-
-                            Course_lecture_views::where('course_lecture_id', $lecture->id)->get()->map(function ($q) {
-                                $q->delete();
-                            });
-
-                            $this->lectureModel->delete($lecture->id); // delete record
-                        }
-                    }
-                }
-                //end:: lecture delete
-                $this->lessonModel->delete($lesson->id);
-            }
-        }
-        //end: lesson delete
-
-        //Start:: Delete this course Wishlist, CartManagement
-        Wishlist::where('course_id', $course->id)->delete();
-        CartManagement::where('course_id', $course->id)->delete();
-        CourseInstructor::where('course_id', $course->id)->delete();
-        //End:: Delete this course wishList and addToCart
-
-        $this->deleteFile($course->image);
-        $this->deleteVideoFile($course->video);
-        $course->delete();
-        $this->showToastrMessage('success', __('Course has been deleted.'));
+        $this->showToastrMessage('success', __('Course deletion request has been submitted .'));
         return redirect()->back();
     }
 

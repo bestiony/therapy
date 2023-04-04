@@ -59,6 +59,8 @@ class LessonController extends Controller
 
         $this->showToastrMessage('success', __('Created successful.'));
         // dd($returned_data);
+        // edited lessons var misson os only to separate them in the view and allow the instructor
+        // to see his new added lessons and his old ones
         return redirect()->back()->with('edited_lessons', $edited_lessons);
     }
 
@@ -66,6 +68,8 @@ class LessonController extends Controller
     {
         $lesson = $this->model->getRecordByUuid($lesson_uuid);
         $course = $this->courseModel->getRecordByUuid($course_uuid);
+        $course_version = CourseVersion::where('course_id', $course->id)->where('status', INCOMPLETED_COURSE_VERSION)->firstOrFail();
+        $details = $course_version->details;
         $data = [
             'name' => $request->name,
             'short_description' => $request->short_description ?: null,
@@ -73,17 +77,31 @@ class LessonController extends Controller
         if ($lesson->course_id){
             $data['course_id'] = $course->id;
         }
-
-        $this->model->update($data, $lesson->id);
+        $details['updated_course_lessons'][$lesson->id] = $data;
+        $course_version->details = $details;
+        $course_version->update();
+        // $this->model->update($data, $lesson->id);
         $this->showToastrMessage('success', __('Updated successful.'));
         return redirect()->back();
     }
 
-    public function deleteLesson($lesson_uuid)
+    public function deleteLesson(Request $request, $lesson_uuid)
     {
-        $this->model->deleteByUuid($lesson_uuid);
+        $deleted_lessons = [];
+        $course_version_id = $request->course_version_id;
+        if(!$course_version_id){
+            $this->model->deleteByUuid($lesson_uuid);
+        } else{
+            $lesson = $this->model->getRecordByUuid($lesson_uuid);
+            $course_version = CourseVersion::find($course_version_id);
+            $details = $course_version->details;
+            $details['deleted_lessons'][] = $lesson->id;
+            $course_version->details = $details;
+            $course_version->save();
+            $deleted_lessons = Course_lesson::whereIn('id', $details['deleted_lessons'])->pluck('uuid')->toArray();
+        }
         $this->showToastrMessage('success', __('Deleted successful'));
-        return redirect()->back();
+        return redirect()->back()->with('deleted_lessons', $deleted_lessons);
     }
 
 
@@ -100,6 +118,7 @@ class LessonController extends Controller
 
     public function storeLecture(Request $request, $course_uuid, $lesson_uuid)
     {
+        $edited_lessons = [];
         if ($request->type == 'video') {
             $request->validate([
                 'video_file' => ['required'],
@@ -163,8 +182,8 @@ class LessonController extends Controller
         $lecture = new Course_lecture();
         $lecture->fill($request->all());
         $lecture->pre_ids = ($lecture->pre_ids) ? json_encode($lecture->pre_ids) : NULL;
-        $lecture->lesson_id = $lesson->id;
         $course_version_id = $request->course_version_id;
+        $lecture->lesson_id = $lesson->id;
         if (!$course_version_id) {
             $lecture->course_id = $course->id;
         }
@@ -239,16 +258,21 @@ class LessonController extends Controller
         $data = [
             $course->uuid,
             'step=lesson',
-            "course_version_id" => $course_version_id
         ];
+        if($course_version_id){
+            $data["course_version_id"] = $course_version_id;
+        }
         if ($course_version_id) {
             $course_version = CourseVersion::find($course_version_id);
             $details = $course_version->details;
-            $details['lectures'][] = $lecture->id;
+            $details['lectures'][$lecture->id] = $lesson->id;
             $course_version->details = $details;
-            $edited_lessons = Course_lesson::whereIn('id', $details['lessons'])->get();
-            $data['edited_lessons'] = $edited_lessons;
             $course_version->update();
+            if(isset($details['lessons'])){
+                $edited_lessons = Course_lesson::whereIn('id', $details['lessons'])->get();
+            }
+            $data['edited_lessons'] = $edited_lessons;
+
         }
 
         if ($course->status == 1) {
@@ -275,7 +299,8 @@ class LessonController extends Controller
     public function editLecture($course_uuid, $lesson_uuid, $lecture_uuid, Request $request)
     {
         $course_version_id = $request->validate(['course_version_id' => 'required'])['course_version_id'];
-        dd($course_version_id);
+        // dd($course_version_id);
+        $data['course_version_id'] = $course_version_id;
         $data['title'] = 'Edit Lecture';
         $data['navCourseActiveClass'] = 'active';
 
@@ -290,6 +315,10 @@ class LessonController extends Controller
 
     public function updateLecture(Request $request,  $lecture_uuid)
     {
+        $course_version_id = $request->validate(['course_version_id' => 'required'])['course_version_id'];
+        $course_version = CourseVersion::findOrFail($course_version_id);
+        $deleted_files = [];
+        $delete_vimeo = '';
         if ($request->type == 'youtube') {
             $request->validate([
                 'youtube_url_path' => ['required'],
@@ -325,15 +354,18 @@ class LessonController extends Controller
                 }
             }
         }
-        dd($request->all());
 
         $lecture = Course_lecture::whereUuid($lecture_uuid)->firstOrFail();
+        $details = $course_version->details;
+        // $model = $request->except('_token');
         $lecture->fill($request->all());
         $lecture->pre_ids = ($lecture->pre_ids) ? json_encode($lecture->pre_ids) : NULL;
 
         if ($request->video_file && $request->type == 'video') {
-            $this->deleteFile($lecture->file_path); // delete file from server
-            $this->saveLectureVideo($request, $lecture); // Save Video File, Path, Size, Duration
+            $deleted_files[] = $lecture->file_path;
+            // $this->deleteFile($lecture->file_path); // delete file from server
+            // $details['updated_lessons'][$lecture->id]['delete_video'] = $lecture->file_path;
+            $this->saveLectureVideo($request, $lecture, $course_version); // Save Video File, Path, Size, Duration
         }
 
         if ($request->type == 'youtube') {
@@ -347,7 +379,8 @@ class LessonController extends Controller
             if ($request->file('vimeo_url_path') && ($request->vimeo_upload_type == 1)) {
                 if (env('VIMEO_STATUS') == 'active') {
                     if ($lecture->url_path) {
-                        $this->deleteVimeoVideoFile('https://vimeo.com/' . $lecture->url_path);
+                        $delete_vimeo = 'https://vimeo.com/' . $lecture->url_path;
+                        // $this->deleteVimeoVideoFile('https://vimeo.com/' . $lecture->url_path);
                     }
 
                     $path = $this->uploadVimeoVideoFile($request->title, $request->file('vimeo_url_path'));
@@ -374,12 +407,15 @@ class LessonController extends Controller
         }
 
         if ($request->type == 'image' && $request->image) {
-            $this->deleteFile($lecture->image); // delete file from server
+            $deleted_files[] = $lecture->image;
+            // $this->deleteFile($lecture->image); // delete file from server
             $lecture->image = $request->image ? $this->saveImage('lecture', $request->image, null, null) :   null;
         }
 
         if ($request->type == 'pdf' && $request->pdf) {
-            $this->deleteFile($lecture->pdf); // delete file from server
+            $deleted_files[] = $lecture->pdf;
+
+            // $this->deleteFile($lecture->pdf); // delete file from server
             //            $lecture->pdf = $request->pdf ? $this->uploadFile('lecture', $request->pdf) :   null;
             $file_details = $this->uploadFileWithDetails('lecture', $request->pdf);
             if ($file_details['is_uploaded']) {
@@ -392,7 +428,9 @@ class LessonController extends Controller
         }
 
         if ($request->audio && $request->type == 'audio') {
-            $this->deleteFile($lecture->audio); // delete file from server
+            $deleted_files[] = $lecture->audio;
+
+            // $this->deleteFile($lecture->audio); // delete file from server
             $file_details = $this->uploadFileWithDetails('lecture', $request->audio);
             if ($file_details['is_uploaded']) {
                 $lecture->audio = $file_details['path'];
@@ -408,15 +446,22 @@ class LessonController extends Controller
             }
         }
 
-        $lecture->save();
+        $details['updated_lessons'][$lecture->id] = [
+            'model' => $lecture->toArray(),
+            'deleted_files' => $deleted_files,
+            'delete_vimeo' => $delete_vimeo,
+        ];
+        $course_version->details = $details;
+        $course_version->save();
+        // $lecture->save();
 
         /** ====== send notification to student ===== */
-        $students = Order_item::where('course_id', $lecture->course->id)->select('user_id')->get();
-        foreach ($students as $student) {
-            $text = __("Lesson has been updated");
-            $target_url = route('student.my-course.show', $lecture->course->slug);
-            $this->send($text, 3, $target_url, $student->user_id);
-        }
+        // $students = Order_item::where('course_id', $lecture->course->id)->select('user_id')->get();
+        // foreach ($students as $student) {
+        //     $text = __("Lesson has been updated");
+        //     $target_url = route('student.my-course.show', $lecture->course->slug);
+        //     $this->send($text, 3, $target_url, $student->user_id);
+        // }
         /** ====== send notification to student ===== */
 
         if ($lecture->course->status != 0) {
@@ -425,33 +470,57 @@ class LessonController extends Controller
             $this->send($text, 1, $target_url, null);
         }
 
-        return redirect(route('instructor.course.edit', [$lecture->course->uuid, 'step=lesson']));
+        return redirect(route('instructor.course.edit', [$lecture->course->uuid, 'step=lesson' , 'course_version_id'=> $course_version_id]));
     }
 
-    public function deleteLecture($course_uuid, $lecture_uuid)
+    public function deleteLecture($course_uuid, $lecture_uuid, Request $request)
     {
+        $course_version_id = $request->course_version_id;
+        $course_version = CourseVersion::find($course_version_id);
         $lecture = $this->lectureModel->getRecordByUuid($lecture_uuid);
-        $this->deleteFile($lecture->file_path); // delete file from server
+        $data = [
+            $course_uuid,
+            'step=lesson',
+        ];
+        $deleted_lectures = [];
+        if(!$course_version){
 
-        if ($lecture->type == 'vimeo') {
-            if ($lecture->url_path) {
-                $this->deleteVimeoVideoFile($lecture->url_path);
+            $this->deleteFile($lecture->file_path); // delete file from server
+
+            if ($lecture->type == 'vimeo') {
+                if ($lecture->url_path) {
+                    $this->deleteVimeoVideoFile($lecture->url_path);
+                }
             }
+
+            Course_lecture_views::where('course_lecture_id', $lecture->id)->get()->map(function ($q) {
+                $q->delete();
+            });
+
+            $this->lectureModel->deleteByUuid($lecture_uuid); // delete record
+        }else{
+            $data['course_version_id'] = $course_version_id;
+            //get details
+            $details = $course_version->details;
+            //update details
+            $details['deleted_lectures'][] = $lecture->id;
+            //save details
+            $course_version->details = $details;
+            $course_version->save();
+            //return deleted for view
+            $data['deleted_lectures'][] = $lecture_uuid;
+            $deleted_lectures = Course_lecture::whereIn('id', $details['deleted_lectures'])->pluck('uuid')->toArray();
+            $data['deleted_lectures'] = $deleted_lectures;
         }
 
-        Course_lecture_views::where('course_lecture_id', $lecture->id)->get()->map(function ($q) {
-            $q->delete();
-        });
-
-        $this->lectureModel->deleteByUuid($lecture_uuid); // delete record
-
         $this->showToastrMessage('success', __('Lecture has been deleted'));
-        return redirect(route('instructor.course.edit', [$course_uuid, 'step=lesson']));
+        return redirect(route('instructor.course.edit', $data));
     }
 
 
-    private function saveLectureVideo($request, $lecture)
+    private function saveLectureVideo($request, $lecture, $course_version = null)
     {
+
         //        $lecture->file_path = $this->uploadFile('video', $request->video_file); // new file upload into server;
         $file_details = $this->uploadFileWithDetails('video', $request->video_file);
         if ($file_details['is_uploaded']) {

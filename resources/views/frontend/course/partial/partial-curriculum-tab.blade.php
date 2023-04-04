@@ -18,6 +18,9 @@
                                 <!-- Note Start-->
 
                                 @forelse($lesson->lectures as  $lecture)
+                                    @if(!$lecture->course_id)
+                                    @continue
+                                    @endif
                                     @if($lecture->lecture_type == 1)
                                         @if($lecture->type == 'video')
                                             <a title="See video preview" class="edit-lecture-preview-show d-flex align-items-center justify-content-between color-heading font-medium font-16 mb-3" data-bs-toggle="modal" href="#html5VideoPlayerModal{{ $lecture->id }}">

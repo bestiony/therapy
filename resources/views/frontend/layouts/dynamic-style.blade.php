@@ -254,6 +254,8 @@ header.hero-area.gradient-bg.position-relative .section-overlay {
     color: #7108c1!important;
     background-color: #fff!important;
     border: 1px solid;
+}p.card-text.instructor-designation.font-medium.m-4 {
+    margin: 11px;
 }
     @media only screen and (max-width: 779px) {.hero-heading {
     font-weight: 300;
@@ -280,6 +282,10 @@ video#video_background{display:none;}
     display: none;
 }.search-instructor-price.align-items-center.mb-15 {
     height: 70px;
+}p.card-text.instructor-designation.font-medium.m-4 {
+    margin: 11px!important;
+}.card-title {
+    margin-bottom: 0;
 }
 li.nav-item.dropdown.menu-round-btn.menu-language-btn.dropdown-top-space {
     display: block;

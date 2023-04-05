@@ -449,9 +449,19 @@ class CourseController extends Controller
                 }
             }
         } else {
-            $course->status = 2;
+            if (!$course_version_id) {
+                $course->status = 2;
+            }
         }
         $course->save();
+
+        if ($course_version_id) {
+            if ($course->status != 0) {
+                $text = __("Course") . " " . $course->title . " " . __(" have a pending update by the instructor");
+                $target_url = route('admin.course.version-view', ['id' => $course_version_id]);
+                $this->send($text, 1, $target_url, null);
+            }
+        }
         return redirect(route('instructor.course'));
     }
 

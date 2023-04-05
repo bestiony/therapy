@@ -66,9 +66,19 @@ class CourseController extends Controller
     }
     public function versionView($id)
     {
-        $data['course_version'] = CourseVersion::findOrFail($id);
-        $data['course'] = Course::with(['keyPoints'])->findOrFail($data['course_version']->course_id);
+        $course_version = CourseVersion::findOrFail($id);
+        $data['course_version'] = $course_version;
+        $details = $course_version->details;
+        $data['details'] = $details;
+        $data['edited_lessons'] = isset($details['lessons']) ? Course_lesson::whereIn('id', $details['lessons'])->get() : [];
+        $data['deleted_lessons'] = isset($details['deleted_lessons']) ? $details['deleted_lessons'] :  [];
+        $data['updated_lessons'] = isset($details['updated_lessons']) ? array_keys($details['updated_lessons']) :  [];
+        $data['updated_course_lessons'] = isset($details['updated_course_lessons']) ? array_keys($details['updated_course_lessons']) :  [];
+        $data['lectures'] = isset($details['lectures']) ? $details['lectures'] :  [];
+        $data['deleted_lectures'] = isset($details['deleted_lectures']) ? $details['deleted_lectures'] :  [];
 
+
+        $data['course'] = Course::with(['keyPoints'])->findOrFail($course_version->course_id);
         return view('admin.course.version-view', $data);
     }
 

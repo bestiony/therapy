@@ -464,13 +464,13 @@ class LessonController extends Controller
         // }
         /** ====== send notification to student ===== */
 
-        if ($lecture->course->status != 0) {
-            $text = __("New lesson has been added");
-            $target_url = route('admin.course.index');
-            $this->send($text, 1, $target_url, null);
-        }
+        // if ($lecture->course->status != 0) {
+        //     $text = __("New lesson has been added");
+        //     $target_url = route('admin.course.index');
+        //     $this->send($text, 1, $target_url, null);
+        // }
 
-        return redirect(route('instructor.course.edit', [$lecture->course->uuid, 'step=lesson' , 'course_version_id'=> $course_version_id]));
+        return redirect(route('instructor.course.edit', [($lecture->course ? $lecture->course->uuid :($course_version ? $course_version->course->uuid : '')), 'step=lesson' , 'course_version_id'=> $course_version_id]));
     }
 
     public function deleteLecture($course_uuid, $lecture_uuid, Request $request)

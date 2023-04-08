@@ -84,7 +84,39 @@
     </div>
 </footer>
 
-
+<div style="position:fixed;bottom:0;width:100%;background:#fff;left:0;" class="aiz-mobile-bottom-nav d-xl-none fixed-bottom bg-white shadow-lg border-top rounded-top">
+    <div class="row align-items-center " style="margin:auto;">
+        <div class="col-xs-3">
+            <a href="" class="text-reset d-block text-center pb-2 pt-3">
+                <i class="fa fa-user" style="color:var(--theme-color);font-weight:bold;"></i>
+                <span class="d-block fs-10 fw-600 opacity-60 opacity-100 fw-600">Courses</span>
+            </a>
+        </div>
+        <div class="col-xs-3">
+            <a href="" class="text-reset d-block text-center pb-2 pt-3">
+                <i class="fa fa-shopping-cart " style="color:var(--theme-color);font-weight:bold;"></i>
+                <span class="d-block fs-10 fw-600 opacity-60 ">Products</span>
+            </a>
+        </div>
+          
+        <div class="col-xs-3">
+            <a href="" class="text-reset d-block text-center pb-2 pt-3">
+                <span class="d-inline-block position-relative px-2">
+                    <i class="fas fa-running " style="color:var(--theme-color);font-weight:bold;"></i>
+                                    </span>
+                <span class="d-block fs-10 fw-600 opacity-60 ">Programmes</span>
+            </a>
+        </div>
+        <div class="col-xs-3">
+                    <a href="" class="text-reset d-block text-center pb-2 pt-3">
+                <span class="d-block mx-auto">
+                   <i class="fas fa-fire-alt" style="color:var(--theme-color);font-weight:bold;"></i>
+                </span>
+                <span class="d-block fs-10 fw-600 opacity-60">Packages</span>
+            </a>
+                </div>
+    </div>
+</div>
 
 <style>
 </style>

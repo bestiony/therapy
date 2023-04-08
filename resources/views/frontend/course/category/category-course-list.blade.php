@@ -79,7 +79,6 @@
                 </div>
                 <div class="row shop-content">
                     <!-- Courses Sidebar start-->
-                    @include('frontend.course.render-sidebar-filter-part')
                     <!-- Courses Sidebar End-->
                     <!-- Show all course area start-->
                     <div class="col-md-8 col-lg-9 col-xl-9 show-all-course-area-wrap">
@@ -92,6 +91,8 @@
                         @include('frontend.course.render-course-list')
                         <!-- all courses grid End-->
                     </div>
+                                        @include('frontend.course.render-sidebar-filter-part')
+
                 </div>
                 <!-- Show all course area End-->
             </div>

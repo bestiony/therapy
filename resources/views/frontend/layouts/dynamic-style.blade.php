@@ -290,4 +290,59 @@ video#video_background{display:none;}
 li.nav-item.dropdown.menu-round-btn.menu-language-btn.dropdown-top-space {
     display: block;
 }.direction-rtl *{letter-spacing:0!important;}
+.hidden-lg{display:none;}
+@media only screen and (max-width: 779px){
+    .hidden-lg{display:block;}
+    .isLoginMenu .menu-notification-btn,li.nav-item.dropdown.menu-round-btn.menu-language-btn.dropdown-top-space{display:inline-block;}
+.theme-button1, .theme-button2, .btn-violet-transparent {
+    color: var(--white-color)!important;
+    background-color: var(--theme-color);
+    border: 2px solid var(--theme-color);
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    outline: none;
+    /* text-transform: capitalize; */
+    z-index: 99;
+    padding: 3.5px 4px!important;
+    font-size: 15px!important;
+    justify-content: center;
+    border-radius: 4px;
+    font-weight: 600!important;
+}
+
+.hero-area .section-overlay {
+    min-height: 651px;
+    padding: 0px 0;
+}.fixed-nav li{display:inline-block;position:relative;} .isLoginMenu .menu-user-btn {
+    display: inline;
+}.hero-content {
+    padding: 42px 3px;
+}.menu-language-btn > a {
+    margin-right: 0;
+   
+}.menu-round-btn > a {
+    margin-right: 0;
+}
+.hidden-lg video#video_background {
+    display: block;
+    float: right;
+}#mainNav .navbar-brand img {
+    width: 120px;
+}#mainNav .navbar-brand img {
+    width: 150px;
+}h5.card-title.course-title {
+    font-size: 14px;
+}.col-sm-6.col-md-6.col-lg-6.col-xl-4,.col-sm-6.col-md-6.col-lg-6.col-xl-4.mt-0.mb-25 {
+    max-width: 50%;
+}#mainNav.sticky {
+    position: relative;}.sign-up-bottom-img img{display:none;}.col-xs-3 {
+    max-width: 25%;
+}.direction-rtl .menu-round-btn > a {
+    margin-left: 0;
+}}.payment-method-card-box {
+    border: 1px solid #681bbc;
+    border-radius: 4px;
+    padding: 20px!important;
+}
 </style>

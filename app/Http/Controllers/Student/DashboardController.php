@@ -62,6 +62,7 @@ class DashboardController extends Controller
 
     public function address()
     {
+
         $data['pageTitle'] = "Address";
         $data['user'] = auth::user();
         $data['student'] = $data['user']->student;
@@ -85,8 +86,8 @@ class DashboardController extends Controller
             'city_id' => 'required',
             'postal_code' => 'required',
             'address' => 'required',
-            'lat' => 'required',
-            'long' => 'required',
+            // 'lat' => 'required',
+            // 'long' => 'required',
         ]);
 
         $student = $this->studentModel->getRecordByUuid($uuid);

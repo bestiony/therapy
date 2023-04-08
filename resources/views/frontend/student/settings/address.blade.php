@@ -142,7 +142,7 @@
                                                     @endif
                                                 </div>
                                             </div>
-                                            <div class="row">
+                                            <div class="row d-none">
                                                 <div class="col-md-12 mb-30">
                                                     <label class="font-medium font-15 color-heading">{{ __('Select Location') }}</label>
                                                     <div id="map"></div>

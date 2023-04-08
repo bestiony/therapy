@@ -52,7 +52,7 @@ class RegistrationController extends Controller
         $user->phone_number = $user->area_code.$request->mobile_number;
         $user->password = Hash::make($request->password);
         $user->remember_token = $request->_token;
-        $user->email_verified_at = get_option('registration_email_verification') == 1 ? '' : now();
+        $user->email_verified_at = get_option('registration_email_verification') == 1 ? null : Carbon::now()->format("Y-m-d H:i:s");
         $user->role = 3;
         $user->save();
 

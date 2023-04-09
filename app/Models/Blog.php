@@ -19,7 +19,9 @@ class Blog extends Model
         'details',
         'image',
         'status',
-        'blog_category_id'
+        'blog_category_id',
+        'description',
+        'keywords',
     ];
 
     /**
@@ -39,6 +41,9 @@ class Blog extends Model
     public function tags()
     {
         return $this->hasMany(BlogTag::class);
+    }
+    public function tagName(){
+        return $this->belongsToMany(Tag::class, 'blog_tags');
     }
 
     public function blogComments()

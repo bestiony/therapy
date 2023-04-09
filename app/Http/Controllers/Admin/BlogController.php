@@ -66,6 +66,8 @@ class BlogController extends Controller
             'title' => $request->title,
             'slug' => $slug,
             'details' => $request->details,
+            'description' => $request->description,
+            'keywords' => $request->keywords,
             'blog_category_id' => $request->blog_category_id,
             'image' => $request->image ? $this->saveImage('blog', $request->image, null, null) :   null,
         ];
@@ -101,6 +103,7 @@ class BlogController extends Controller
 
     public function update(BlogRequest $request, $uuid)
     {
+
         if (!Auth::user()->can('manage_blog')) {
             abort('403');
         } // end permission checking
@@ -130,6 +133,8 @@ class BlogController extends Controller
             'details' => $request->details,
             'blog_category_id' => $request->blog_category_id,
             'image' => $image,
+            'description' => $request->description,
+            'keywords' => $request->keywords,
             'status'=> $request->status
         ];
 

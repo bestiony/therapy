@@ -31,7 +31,7 @@ class BlogController extends Controller
     {
         $data['pageTitle'] = "Blog Details";
         $data['metaData'] = staticMeta(6);
-        $data['blog'] = Blog::whereSlug($slug)->firstOrFail();
+        $data['blog'] = Blog::with('tags')->whereSlug($slug)->firstOrFail();
         $tag_ids = BlogTag::whereBlogId($data['blog']->id)->pluck('tag_id')->toArray();
         $data['tags'] = Tag::whereIn('id', $tag_ids)->get();
         $data['recentBlogs'] = Blog::latest()->take(3)->active()->get();

@@ -1,5 +1,5 @@
-ClassicEditor
-.create( document.querySelector( '#editor-text' ), {
+
+ClassicEditor.create(document.querySelector('#editor-text'), {
     // toolbar: [ 'heading', '|', 'bold', 'italic', 'link' ]
 } )
 .then( editor => {

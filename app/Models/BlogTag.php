@@ -8,4 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class BlogTag extends Model
 {
     use HasFactory;
+    public function tag(){
+        return $this->belongsTo(Tag::class);
+    }
 }

@@ -2,8 +2,10 @@
 
 @section('meta')
     <meta property="og:title" content="{{ __($blog->title) }}">
-    <meta property="og:description" content="{{ Str::limit(@$blog->details, 150) }}">
+    <meta property="og:description" content="{{ $blog->description }}">
+    <meta property="og:keywords" content="{{ $blog->keywords }}">
     <meta property="og:image" content="{{ getImageFile(@$blog->image_path) }}">
+    {{-- <meta property="og:tags" content="{{ implode(',', $blog->tagName->pluck('name')->toArray()) }}"> --}}
 @endsection
 
 @section('content')

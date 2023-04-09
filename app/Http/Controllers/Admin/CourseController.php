@@ -293,6 +293,11 @@ class CourseController extends Controller
                 $course_version->update(['status' => APPROVED_COURSE_VERSION]);
             }
         });
+
+        $text = __("You Course's New Version has been apporved by the admin!");
+        $target_url = route('course-details',['slug'=>$course->slug]);
+        $this->send($text, 2, $target_url, $course->user_id);
+
         $this->showToastrMessage('success', __('Course Has Been Updated.'));
         return back();
     }

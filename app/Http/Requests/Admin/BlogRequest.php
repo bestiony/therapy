@@ -27,6 +27,8 @@ class BlogRequest extends FormRequest
             'title' => ['required', 'min:2', 'max:255'],
             'slug' => ['required', 'min:2', 'max:255'],
             'details' => ['required'],
+            'description' => ['required'],
+            'keywords' => ['required'],
             'image' => 'mimes:jpeg,png,jpg|file|max:1024'
         ];
     }

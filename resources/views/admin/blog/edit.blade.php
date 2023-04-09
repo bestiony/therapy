@@ -105,7 +105,31 @@
                                     <p>{{ __('Accepted Files') }}: JPEG, JPG, PNG <br> {{ __('Recommend Size') }}: 870 x 500 (1MB)</p>
                                 </div>
                             </div>
+                            <div class="row">
+                                <hr>
+                                <h2>Meta Data</h2>
+                                <hr>
+                                <div class="input__group mb-25">
+                                    <label>{{ __('Description') }} <span class="text-danger">*</span></label>
+                                    <textarea name="description" id="description">{{ $blog->description }}</textarea>
 
+                                    @if ($errors->has('description'))
+                                        <span class="text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                            {{ $errors->first('description') }}</span>
+                                    @endif
+
+                                </div>
+                                <div class="input__group mb-25">
+                                    <label>{{ __('Keywords') }} <span class="text-danger">*</span></label>
+                                    <textarea name="keywords" id="keywords">{{$blog->keywords }}</textarea>
+
+                                    @if ($errors->has('keywords'))
+                                        <span class="text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                            {{ $errors->first('keywords') }}</span>
+                                    @endif
+
+                                </div>
+                            </div>
                             <div class="row mb-3">
                                 <div class="col-md-12 text-right">
                                     @updateButton

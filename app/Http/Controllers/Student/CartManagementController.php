@@ -756,6 +756,17 @@ class CartManagementController extends Controller
                     create_conversation($item->bookingHistory);
                 }
             }
+
+            $new_text = __("New student enrolled");
+            $target_url = route('instructor.all-student');
+
+            foreach ($order->items as $item) {
+                if ($item->consultation_slot_id) {
+                    $instructor_id = $item->bookingHistory->instructor_user_id;
+                    $this->send($new_text, 2, $target_url, $instructor_id);
+                }
+            }
+
             return redirect()->route('student.thank-you');
 
         }
@@ -1478,9 +1489,7 @@ class CartManagementController extends Controller
                     create_conversation($booking);
                     //End:: Add Booking History
                 }
-
             }
-
             DB::commit();
             return ['status' => true,'data' => $order];
         }catch (\Exception $e){

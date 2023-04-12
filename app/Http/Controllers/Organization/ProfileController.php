@@ -157,12 +157,12 @@ class ProfileController extends Controller
     {
         $request->validate([
             'country_id' => 'required',
-            'state_id' => 'required',
-            'city_id' => 'required',
-            'postal_code' => 'required',
+            //'state_id' => 'required',
+           // 'city_id' => 'required',
+           // 'postal_code' => 'required',
             'address' => 'required',
-            'lat' => 'required',
-            'long' => 'required',
+            //'lat' => 'required',
+            //'long' => 'required',
         ]);
         $organization = $this->model->getRecordByUuid($uuid);
         $user = User::findOrFail($organization->user_id);
@@ -171,9 +171,9 @@ class ProfileController extends Controller
         $user->save();
         $data = [
             'country_id' => $request->country_id,
-            'state_id' => $request->state_id,
-            'city_id' => $request->city_id,
-            'postal_code' => $request->postal_code,
+           // 'state_id' => $request->state_id,
+           // 'city_id' => $request->city_id,
+            //'postal_code' => $request->postal_code,
             'address' => $request->address,
         ];
 

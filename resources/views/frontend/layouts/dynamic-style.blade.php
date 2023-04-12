@@ -286,14 +286,30 @@ video#video_background{display:none;}
     margin: 11px!important;
 }.card-title {
     margin-bottom: 0;
+}.search-instructor-price.align-items-center.mb-4 {
+    height: 50px;margin-bottom:0!important;
+    overflow: hidden;
+}.m-4 {
+    margin: 0.5rem!important;
 }
 li.nav-item.dropdown.menu-round-btn.menu-language-btn.dropdown-top-space {
     display: block;
 }.direction-rtl *{letter-spacing:0!important;}
 .hidden-lg{display:none;}
+#mainNav .navbar-brand {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    margin-right: 0;
+}
 @media only screen and (max-width: 779px){
     .hidden-lg{display:block;}
     .isLoginMenu .menu-notification-btn,li.nav-item.dropdown.menu-round-btn.menu-language-btn.dropdown-top-space{display:inline-block;}
+    .search-instructor-price.align-items-center.mb-4 {
+    height: 73px;
+    overflow: hidden;
+}
 .theme-button1, .theme-button2, .btn-violet-transparent {
     color: var(--white-color)!important;
     background-color: var(--theme-color);
@@ -330,16 +346,38 @@ li.nav-item.dropdown.menu-round-btn.menu-language-btn.dropdown-top-space {
 }#mainNav .navbar-brand img {
     width: 120px;
 }#mainNav .navbar-brand img {
-    width: 150px;
+    width: 120px;
 }h5.card-title.course-title {
     font-size: 14px;
-}.col-sm-6.col-md-6.col-lg-6.col-xl-4,.col-sm-6.col-md-6.col-lg-6.col-xl-4.mt-0.mb-25 {
-    max-width: 50%;
 }#mainNav.sticky {
     position: relative;}.sign-up-bottom-img img{display:none;}.col-xs-3 {
     max-width: 25%;
 }.direction-rtl .menu-round-btn > a {
     margin-left: 0;
+}.text-bg-primary {
+    font-size: 14px;}.page-banner-header.blank-page-banner-header.gradient-bg.position-relative {
+    margin-bottom: 30px;
+}.hidden-lg video#video_background {
+    display: block;
+    position: absolute;
+    float: right;
+    top: 33px;
+    right: -25px;
+}.hero-content {
+    float: left;
+    padding-right: 100px;
+}.hero-heading {
+    font-weight: 300;
+    font-size: 19px;
+}.search-instructor-price.align-items-center.mb-4 {
+    margin-bottom: 0!important;
+}.main-middle-text {
+    margin-right: 0;
+}.hero-area .section-overlay {
+    min-height: 292px;
+    padding: 0px 0;
+}.col-sm-6.col-md-6.col-lg-6.col-xl-4.mt-0.mb-25 {
+    max-width: 49%;
 }}.payment-method-card-box {
     border: 1px solid #681bbc;
     border-radius: 4px;

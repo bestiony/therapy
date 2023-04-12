@@ -15,7 +15,11 @@
         <h6 class="card-title"><a href="{{ route('userProfile', $user->id) }}">{{ $user->name }}</a>
         </h6>
         <p class="card-text instructor-designation font-medium m-4">
+            @if($user->role == USER_ROLE_INSTRUCTOR)
             {{ @$user->instructor->professional_title }}
+            @elseif($user->role == USER_ROLE_ORGANIZATION)
+            {{ @$user->organization->professional_title }}
+            @endif
             {{-- @if (get_instructor_ranking_level($user->badges)) --}}
             {{-- <span class="mx-2"> --}}
             {{-- ||</span>{{ get_instructor_ranking_level($user->badges) }} --}}
@@ -48,7 +52,7 @@
                 @endforeach
             </div>
         </div> --}}
-
+        @if($user->role == USER_ROLE_INSTRUCTOR)
         <div class="search-instructor-price  align-items-center m-4">
             @if ($user->instructor && $user->instructor->consultation_available == 1)
                 <div class="text-center">
@@ -98,6 +102,7 @@
                 </div>
             @endif
         </div>
+        @endif
         <div class="search-instructor-price  align-items-center mb-4">
             @if ($user->instructor)
                 @foreach ($user->instructor->skills as $skill)

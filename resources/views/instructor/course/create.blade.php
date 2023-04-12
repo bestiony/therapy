@@ -46,8 +46,7 @@
                                         </div>
                                         <ul class="mb-30">
                                             @foreach($rules as $rule)
-                                            <li><span class="iconify" data-icon="akar-icons:arrow-right"></span>{{
-                                                $rule->description }}</li>
+                                            <li><span class="iconify" data-icon="akar-icons:arrow-right"></span>{{ __($rule->description) }}</li>
                                             @endforeach
                                         </ul>
 

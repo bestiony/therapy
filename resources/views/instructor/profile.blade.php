@@ -157,7 +157,7 @@
                         <label class="font-medium font-15 color-heading">{{__('Skills Name')}}</label>
                         <select name="skills[]"  class="form-control select2" multiple>
                             @foreach ($skills as $skill)
-                                <option value="{{ $skill->id }}" {{ in_array($skill->id, $instructor->skills->pluck('id')->toArray())?'selected':'' }}>{{ $skill->title }}</option>
+                                <option value="{{ $skill->id }}" {{ in_array($skill->id, $instructor->skills->pluck('id')->toArray())?'selected':'' }}> {{ __($skill->title) }}</option>
                             @endforeach
                         </select>
                         @if ($errors->has('skills'))

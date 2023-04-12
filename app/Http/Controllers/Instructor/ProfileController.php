@@ -160,12 +160,12 @@ class ProfileController extends Controller
     {
         $request->validate([
             'country_id' => 'required',
-            'state_id' => 'required',
-            'city_id' => 'required',
-            'postal_code' => 'required',
+            //'state_id' => 'required',
+            //'city_id' => 'required',
+            //'postal_code' => 'required',
             'address' => 'required',
-            'lat' => 'required',
-            'long' => 'required',
+            //'lat' => 'required',
+            //'long' => 'required',
         ]);
         $instructor = $this->model->getRecordByUuid($uuid);
         $user = User::find($instructor->user_id);

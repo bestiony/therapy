@@ -60,6 +60,11 @@
             </div>
             <div class="row shop-content">
                 <!-- instructor Sidebar start-->
+                <!-- Show all Instructor area start-->
+                <div class="col-md-8 col-lg-9 col-xl-9 show-all-course-area-wrap" id="instructorParentBlock">
+                    @include('frontend.instructor.render_instructor')
+                    <!-- all courses grid End-->
+                </div>
                 <div class="col-md-4 col-lg-3 col-xl-3">
                     <div class="courses-sidebar-area bg-light">
 
@@ -350,11 +355,7 @@
                 </div>
                 <!-- instructor Sidebar End-->
 
-                <!-- Show all Instructor area start-->
-                <div class="col-md-8 col-lg-9 col-xl-9 show-all-course-area-wrap" id="instructorParentBlock">
-                    @include('frontend.instructor.render_instructor')
-                    <!-- all courses grid End-->
-                </div>
+                
             </div>
             <!-- Show all Instructor area End-->
         </div>

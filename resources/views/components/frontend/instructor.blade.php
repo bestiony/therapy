@@ -106,7 +106,7 @@
         <div class="search-instructor-price  align-items-center mb-4">
             @if ($user->instructor)
                 @foreach ($user->instructor->skills as $skill)
-                    <span class="badge text-bg-primary">{{ $skill->title }}</span>
+                    <span class="badge text-bg-primary"> {{ __($skill->title) }}</span>
                 @endforeach
             @endif
         </div>

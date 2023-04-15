@@ -65,13 +65,13 @@
 
                                         <td>
                                             <div class="action__buttons">
-                                                <a href="{{route('instructor.status-change', [$instructor->uuid, 1])}}" class="btn-action approve-btn mr-30 p-1" title="Make as approve">
+                                                <a href="{{route('instructor.status-change', [$instructor->uuid, 1])}}" class="btn-action approve-btn mr-30  p-1" title="Make as approve" style="width: 40px;">
                                                     {{__('Approve')}}
                                                 </a>
-                                                <a href="{{route('instructor.view', [$instructor->uuid])}}" class="btn-action mr-30" title="View Details">
+                                                <a href="{{route('instructor.view', [$instructor->uuid])}}" class="btn-action mr-30 " title="View Details" style="width: 40px;">
                                                     <img src="{{asset('admin/images/icons/eye-2.svg')}}" alt="eye">
                                                 </a>
-                                                <a href="{{route('instructor.edit', [$instructor->uuid])}}" class="btn-action mr-30" title="Edit Details">
+                                                <a href="{{route('instructor.edit', [$instructor->uuid])}}" class="btn-action mr-30 " title="Edit Details" style="width: 40px;">
                                                     <img src="{{asset('admin/images/icons/edit-2.svg')}}" alt="edit">
                                                 </a>
                                                 <a href="javascript:void(0);" data-url="{{route('instructor.delete', [$instructor->uuid])}}" title="Delete" class="btn-action delete">

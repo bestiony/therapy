@@ -103,9 +103,14 @@
             @endif
         </div>
         @endif
-        <div class="search-instructor-price  align-items-center mb-4">
+        <div class="search-instructor-price  align-items-center mb-1">
             @if ($user->instructor)
                 @foreach ($user->instructor->skills as $skill)
+                    <span class="badge text-bg-primary"> {{ __($skill->title) }}</span>
+                @endforeach
+            @endif
+            @if ($user->organization)
+                @foreach ($user->organization->skills as $skill)
                     <span class="badge text-bg-primary"> {{ __($skill->title) }}</span>
                 @endforeach
             @endif

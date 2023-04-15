@@ -64,6 +64,11 @@
                                                     </h6>
                                                     <div class="ticket-reply-content">
                                                         <p>{{ $ticketMessage->message }}<br>
+                                                            @if($ticketMessage->file)
+                                                                    <div class="upload-img-box mb-25">
+                                                                        <a href="{{getImageFile($ticketMessage->file)}}" target="_blank"><img src="{{getImageFile($ticketMessage->file)}}" alt="img"></a>
+                                                                    </div>
+                                                                @endif
                                                         </p>
                                                     </div>
                                                 </div>

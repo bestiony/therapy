@@ -87,28 +87,28 @@
 <div style="position:fixed;bottom:0;width:100%;background:#fff;left:0;" class="aiz-mobile-bottom-nav d-xl-none fixed-bottom bg-white shadow-lg border-top rounded-top">
     <div class="row align-items-center " style="margin:auto;">
         <div class="col-xs-3">
-            <a href="https://my-therapists.com/forum" class="text-reset d-block text-center pb-2 pt-3">
-               <img src="https://my-therapists.com/uploads/b1.png" 
+            <a href="{{route('forum.index')}}" class="text-reset d-block text-center pb-2 pt-3">
+               <img src="{{asset('uploads/b1.png')}}"
                style="width:40px;" alt="feature" />
                 <span class="d-block fs-10 fw-600 opacity-60 opacity-100 fw-600">{{ __('forum') }}</span>
             </a>
         </div>
         <div class="col-xs-3">
-            <a href="https://my-therapists.com/instructor" class="text-reset d-block text-center pb-2 pt-3">
-                 <img src="https://my-therapists.com/uploads/b2.png"  style="width:40px;" alt="feature" />
+            <a href="{{route('instructor')}}" class="text-reset d-block text-center pb-2 pt-3">
+                 <img src="{{asset('uploads/b2.png')}}"  style="width:40px;" alt="feature" />
                 <span class="d-block fs-10 fw-600 opacity-60 ">{{ __('Instructor') }}</span>
             </a>
         </div>
-          
+
         <div class="col-xs-3">
-            <a href="https://my-therapists.com/organizations" class="text-reset d-block text-center pb-2 pt-3">
-                 <img src="https://my-therapists.com/uploads/b3.png"  style="width:40px;" alt="feature" />
+            <a href="{{route('organizations')}}" class="text-reset d-block text-center pb-2 pt-3">
+                 <img src="{{asset('uploads/b3.png')}}"  style="width:40px;" alt="feature" />
                 <span class="d-block fs-10 fw-600 opacity-60 ">{{ __('Organizations') }}</span>
             </a>
         </div>
         <div class="col-xs-3">
-                    <a href="https://my-therapists.com/courses" class="text-reset d-block text-center pb-2 pt-3">
-                 <img src="https://my-therapists.com/uploads/b4.png"  style="width:40px;" alt="feature" />
+                    <a href="{{route('courses')}}" class="text-reset d-block text-center pb-2 pt-3">
+                 <img src="{{asset('uploads/b4.png')}}"  style="width:40px;" alt="feature" />
                 <span class="d-block fs-10 fw-600 opacity-60"> {{ __('Courses') }}</span>
             </a>
                 </div>

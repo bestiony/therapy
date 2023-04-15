@@ -167,7 +167,22 @@
                     </div>
                 </div>
             </div>
-
+            <div class="instructor-profile-info-box">
+                <h6 class="instructor-info-box-title">{{__('Languages')}}</h6>
+                <div class="row">
+                    <div class="col-md-12 mb-30">
+                        <label class="font-medium font-15 color-heading">{{__('Language')}}</label>
+                        <select name="languages[]"  class="form-control select2" multiple>
+                            @foreach ($languages as $language)
+                                <option value="{{ $language->id }}" {{ in_array($language->id, $organization->user->languages ?? [])?'selected':'' }}>{{ $language->name }}</option>
+                            @endforeach
+                        </select>
+                        @if ($errors->has('languages'))
+                            <span class="text-danger"><i class="fas fa-exclamation-triangle"></i> {{ $errors->first('languages') }}</span>
+                        @endif
+                    </div>
+                </div>
+            </div>
             <div class="instructor-profile-info-box">
                 <h6 class="instructor-info-box-title">{{__('Certifications')}}</h6>
                 <div class="certificates">

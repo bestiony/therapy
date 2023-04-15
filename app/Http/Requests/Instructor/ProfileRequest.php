@@ -29,7 +29,7 @@ class ProfileRequest extends FormRequest
             'last_name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'string', 'email', 'max:255'],
             'image' => 'mimes:jpeg,png,jpg|file|dimensions:min_width=300,min_height=300,max_width=300,max_height=300|max:1024',
-            // 'languages'=>'required',
+            'languages'=>'required',
         ];
     }
 }

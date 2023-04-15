@@ -90,7 +90,7 @@ class CourseController extends Controller
     {
         $data['pageTitle'] = "Course Details";
         $data['metaData'] = staticMeta(3);
-        $data['course'] = Course::whereSlug($slug)->first();
+        $data['course'] = Course::whereSlug($slug)->firstOrFail();
         $affilate_request = AffiliateRequest::where(['user_id' => Auth::id(), 'status' => STATUS_APPROVED])->first();
         if (!is_null($affilate_request)) {
             $ref_cod = $data['course']->id . '$' . $affilate_request->affiliate_code;

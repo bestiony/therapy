@@ -403,11 +403,11 @@ class CourseController extends Controller
         }
 
 
-        if ($course->status != 0) {
-            $text = __("Course") . " " . $course->title . " " . __("Course category has been updated");
-            $target_url = route('admin.course.index');
-            $this->send($text, 1, $target_url, null);
-        }
+        // if ($course->status != 0) {
+        //     $text = __("Course") . " " . $course->title . " " . __("Course category has been updated");
+        //     $target_url = route('admin.course.index');
+        //     $this->send($text, 1, $target_url, null);
+        // }
 
 
         return redirect(route('instructor.course.edit', [$course->uuid, 'step=lesson', 'course_version_id' => ($course_version ?  $course_version->id : null)]));

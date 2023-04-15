@@ -275,16 +275,16 @@ class LessonController extends Controller
 
         }
 
-        if ($course->status == 1) {
-            /** ====== send notification to student ===== */
-            $students = Enrollment::where('course_id', $course->id)->select('user_id')->get();
-            foreach ($students as $student) {
-                $text = __("New lesson has been added");
-                $target_url = route('student.my-course.show', $course->slug);
-                $this->send($text, 3, $target_url, $student->user_id);
-            }
-            /** ====== send notification to student ===== */
-        }
+        // if ($course->status == 1) {
+        //     /** ====== send notification to student ===== */
+        //     $students = Enrollment::where('course_id', $course->id)->select('user_id')->get();
+        //     foreach ($students as $student) {
+        //         $text = __("New lesson has been added");
+        //         $target_url = route('student.my-course.show', $course->slug);
+        //         $this->send($text, 3, $target_url, $student->user_id);
+        //     }
+        //     /** ====== send notification to student ===== */
+        // }
 
         if ($course->status != 0) {
             $text = __("New lesson has been added");

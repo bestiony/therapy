@@ -64,7 +64,7 @@ class ProfileController extends Controller
         } else {
             $image = $user->image;
         }
-        
+
         $user->name = $request->first_name . ' ' . $request->last_name;
         $user->image = $image;
         $user->languages = $request->languages;

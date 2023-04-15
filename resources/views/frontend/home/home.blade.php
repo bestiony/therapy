@@ -46,7 +46,7 @@
 <div class="hidden-lg">
                        <video id="video_background" preload="auto" autoplay="autoplay" loop="true" muted="muted"
             style=" z-index: 100; width: auto; height: 224px;">
-            <source src="http://theraphy.almustashar.net/uploads_demo/home/video2.mp4" type="video/mp4">
+            <source src="https://theraphy.almustashar.net/uploads_demo/home/video2.mp4" type="video/mp4">
             <source src="video/video2.ogg" type="video/ogg">
             <source src="video/video2.webm" type="video/webm">bgvideo
         </video></div>

@@ -364,7 +364,13 @@
 <!-- Instructor Search Page Area End -->
 
 </div>
+
 @endsection
+
+
+<style>
+    .search-instructor-price.align-items-center.mb-4{display:none;}
+</style>
 @push('style')
 {{-- <link href='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.css' rel='stylesheet' /> --}}
     {{-- <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v1.0.0/MarkerCluster.css' rel='stylesheet' /> --}}

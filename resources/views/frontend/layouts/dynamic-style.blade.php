@@ -302,7 +302,7 @@ li.nav-item.dropdown.menu-round-btn.menu-language-btn.dropdown-top-space {
     align-items: center;
     padding: 0;
     margin-right: 0;
-}
+}.about-instructor-box p{width:auto;}
 @media only screen and (max-width: 779px){
     .hidden-lg{display:block;}
     .isLoginMenu .menu-notification-btn,li.nav-item.dropdown.menu-round-btn.menu-language-btn.dropdown-top-space{display:inline-block;}

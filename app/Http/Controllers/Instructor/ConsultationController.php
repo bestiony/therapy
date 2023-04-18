@@ -46,6 +46,7 @@ class ConsultationController extends Controller
         $instructor->monthly_rate = $request->monthly_rate;
         $instructor->hourly_old_rate = $request->hourly_old_rate;
         $instructor->monthly_old_rate = $request->monthly_old_rate;
+        $instructor->availibity_range = $request->availibity_range;
         $instructor->hours_per_month = $request->hours_per_month;
         $instructor->booking_note = $request->booking_note;
         $instructor->consultancy_area = $request->consultancy_area ?? 3;

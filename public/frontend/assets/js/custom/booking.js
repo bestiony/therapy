@@ -86,6 +86,9 @@
 
 
         $(document).on('change', ".startingDate", function () {
+            // if ($(this).hasClass("bookingDate")) {
+            //     return;
+            // }
             var bookingDate = $('.startingDate').val();
             var user_id = $('.booking_instructor_user_id').val();
             var clientOrderType = $('.clientOrderType').val();

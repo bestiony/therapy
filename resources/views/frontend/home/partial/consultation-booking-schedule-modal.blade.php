@@ -10,7 +10,7 @@
 
             <div class=" bg-white rounded ">
                 <!-- Rounded tabs -->
-                <ul id="myTab" role="tablist"
+                <ul id="myTab-consultation" role="tablist"
                     class="nav nav-tabs nav-pills flex-column flex-sm-row text-center bg-light border-0 rounded-nav px-4 py-2">
                     <li class="nav-item flex-sm-fill">
                         <a id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
@@ -131,7 +131,7 @@
     var clientOrderType = document.querySelector('.clientOrderType');
 
     document.addEventListener("DOMContentLoaded", function() {
-        var tabList = [].slice.call(document.querySelectorAll("#myTab a"));
+        var tabList = [].slice.call(document.querySelectorAll("#myTab-consultation a"));
         tabList.forEach(function(tab) {
             var tabTrigger = new bootstrap.Tab(tab);
 

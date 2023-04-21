@@ -63,6 +63,23 @@
                         </div>
                     </div>
 
+                    <div class="mb-3 row instructor-panel-monthly-rate-box align-items-center">
+                        <label for="monthlyOldRate"
+                            class="col-sm-2 col-form-label font-medium color-heading">{{ __('Availibity Range') }}</label>
+                        <div class="col-sm-6 col-md-3">
+                            <input type="text" step="any" min="0" name="availibity_range" class="form-control"
+                                id="bookingNote" placeholder="" value="{{ $organization->availibity_range }}">
+                        </div>
+                        <div class="alert alert-primary col-sm-6 col-md-3" role="alert">
+                            {{__("clients can't book this many days into the future")}}
+                        </div>
+                        @if ($errors->has('availibity_range'))
+                            <span class="text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                {{ $errors->first('availibity_range') }}</span>
+                        @endif
+
+                    </div>
+
                     <div id="consultancyArea" class="@if ($organization->available_type == 2) d-none @endif">
                         <h6 class="are-you-available-title mb-3 d-inline-flex align-items-center"><span class="iconify me-2"
                                 data-icon="heroicons-outline:thumb-up"></span>{{ __('Consultancy Area') }}</h6>

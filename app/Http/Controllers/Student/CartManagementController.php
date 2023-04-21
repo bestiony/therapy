@@ -661,16 +661,16 @@ class CartManagementController extends Controller
                         return response()->json($response);
                     }
                 }
-                
+
                 $days_till_session = now()->diffInDays($request->bookingDate);
-                $instructor_future_availability =
-                $consultationExit->user->instructor->availibity_range;
+                $instructor_future_availability = $consultationExit->user->instructor ? $consultationExit->user->instructor->availibity_range : $consultationExit->user->organization->availibity_range;
                 if ($days_till_session > $instructor_future_availability){
                     $response['msg'] = __("Date is out of instructor availibity range!");
                     $response['status'] = 404;
                     DB::rollBack();
                     return response()->json($response);
                 }
+                // return response()->json(['data' => 'here', 'status' => 422]);
 
 
                 $cartExists = CartManagement::whereUserId(Auth::user()->id)->whereConsultationSlotId($request->consultation_slot_id)->where('consultation_date', $request->bookingDate)->first();

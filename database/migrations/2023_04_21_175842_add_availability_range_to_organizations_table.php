@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('instructors', function (Blueprint $table) {
-        $table->integer('availibity_range')->default(30)->nullable();
+        Schema::table('organizations', function (Blueprint $table) {
+            $table->integer('availibity_range')->default(30)->nullable();
         });
     }
 
@@ -25,7 +25,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('instructors', function (Blueprint $table) {
+        Schema::table('organizations', function (Blueprint $table) {
             //
         });
     }

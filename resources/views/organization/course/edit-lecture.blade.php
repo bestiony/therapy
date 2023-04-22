@@ -35,6 +35,8 @@
                                 <div class="upload-course-step-item upload-course-video-step-item">
                                     <form method="POST" action="{{route('organization.update.lecture', [$lecture->uuid])}}" class="row g-3 needs-validation" novalidate enctype="multipart/form-data">
                                     @csrf
+                                    <input type="hidden" name="course_version_id" value="{{$course_version_id}}">
+
                                     <!-- Upload Course Video-4 start -->
                                         <div id="upload-course-video-4" >
                                             <div class="upload-course-item-block course-overview-step1 radius-8">
@@ -295,7 +297,7 @@
                                                                             !
                                                                         </span>
                                                                     </label>
-                                                                    @php 
+                                                                    @php
                                                                         $pre_ids = ($lecture->pre_ids) ? json_decode($lecture->pre_ids) : [];
                                                                     @endphp
                                                                     <select name="pre_ids[]" required class="form-select select2" multiple>
@@ -319,7 +321,7 @@
                                                             <div class="row mb-30">
                                                                 <div class="col-md-12 main-upload-video-processing-item-btns">
                                                                     <button type="submit" class="theme-btn upload-video-processing-item-save-btn">{{__('Save')}}</button>
-                                                                    <a href="{{route('organization.course.edit', [$course->uuid, 'step=lesson'])}}" class="theme-btn default-hover-btn default-back-btn theme-button3">{{__('Back')}}</a>
+                                                                    <a href="{{route('organization.course.edit', [$course->uuid, 'step=lesson','course_version_id'=>$course_version_id])}}" class="theme-btn default-hover-btn default-back-btn theme-button3">{{__('Back')}}</a>
                                                                 </div>
                                                             </div>
                                                         </div>

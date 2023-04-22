@@ -59,7 +59,7 @@ class LessonController extends Controller
 
         $this->showToastrMessage('success', __('Created successful.'));
         // dd($returned_data);
-        // edited lessons var misson os only to separate them in the view and allow the instructor
+        // edited lessons var's misson is only to separate them in the view and allow the instructor
         // to see his new added lessons and his old ones
         return redirect()->back()->with('edited_lessons', $edited_lessons);
     }
@@ -182,8 +182,9 @@ class LessonController extends Controller
         $lecture = new Course_lecture();
         $lecture->fill($request->all());
         $lecture->pre_ids = ($lecture->pre_ids) ? json_encode($lecture->pre_ids) : NULL;
-        $course_version_id = $request->course_version_id;
         $lecture->lesson_id = $lesson->id;
+
+        $course_version_id = $request->course_version_id;
         if (!$course_version_id) {
             $lecture->course_id = $course->id;
         }
@@ -318,7 +319,7 @@ class LessonController extends Controller
         $course_version_id = $request->validate(['course_version_id' => 'required'])['course_version_id'];
         $course_version = CourseVersion::findOrFail($course_version_id);
         $deleted_files = [];
-        $delete_vimeo = '';
+
         if ($request->type == 'youtube') {
             $request->validate([
                 'youtube_url_path' => ['required'],
@@ -379,7 +380,7 @@ class LessonController extends Controller
             if ($request->file('vimeo_url_path') && ($request->vimeo_upload_type == 1)) {
                 if (env('VIMEO_STATUS') == 'active') {
                     if ($lecture->url_path) {
-                        $delete_vimeo = 'https://vimeo.com/' . $lecture->url_path;
+                        $details['delete_vimeo'] = 'https://vimeo.com/' . $lecture->url_path;
                         // $this->deleteVimeoVideoFile('https://vimeo.com/' . $lecture->url_path);
                     }
 
@@ -449,7 +450,6 @@ class LessonController extends Controller
         $details['updated_lessons'][$lecture->id] = [
             'model' => $lecture->toArray(),
             'deleted_files' => $deleted_files,
-            'delete_vimeo' => $delete_vimeo,
         ];
         $course_version->details = $details;
         $course_version->save();

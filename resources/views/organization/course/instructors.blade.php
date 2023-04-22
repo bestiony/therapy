@@ -35,6 +35,9 @@
                         <form method="POST" action="{{route('organization.course.store.instructor', [$course->uuid])}}"
                             class="row g-3 needs-validation" novalidate>
                             @csrf
+                            @if ($course_version_id)
+                                    <input type="hidden" name="course_version_id" value="{{ $course_version_id }}">
+                                @endif
                             <div class="upload-course-step-item upload-course-overview-step-item">
                                 <div class="row">
                                     @php
@@ -103,7 +106,7 @@
                                 </div>
                             </div>
                             <div class="stepper-action-btns">
-                                <a href="{{route('organization.course.edit', [$course->uuid, 'step=lesson'])}}"
+                                <a href="{{route('organization.course.edit', [$course->uuid, 'step=lesson', "course_version_id"=>$course_version_id])}}"
                                     class="theme-btn theme-button3">{{__('Back')}}</a>
                                 <button type="submit" class="theme-btn default-hover-btn theme-button1">{{__('Save and
                                     continue')}}</button>

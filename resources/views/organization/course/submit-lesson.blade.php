@@ -39,11 +39,11 @@
                                             <div class="last-step-content-wrap">
                                                 <h4 class="mb-3">Finish!</h4>
                                                 <div class="stepper-action-btns">
-                                                    <a href="{{route('organization.course.index')}}" class="theme-btn theme-button3">{{__('Cancel')}}</a>
+                                                    <a href="{{route('organization.course.index',["course_version_id"=>$course_version_id])}}" class="theme-btn theme-button3">{{__('Cancel')}}</a>
                                                     @if($course->status == 1)
-                                                    <a href="{{route('organization.course.upload-finished', [$course->uuid])}}" type="button" class="theme-btn theme-button1">{{ __('Done') }}</a>
+                                                    <a href="{{route('organization.course.upload-finished', [$course->uuid, "course_version_id"=>$course_version_id])}}" type="button" class="theme-btn theme-button1">{{ __('Done') }}</a>
                                                     @else
-                                                    <a href="{{route('organization.course.upload-finished', [$course->uuid])}}" type="button" class="theme-btn theme-button1">{{ __('Submit for review') }}</a>
+                                                    <a href="{{route('organization.course.upload-finished', [$course->uuid, "course_version_id"=>$course_version_id])}}" type="button" class="theme-btn theme-button1">{{ __('Submit for review') }}</a>
                                                     @endif
                                                 </div>
                                             </div>

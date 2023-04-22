@@ -56,12 +56,20 @@
                                         <td>{{ $course->subtitle }}</td>
                                         <td>{{ $course_version->details['subtitle'] }}</td>
                                     </tr>
+
+                                    @if(isset($course_version->details['new_learn_key_points']) && count($course_version->details['new_learn_key_points']))
                                     <tr>
                                         <td>{{ _('Key Points') }}</td>
                                         <td>{{ implode(', ', $course->keyPoints->pluck('name')->toArray()) }}</td>
-                                        <td>{{ get_names('key_point', $course_version->details['new_learn_key_points']) }}
+                                        <td>
+                                            New: {{ get_names('key_point', $course_version->details['new_learn_key_points']) }}
+
+                                            @if(isset($course_version->details['updated_learn_key_points']) && count($course_version->details['updated_learn_key_points']))
+                                            Updated : {{ get_names('key_point', $course_version->details['updated_learn_key_points']) }}
+                                            @endif
                                         </td>
                                     </tr>
+                                    @endif
                                     <tr>
                                         <td>{{ _('Description') }}</td>
                                         <td>{{ $course->description }}</td>

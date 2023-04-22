@@ -296,6 +296,7 @@ class CourseController extends Controller
 
         // $this->model->updateByUuid($data, $uuid); // update category
         $new_learn_key_points = [];
+        $updated_learn_key_points = [];
         $now = now();
         if ($request['key_points']) {
             if (count(@$request['key_points']) > 0) {
@@ -303,19 +304,29 @@ class CourseController extends Controller
                     if (@$item['name']) {
                         if (@$item['id']) {
                             $key_point = LearnKeyPoint::find($item['id']);
+                            if ($key_point->name != @$item['name'] ){
+                                $key_point->name = @$item['name'];
+                                $key_point->updated_at = $now;
+                                $updated_learn_key_points[$key_point->id] = [
+                                    'name'=> @$item['name'],
+                                    'updated_at' => $now,
+                                ];
+                            }
                         } else {
                             $key_point = new LearnKeyPoint();
+                            $key_point->name = @$item['name'];
+                            $key_point->updated_at = $now;
+                            // $key_point->course_id = $course->id;
+                            $key_point->save();
+                            $new_learn_key_points[] = $key_point->id;
                         }
-                        // $key_point->course_id = $course->id;
-                        $key_point->name = @$item['name'];
-                        $key_point->updated_at = $now;
-                        $key_point->save();
-                        $new_learn_key_points[] = $key_point->id;
+
                     }
                 }
             }
         }
         $data['new_learn_key_points'] = $new_learn_key_points;
+        $data['updated_learn_key_points'] = $updated_learn_key_points;
         $data['course_instructors'] = isset($data['course_instructors']) ? $data['course_instructors'] : [];
         $data['tags'] = isset($data['tags']) ? $data['tags'] : [];
         $course_version->details = $data;
@@ -439,7 +450,7 @@ class CourseController extends Controller
 
                 if ($course->user_id != auth()->id()) {
                     //TODO: notify from here to multi instructor;
-                    $text = __("You have selected as co-instructor");
+                    $text = __("You have been selected as co-instructor");
                     $target_url = route('instructor.multi_instructor');
                     $courseInstructors = $course->course_instructors->where('status', STATUS_PENDING)->where('instructor_id', '!=', $course->user_id);
 
@@ -479,14 +490,14 @@ class CourseController extends Controller
             return redirect()->back();
         }
         $course_delete = CourseDelete::where('course_id', $course->id)->first();
-        if($course_delete){
+        if ($course_delete) {
             $this->showToastrMessage('error', __('You already have a deletion request pending. wait for admin apporval !'));
             return redirect()->back();
-        }else{
+        } else {
             $course_delete = CourseDelete::create([
-                'course_id'=> $course->id,
-                'instructor_id'=> auth()->id(),
-                'reason'=>'',
+                'course_id' => $course->id,
+                'instructor_id' => auth()->id(),
+                'reason' => '',
             ]);
         }
 
@@ -511,16 +522,13 @@ class CourseController extends Controller
             $data = $request->all();
             $courseInstructorIds = [];
             if ($request->instructor_id) {
-
                 $totalShare = array_sum($request->share);
                 if ($totalShare > 100) {
                     $this->showToastrMessage('error', 'The total percentage should not be grater than 100');
                     return back()->withInput();
                 }
-
-                foreach ($data['instructor_id'] as $id => $instructor) {
-
-                    if (!$course_version) {
+                if (!$course_version) {
+                    foreach ($data['instructor_id'] as $id => $instructor) {
                         $courseInstructor = CourseInstructor::updateOrCreate([
                             'instructor_id' => $id,
                             'course_id' => $course->id,
@@ -529,49 +537,50 @@ class CourseController extends Controller
                             'course_id' => $course->id,
                             'share' => $data['share'][$id],
                         ]);
-
                         array_push($courseInstructorIds, $courseInstructor->id);
-                    } else {
+                    }
+                } else {
+                    foreach ($data['instructor_id'] as $id => $instructor) {
                         $details['course_instructors'][$id] = [
                             'instructor_id' => $id,
                             'share' => $data['share'][$id],
                         ];
                     }
                 }
-            } else {
-                $totalShare = 0;
             }
-
-
-            if (!$course_version) {
-
-                $courseInstructor = CourseInstructor::updateOrCreate([
-                    'instructor_id' => $course->user_id,
-                    'course_id' => $course->id,
-                ], [
-                    'instructor_id' => $course->user_id,
-                    'course_id' => $course->id,
-                    'share' => (100 - $totalShare),
-                    'status' => STATUS_ACCEPTED
-                ]);
-                array_push($courseInstructorIds, $courseInstructor->id);
-
-                CourseInstructor::whereNotIn('id', $courseInstructorIds)->where('course_id', $course->id)->delete();
-            } else {
-                $details['course_main_instructor'] = [
-                    'instructor_id' => $course->user_id,
-                    'course_id' => $course->id,
-                    'share' => (100 - $totalShare),
-                ];
-            }
-
-            if ($course_version) {
-                $course_version->details = $details;
-                $course_version->update();
-            }
-
-
-            return redirect(route('instructor.course.edit', [$course->uuid, 'step=submit', 'course_version_id' => $course_version_id]));
+        } else {
+            $totalShare = 0;
         }
+
+
+        if (!$course_version) {
+
+            $courseInstructor = CourseInstructor::updateOrCreate([
+                'instructor_id' => $course->user_id,
+                'course_id' => $course->id,
+            ], [
+                'instructor_id' => $course->user_id,
+                'course_id' => $course->id,
+                'share' => (100 - $totalShare),
+                'status' => STATUS_ACCEPTED
+            ]);
+            array_push($courseInstructorIds, $courseInstructor->id);
+
+            CourseInstructor::whereNotIn('id', $courseInstructorIds)->where('course_id', $course->id)->delete();
+        } else {
+            $details['course_main_instructor'] = [
+                'instructor_id' => $course->user_id,
+                'course_id' => $course->id,
+                'share' => (100 - $totalShare),
+            ];
+        }
+
+        if ($course_version) {
+            $course_version->details = $details;
+            $course_version->update();
+        }
+
+
+        return redirect(route('instructor.course.edit', [$course->uuid, 'step=submit', 'course_version_id' => $course_version_id]));
     }
 }

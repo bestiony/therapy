@@ -30,12 +30,14 @@
                             <li id="organization"><strong>{{ __('Instructor') }}</strong></li>
                             <li id="confirm"><strong>{{ __('Submit process') }}</strong></li>
                         </ul>
-
+                        
                         <div class="upload-course-step-item upload-course-overview-step-item">
                             <!-- Upload Course Overview-2 start -->
                             <form method="POST" action="{{route('organization.course.update.category', [$course->uuid])}}"
                                 enctype="multipart/form-data" class="row g-3 needs-validation" novalidate>
                                 @csrf
+                                <input type="hidden" name="course_version_id" value="{{$course_version_id}}">
+
                                 <div id="upload-course-overview-2">
 
                                     <div class="upload-course-item-block course-overview-step1 radius-8">
@@ -426,7 +428,7 @@
 
                                     </div>
 
-                                    <a href="{{route('organization.course.edit', [$course->uuid, 'step=overview'])}}"
+                                    <a href="{{route('organization.course.edit', [$course->uuid, 'step=overview','course_version_id'=> $course_version_id])}}"
                                         class="theme-btn theme-button3 show-last-phase-back-btn">{{__('Back')}}</a>
                                     <button type="submit" class="theme-btn default-hover-btn theme-button1">{{__('Save
                                         and continue')}}</button>

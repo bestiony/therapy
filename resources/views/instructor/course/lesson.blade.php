@@ -7,15 +7,13 @@
         <!-- Breadcrumb Start-->
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb justify-content-center">
-                <li class="breadcrumb-item font-14"><a href="{{ route('instructor.dashboard') }}">{{ __('Dashboard') }}</a>
-                </li>
+                <li class="breadcrumb-item font-14"><a href="{{ route('instructor.dashboard') }}">{{ __('Dashboard') }}</a></li>
                 <li class="breadcrumb-item font-14"><a href="{{ route('instructor.course') }}">{{ __('My Courses') }}</a></li>
                 <li class="breadcrumb-item font-14 active" aria-current="page">{{ __('Upload Course') }}</li>
             </ol>
         </nav>
     </div>
 @endsection
-
 @section('content')
     @php
         $deleted_lessons = $deleted_lessons ?? (session('deleted_lessons') ?? []);
@@ -367,7 +365,8 @@
                                                                                 <a href="{{ route('upload.lecture', [$course->uuid, $lesson->uuid, 'course_version_id' => $course_version_id]) }}"
                                                                                     class="common-upload-video-btn color-heading font-13 font-medium ms-0 mt-4">
                                                                                     <span class="iconify"
-                                                                                        data-icon="feather:upload-cloud"></span>{{ __('Upload lesson') }}</a>
+                                                                                        data-icon="feather:upload-cloud">
+                                                                                    </span>{{ __('Upload lesson') }}</a>
                                                                             </div>
                                                                         </div>
                                                                     </div>

@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class LearnKeyPoint extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'name',
+        'updated_at'
+    ];
 }

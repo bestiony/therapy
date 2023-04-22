@@ -175,10 +175,19 @@ class CourseController extends Controller
         DB::transaction(function () use ($status, $course_version, $course) {
             if ($status == APPROVED_COURSE_VERSION) {
                 $details = $course_version->details;
-                LearnKeyPoint::
-                whereIn('id', $details['new_learn_key_points'])
-                ->update(['course_id' => $course->id]);
-                LearnKeyPoint::whereNotIn('id', $details['new_learn_key_points'])->where('course_id', $course->id)->delete();
+                $learn_key_point_kept = [];
+                if (isset($details['new_learn_key_points'])) {
+                    LearnKeyPoint::whereIn('id', $details['new_learn_key_points'])
+                        ->update(['course_id' => $course->id]);
+                    $learn_key_point_kept = array_merge($learn_key_point_kept, $details['new_learn_key_points']);
+                }
+                if (isset($details['updated_learn_key_points'])) {
+                    foreach ($details['updated_learn_key_points'] as $key_point_id => $updated_values) {
+                        LearnKeyPoint::find($key_point_id)->update($updated_values);
+                        $learn_key_point_kept[] = $key_point_id;
+                    }
+                }
+                LearnKeyPoint::whereNotIn('id', $learn_key_point_kept)->where('course_id', $course->id)->delete();
 
                 if ($course->image != $details['image']) {
                     $this->deleteFile($course->image);
@@ -192,11 +201,11 @@ class CourseController extends Controller
                 if (isset($details['lessons'])) {
                     Course_lesson::whereIn('id', $details['lessons'])->update(['course_id' => $course->id]);
                 }
-                if (isset($details['lectures'])){
-                    foreach($details['lectures'] as $added_lecture => $related_lesson){
+                if (isset($details['lectures'])) {
+                    foreach ($details['lectures'] as $added_lecture => $related_lesson) {
 
                         $added_lecture_model = Course_lecture::find($added_lecture);
-                        if ($added_lecture_model){
+                        if ($added_lecture_model) {
 
                             $added_lecture_model->update([
                                 'course_id' => $course->id,
@@ -205,22 +214,21 @@ class CourseController extends Controller
                         }
                     }
                 }
-                if (isset($details['updated_lessons'])){
-                    foreach($details['updated_lessons'] as $id => $content){
+                if (isset($details['updated_lessons'])) {
+                    foreach ($details['updated_lessons'] as $id => $content) {
                         $updated_lesson = Course_lecture::findOrFail($id);
-                        foreach($content['deleted_files'] as $file){
+                        foreach ($content['deleted_files'] as $file) {
                             $this->deleteFile($file);
                         }
-                        if (isset($content['delete_vimeo']) && strlen($content['delete_vimeo']) > 0){
+                        if (isset($content['delete_vimeo']) && strlen($content['delete_vimeo']) > 0) {
                             $this->deleteVimeoVideoFile($content['delete_vimeo']);
                         }
                         $updated_lesson->update($content['model']);
                     }
-
                 }
 
-                if (isset($details['updated_course_lessons'])){
-                    foreach($details['updated_course_lessons'] as $updated_course_lesson_id => $updated_course_lesson_content){
+                if (isset($details['updated_course_lessons'])) {
+                    foreach ($details['updated_course_lessons'] as $updated_course_lesson_id => $updated_course_lesson_content) {
                         $updated_course_lesson = Course_lesson::findOrFail($updated_course_lesson_id);
                         $updated_course_lesson->update($updated_course_lesson_content);
                     }
@@ -239,22 +247,22 @@ class CourseController extends Controller
                     $instructors_ids = array_keys($details['course_instructors']);
                     CourseInstructor::whereNotIn('id', $instructors_ids)->where('course_id', $course->id)->delete();
                 }
-                if (isset($details['course_main_instructor'])){
+                if (isset($details['course_main_instructor'])) {
                     CourseInstructor::updateOrCreate([
                         'instructor_id' => $course->user_id,
                         'course_id' => $course->id,
                     ], [
-                        'instructor_id' =>$course->user_id,
-                        'course_id' =>$course->id,
+                        'instructor_id' => $course->user_id,
+                        'course_id' => $course->id,
                         'share' => $details['course_main_instructor']['share'],
-                        'status' => STATUS_ACCEPTED ,
+                        'status' => STATUS_ACCEPTED,
                     ]);
                 }
-                if (isset($details['deleted_lessons'])){
+                if (isset($details['deleted_lessons'])) {
                     Course_lesson::whereIn('id', $details['deleted_lessons'])->delete();
                 }
                 if (isset($details['deleted_lectures'])) {
-                    foreach($details['deleted_lectures'] as $delete_lecture_id){
+                    foreach ($details['deleted_lectures'] as $delete_lecture_id) {
                         $delete_lecture = Course_lecture::find($delete_lecture_id);
                         $this->deleteFile($delete_lecture->file_path);
                         if ($delete_lecture->type == 'vimeo') {
@@ -295,7 +303,7 @@ class CourseController extends Controller
         });
 
         $text = __("You Course's New Version has been apporved by the admin!");
-        $target_url = route('course-details',['slug'=>$course->slug]);
+        $target_url = route('course-details', ['slug' => $course->slug]);
         $this->send($text, 2, $target_url, $course->user_id);
 
         $this->showToastrMessage('success', __('Course Has Been Updated.'));
@@ -496,7 +504,8 @@ class CourseController extends Controller
         $this->showToastrMessage('success', __('Student enroll in course'));
         return redirect()->back();
     }
-    public function approveCourseDelete(CourseDelete $course_delete){
+    public function approveCourseDelete(CourseDelete $course_delete)
+    {
         $course = Course::where('id', $course_delete->course_id)->firstOrFail();
         $order_item = Order_item::whereCourseId($course->id)->first();
         if ($order_item) {
@@ -548,7 +557,8 @@ class CourseController extends Controller
         $this->showToastrMessage('success', __('Course was deleted'));
         return redirect()->back();
     }
-    public function removeCourseDelete( CourseDelete $course_delete){
+    public function removeCourseDelete(CourseDelete $course_delete)
+    {
         $course_delete->delete();
         $this->showToastrMessage('success', __('Course deletion request was removed'));
         return redirect()->back();

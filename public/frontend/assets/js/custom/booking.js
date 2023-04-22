@@ -5,6 +5,7 @@
             var hourly_fee = $(this).data('hourly_fee');
             var hourly_rate = $(this).data('hourly_rate');
             var monthly_rate = $(this).data('monthly_rate');
+            var monthly_rate_pure = $(this).data('monthly_rate-pure');
             console.log(monthly_rate);
             var booking_instructor_user_id = $(this).data('booking_instructor_user_id');
             var available_type = $(this).data('type');
@@ -23,6 +24,7 @@
             $('.hourly_fee').val(hourly_fee);
             $('.hourly_rate').val(hourly_rate);
             $('.monthly_rate').val(monthly_rate);
+            $('.monthly_rate_pure').val(monthly_rate_pure);
             $('.booking_instructor_user_id').val(booking_instructor_user_id);
 
             var getOffDaysRoute = $(this).data('get_off_days_route');

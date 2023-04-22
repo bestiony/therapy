@@ -40,6 +40,7 @@
                                 <input type="text" class="form-control font-medium hourly_fee" disabled
                                     value="0">
                                 <input type="hidden" class="form-control font-medium hourly_rate" value="0">
+                                <input type="hidden" class="form-control font-medium monthly_rate" value="0">
                             </div>
                             <input type="hidden" class="booking_instructor_user_id" value="">
                         </div>
@@ -63,6 +64,7 @@
                                 <input type="text" class="form-control font-medium monthly_rate" disabled
                                     value="0">
                                 <input type="hidden" class="form-control font-medium monthly_rate" value="0">
+                                <input type="hidden" class="form-control font-medium monthly_rate_pure" value="0">
                             </div>
                             <input type="hidden" class="booking_instructor_user_id" value="">
                         </div>

@@ -43,12 +43,14 @@
     "use strict"
     $(document).ready(function () {
         $("input[name='time']").click(function () {
+            console.log(this);
             var time = $("input[name='time']:checked").val();
             var duration = $(this).data('item').duration;
             var hour_duration = $(this).data('item').hour_duration;
             var minute_duration = $(this).data('item').minute_duration;
             var hourly_rate = $('.hourly_rate').val();
-            var monthly_rate = $('.bookSchedule').data('monthly_rate-pure');
+            var monthly_rate = $('.monthly_rate_pure').val();
+            // var monthly_rate = $('.bookSchedule').data('monthly_rate-pure');
             var minuteCost = 0;
             if (minute_duration > 0){
                 minuteCost = (parseFloat(hourly_rate) / (60 / parseFloat(minute_duration)));
@@ -63,6 +65,7 @@
                 cost = ((parseFloat(hour_duration) * parseFloat(hourly_rate)) + minuteCost).toFixed(2)
                 $('.meetingDuration').html(duration)
             } else {
+                // cost = monthly_rate;
                 cost = parseFloat(monthly_rate).toFixed(2);
                 $('.meetingDuration').html("1 Month | first session:"+ duration)
                 $('.booking_note').removeClass('d-none')
@@ -72,7 +75,7 @@
             var currency_placement = "{{ $currencyPlacement ?? get_currency_placement() }}";
             var totalCost = 0;
             if(currency_placement == 'after'){
-                totalCost = cost + ' ' + currency_symbol;
+                totalCost = cost + ' ' + currency_symbol ;
             } else {
                 totalCost = currency_symbol + ' ' + cost ;
             }

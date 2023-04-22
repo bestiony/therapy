@@ -71,7 +71,7 @@
                                 id="bookingNote" placeholder="" value="{{ $organization->availibity_range }}">
                         </div>
                         <div class="alert alert-primary col-sm-6 col-md-3" role="alert">
-                            {{__("clients can't book this many days into the future")}}
+                            {{ __("clients can't book this many days into the future") }}
                         </div>
                         @if ($errors->has('availibity_range'))
                             <span class="text-danger"><i class="fas fa-exclamation-triangle"></i>
@@ -114,8 +114,9 @@
                             class="col-sm-2 col-form-label font-medium color-heading">{{ __('Hourly Old Rate') }}
                             {{ get_currency_symbol() }}</label>
                         <div class="col-sm-6 col-md-3">
-                            <input type="number" step="any" min="0" name="hourly_old_rate" class="form-control"
-                                id="hourlyOldRate" placeholder="Ex.20" value="{{ $organization->hourly_old_rate }}">
+                            <input type="number" step="any" min="0" name="hourly_old_rate"
+                                class="form-control" id="hourlyOldRate" placeholder="Ex.20"
+                                value="{{ $organization->hourly_old_rate }}">
                         </div>
                         @if ($errors->has('hourly_old_rate'))
                             <span class="text-danger"><i class="fas fa-exclamation-triangle"></i>
@@ -123,6 +124,62 @@
                         @endif
                     </div>
 
+                    {{-- monthly rate --}}
+                    <div class="mb-3 row instructor-panel-monthly-rate-box align-items-center">
+                        <label for="monthly_rate"
+                            class="col-sm-2 col-form-label font-medium color-heading">{{ __('Monthly Rate') }}{{ get_currency_symbol() }}</label>
+                        <div class="col-sm-6 col-md-3">
+                            <input type="number" step="any" min="0" name="monthly_rate"
+                                class="form-control" id="monthly_rate" placeholder="Ex.20"
+                                value="{{ $organization->monthly_rate }}">
+                        </div>
+                        @if ($errors->has('monthly_rate'))
+                            <span class="text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                {{ $errors->first('monthly_rate') }}</span>
+                        @endif
+                    </div>
+                    {{-- monthly rate --}}
+
+                    <div class="mb-3 row instructor-panel-monthly-rate-box align-items-center">
+                        <label for="hours_per_month"
+                            class="col-sm-2 col-form-label font-medium color-heading">{{ __('Hours Per Month') }}</label>
+                        <div class="col-sm-6 col-md-3">
+                            <input type="number" step="any" min="0" name="hours_per_month"
+                                class="form-control" id="hours_per_month" placeholder="Ex.20"
+                                value="{{ $organization->hours_per_month }}">
+                        </div>
+                        @if ($errors->has('hours_per_month'))
+                            <span class="text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                {{ $errors->first('hours_per_month') }}</span>
+                        @endif
+                    </div>
+                    <div class="mb-3 row instructor-panel-monthly-rate-box align-items-center">
+                        <label for="monthlyOldRate"
+                            class="col-sm-2 col-form-label font-medium color-heading">{{ __('Monthly Old Rate') }}
+                            {{ get_currency_symbol() }}</label>
+                        <div class="col-sm-6 col-md-3">
+                            <input type="number" step="any" min="0" name="monthly_old_rate"
+                                class="form-control" id="monthlyOldRate" placeholder="Ex.20"
+                                value="{{ $organization->monthly_old_rate }}">
+                        </div>
+                        @if ($errors->has('monthly_old_rate'))
+                            <span class="text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                {{ $errors->first('monthly_old_rate') }}</span>
+                        @endif
+                    </div>
+                    <div class="mb-3 row instructor-panel-monthly-rate-box align-items-center">
+                        <label for="monthlyOldRate"
+                            class="col-sm-2 col-form-label font-medium color-heading">{{ __('Booking Note') }}</label>
+                        <div class="col-sm-6 col-md-3">
+                            <input type="text" step="any" min="0" name="booking_note"
+                                class="form-control" id="bookingNote" placeholder=""
+                                value="{{ $organization->booking_note }}">
+                        </div>
+                        @if ($errors->has('booking_note'))
+                            <span class="text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                {{ $errors->first('booking_note') }}</span>
+                        @endif
+                    </div>
                     <div class="mb-3">
                         <div class="form-check form-switch mb-3">
                             <input class="form-check-input" type="checkbox" id="offlineStatus" name="is_offline"
@@ -141,8 +198,11 @@
                     </div>
                     <div class="mb-3">
                         <div class="form-check form-switch mb-3">
-                            <input class="form-check-input" type="checkbox" id="isSubscriptionEnable" name="is_subscription_enable" value="1" {{ $organization->is_subscription_enable == STATUS_ACCEPTED ? 'checked' : '' }}>
-                            <label class="form-check-label color-heading mb-0" for="isSubscriptionEnable">{{ __('Is Subscription Enable') }}</label>
+                            <input class="form-check-input" type="checkbox" id="isSubscriptionEnable"
+                                name="is_subscription_enable" value="1"
+                                {{ $organization->is_subscription_enable == STATUS_ACCEPTED ? 'checked' : '' }}>
+                            <label class="form-check-label color-heading mb-0"
+                                for="isSubscriptionEnable">{{ __('Is Subscription Enable') }}</label>
                         </div>
                     </div>
 
@@ -334,8 +394,8 @@
 
                             <div class="row slot_field_wrap">
                                 <!-------Note---------
-                                    after add time slot input field color and border color will change. To do that please add class="time_added_field" into input class name
-                                    -------Note--------->
+                                        after add time slot input field color and border color will change. To do that please add class="time_added_field" into input class name
+                                        -------Note--------->
                                 <div class="d-flex">
                                     <div class="col-sm-5 col-md-5">
                                         <div class="input-group add-slot-day-item">

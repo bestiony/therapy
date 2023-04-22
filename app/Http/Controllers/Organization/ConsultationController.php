@@ -42,7 +42,9 @@ class ConsultationController extends Controller
         $organization->hourly_rate = $request->hourly_rate;
         $organization->hourly_old_rate = $request->hourly_old_rate;
         $organization->availibity_range = $request->availibity_range;
-
+        $organization->monthly_rate = $request->monthly_rate;
+        $organization->monthly_old_rate = $request->monthly_old_rate;
+        $organization->booking_note = $request->booking_note;
         $organization->consultancy_area = $request->consultancy_area ?? 3;
         $organization->is_offline = $request->is_offline ?? 0;
         $organization->offline_message = $request->offline_message;

@@ -50,7 +50,7 @@
                                         </td>
                                         <td>
                                             {{__('Name')}}: {{$student->name}}<br>
-                                            {{__('Email')}}: {{$student->user->email}}<br>
+                                            {{__('Email')}}: {{$student->email}}<br>
                                             {{__('Phone')}}: {{$student->phone_number ?? @$student->user->phone_number}}<br>
 
                                         </td>

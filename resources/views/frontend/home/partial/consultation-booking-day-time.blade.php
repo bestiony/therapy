@@ -49,7 +49,7 @@
             var hour_duration = $(this).data('item').hour_duration;
             var minute_duration = $(this).data('item').minute_duration;
             var hourly_rate = $('.hourly_rate').val();
-            var monthly_rate = $('.monthly_rate_pure').val();
+            var monthly_rate = $('.monthly_rate_pure').val() ?? 0;
             // var monthly_rate = $('.bookSchedule').data('monthly_rate-pure');
             var minuteCost = 0;
             if (minute_duration > 0){
@@ -65,8 +65,8 @@
                 cost = ((parseFloat(hour_duration) * parseFloat(hourly_rate)) + minuteCost).toFixed(2)
                 $('.meetingDuration').html(duration)
             } else {
-                // cost = monthly_rate;
-                cost = parseFloat(monthly_rate).toFixed(2);
+                cost = monthly_rate;
+                // cost = parseFloat(monthly_rate).toFixed(2);
                 $('.meetingDuration').html("1 Month | first session:"+ duration)
                 $('.booking_note').removeClass('d-none')
             }

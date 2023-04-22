@@ -48,7 +48,7 @@
             var hour_duration = $(this).data('item').hour_duration;
             var minute_duration = $(this).data('item').minute_duration;
             var hourly_rate = $('.hourly_rate').val();
-            var monthly_rate = $('.bookSchedule').data('monthly_rate-pure');
+            var monthly_rate = $('.monthly_rate_pure')val();
             var minuteCost = 0;
             if (minute_duration > 0){
                 minuteCost = (parseFloat(hourly_rate) / (60 / parseFloat(minute_duration)));

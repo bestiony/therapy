@@ -353,7 +353,7 @@
                                         href="#Discussion" role="tab" aria-controls="Discussion"
                                         aria-selected="false">{{__('Discussion')}}</a>
                                 </li>
-                                <li style="display:none;" class="nav-item" role="presentation">
+                                <li  class="nav-item" role="presentation">
                                     <a class="nav-link text-uppercase" id="Certificate-tab" data-bs-toggle="tab"
                                         href="#Certificate" role="tab" aria-controls="Certificate"
                                         aria-selected="false">{{__('Certificate')}}</a>

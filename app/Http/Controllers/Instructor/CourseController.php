@@ -514,6 +514,7 @@ class CourseController extends Controller
         $course_version_id = $request->course_version_id;
         $course_version = CourseVersion::find($course_version_id);
         $details = $course_version ? $course_version->details : [];
+        $totalShare = 0;
         if ($course->user_id == auth()->id()) {
             $request->validate([
                 'share.*' => 'bail|required|min:0|max:100'

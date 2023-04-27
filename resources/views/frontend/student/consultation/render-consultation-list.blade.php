@@ -15,10 +15,9 @@
             <tbody>
 
             @foreach($orderItems as $orderItem)
-                @if($orderItem->consultation_slot_id)
+                @if($orderItem->consultation_slot_id && $orderItem->consultationSlot)
                     @php
-
-                        $relation = getUserRoleRelation($orderItem->consultationSlot->user)
+                            $relation = getUserRoleRelation($orderItem->consultationSlot->user);
                     @endphp
                 <tr>
                     <td class="wishlist-course-item">
@@ -109,7 +108,7 @@
                                         <h6 class="font-15">{{ __('Instructor Details') }}</h6>
                                         <hr>
                                         <p><h6 class="font-15 d-inline">{{ __('Name') }}</h6>: {{ @$orderItem->bookingHistory->instructorUser->instructor->full_name }}</p>
-                                       
+
                                     </div>
                                 </div>
 

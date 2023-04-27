@@ -47,7 +47,7 @@
                     <li><a href="{{ route('organization.messages') }}" class="{{ @$subNavBookingHistoryActiveClass }}">{{ __('My Messages') }}</a></li>
                 </ul>
             </li>
-            <li style="display:none;"><a href="{{route('organization.certificate.index')}}" class="{{ @$navCertificateActiveClass }}" ><span class="iconify mr-15" data-icon="fluent:certificate-20-regular"></span>{{__('Certificate')}}</a></li>
+            <li ><a href="{{route('organization.certificate.index')}}" class="{{ @$navCertificateActiveClass }}" ><span class="iconify mr-15" data-icon="fluent:certificate-20-regular"></span>{{__('Certificate')}}</a></li>
 
             <li><a href="{{route('organization.discussion.index')}}" class="{{ @$navDiscussionActiveClass }}" ><span class="iconify mr-15" data-icon="octicon:comment-discussion-24"></span>{{__('Discussion')}}</a></li>
             <li><a href="{{route('organization.finance.analysis.index')}}" class="{{ @$navFinanceActiveClass }}" ><span class="iconify mr-15" data-icon="system-uicons:heart-rate"></span>{{__('Finance')}}</a></li>

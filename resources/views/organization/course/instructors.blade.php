@@ -40,11 +40,12 @@
                                 @endif
                             <div class="upload-course-step-item upload-course-overview-step-item">
                                 <div class="row">
+                                    <h1>{{ __('Accept all rules of creating courses and not editing') }}</h1>
                                     @php
                                     $instructors_id =
                                     @$course->course_instructors->pluck('instructor_id')->toArray();
                                     @endphp
-                                    <div class="col-md-12">
+                                    <div class="col-md-12" style="display:none;">
                                         <label class="label-text-title color-heading font-medium font-16 mb-3">{{
                                             __('Other Instructors') }}
                                             <span

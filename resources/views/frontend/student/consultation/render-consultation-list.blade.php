@@ -15,7 +15,9 @@
             <tbody>
 
             @foreach($orderItems as $orderItem)
-                @if($orderItem->consultation_slot_id && $orderItem->consultationSlot)
+                @if($orderItem->consultation_slot_id
+                && $orderItem->consultationSlot
+                )
                     @php
                             $relation = getUserRoleRelation($orderItem->consultationSlot->user);
                     @endphp

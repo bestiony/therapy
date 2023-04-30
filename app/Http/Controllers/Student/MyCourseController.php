@@ -89,7 +89,10 @@ class MyCourseController extends Controller
 
         $orderIds = array_merge($paidOrderIds, $freeOrderIds);
 
-        $data['orderItems'] = Order_item::whereIn('order_id', $orderIds);
+        $data['orderItems'] = Order_item::with([
+            'consultationSlot' => function ($query) {
+                $query->withTrashed();
+        }])->whereIn('order_id', $orderIds);
 
         if ($request->ajax()) {
             $sortByID = $request->sortByID; // 1=newest, 2=Oldest

@@ -33,7 +33,10 @@ class Organization extends Model
         'cv_filename',
         'level_id',
         'lat',
-        'long'
+        'long',
+        'intro_video_check',
+        'youtube_video_id',
+        'video',
     ];
 
     public function user()
@@ -48,7 +51,7 @@ class Organization extends Model
 
     public function getFullNameAttribute($value)
     {
-        return $this->first_name.' '.$this->last_name;
+        return $this->first_name . ' ' . $this->last_name;
     }
 
     public function courses()
@@ -99,7 +102,7 @@ class Organization extends Model
 
     public function getNameAttribute()
     {
-        return $this->first_name .' '. $this->last_name;
+        return $this->first_name . ' ' . $this->last_name;
     }
 
     public function scopePending($query)
@@ -130,11 +133,8 @@ class Organization extends Model
     protected static function boot()
     {
         parent::boot();
-        self::creating(function($model){
+        self::creating(function ($model) {
             $model->uuid =  Str::uuid()->toString();
         });
     }
-
-
-
 }

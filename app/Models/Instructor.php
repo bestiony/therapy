@@ -36,6 +36,9 @@ class Instructor extends Model
         'status',
         'long',
         'user_category_id',
+        'intro_video_check',
+        'youtube_video_id',
+        'video',
     ];
 
     public function user()
@@ -146,14 +149,14 @@ class Instructor extends Model
         });
         static::created(function ($model) {
             ZoomSetting::create([
-                'user_id'=> $model->user->id,
-                'api_key'=> "000000",
-                'api_secret'=> "000000",
-                'timezone'=> session('timezone') ?? config('timezone'),
-                'host_video'=> 1,
-                'participant_video'=> 1,
-                'waiting_room'=> 1,
-                'status'=> 1,
+                'user_id' => $model->user->id,
+                'api_key' => "000000",
+                'api_secret' => "000000",
+                'timezone' => session('timezone') ?? config('timezone'),
+                'host_video' => 1,
+                'participant_video' => 1,
+                'waiting_room' => 1,
+                'status' => 1,
             ]);
         });
     }

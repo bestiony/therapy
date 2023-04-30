@@ -218,7 +218,9 @@ class MainIndexController extends Controller
             $data['instructors'] = User::join('instructors as ins', 'ins.user_id', '=', 'users.id')->where('ins.status', STATUS_APPROVED)->where('organization_id', $data['user']->organization->id)->select('*', 'users.id')->paginate(12);
             $data['consultationInstructors'] = User::join('instructors as ins', 'ins.user_id', '=', 'users.id')->where('ins.status', STATUS_APPROVED)->where('ins.consultation_available', STATUS_APPROVED)->where('organization_id', $data['user']->organization->id)->select('*', 'users.id')->paginate(12);
         }
-
+        $data['intro_video_check'] = $user->$userRelation->intro_video_check;
+        $data['youtube_video_id'] = $user->$userRelation->youtube_video_id;
+        $data['video'] = $user->$userRelation->video;
         return view('frontend.user-details', $data);
     }
 

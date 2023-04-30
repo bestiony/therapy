@@ -66,6 +66,18 @@ class ProfileController extends Controller
             $image = $user->image;
         }
 
+        if ($request->video) {
+
+            $file_details = $this->uploadFileWithDetails('organization', $request->video);
+            if (!$file_details['is_uploaded']) {
+                $this->showToastrMessage('error', __('Something went wrong! Failed to upload file'));
+                return redirect()->back();
+            }
+            $video = $file_details['path'];
+        } else {
+            $video = $user->video;
+        }
+
         $user->name = $request->first_name . ' ' . $request->last_name;
         $user->image = $image;
         $user->languages = $request->languages;
@@ -79,6 +91,9 @@ class ProfileController extends Controller
             'about_me' => $request->about_me,
             'social_link' => json_encode($request->social_link),
             'gender' => $request->gender,
+            'intro_video_check' => $request->intro_video_check,
+            'youtube_video_id' => $request->youtube_video_id,
+            'video' => $video,
         ];
 
         $organization = $this->model->updateByUuid($organization, $uuid); // update category

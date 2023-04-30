@@ -183,6 +183,55 @@
                     </div>
                 </div>
             </div>
+
+            <div class="row align-items-center">
+                <div class="col-12">
+                    <label
+                        class="label-text-title color-heading font-medium font-16 mb-3">{{ __('Introductory Video') }}
+                        ({{ __('Optional') }})</label>
+                </div>
+                <div class="col-md-12 mb-30">
+                    <input type="radio" {{ $organization->intro_video_check == 1 ? 'checked' : '' }} id="video_check"
+                        class="intro_video_check" name="intro_video_check" value="1">
+                    <label for="video_check">{{ __('Video Upload') }}</label><br>
+                    <input type="radio" {{ $organization->intro_video_check == 2 ? 'checked' : '' }} id="youtube_check"
+                        class="intro_video_check" name="intro_video_check" value="2">
+                    <label for="youtube_check">{{ __('Youtube Video') }} ({{ __('write only video Id') }})</label><br>
+                </div>
+                <div class="col-md-12 mb-30">
+                    <input type="file" name="video" id="video" accept="video/mp4" class="form-control d-none">
+                    <input type="text" name="youtube_video_id" id="youtube_video_id"
+                        placeholder="{{ __('Type your youtube video ID') }}" value="{{ $organization->youtube_video_id }}"
+                        class="form-control d-none">
+                </div>
+                @if ($organization->video)
+                    <div class="col-md-12 mb-30 d-none videoSource">
+                        <div class="video-player-area ">
+                            <video id="player" playsinline controls data-poster="{{ getImageFile(@$organization->image) }}"
+                                controlsList="nodownload">
+                                <source src="{{ getVideoFile(@$organization->video) }}" type="video/mp4">
+                            </video>
+                        </div>
+                    </div>
+                @endif
+                @if ($organization->youtube_video_id)
+                    <div class="col-md-12 mb-30 d-none videoSourceYoutube">
+                        <div class="video-player-area ">
+                            <div class="plyr__video-embed" id="playerVideoYoutube">
+                                <iframe src="https://www.youtube.com/embed/{{ @$organization->youtube_video_id }}"
+                                    allowfullscreen allowtransparency allow="autoplay">
+                                </iframe>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+                @if ($errors->has('video'))
+                    <span class="text-danger"><i class="fas fa-exclamation-triangle"></i>
+                        {{ $errors->first('video') }}</span>
+                @endif
+            </div>
+
             <div class="instructor-profile-info-box">
                 <h6 class="instructor-info-box-title">{{__('Certifications')}}</h6>
                 <div class="certificates">
@@ -311,5 +360,33 @@
          $('.select2').select2({
             width: '100%'
         });
+    </script>
+    <script>
+        "use strict"
+        $(function (){
+            var intro_video_check = "{{ $organization->intro_video_check }}";
+            console.log(intro_video_check)
+            introVideoCheck(intro_video_check);
+        })
+        $(".intro_video_check").click(function(){
+            var intro_video_check = $("input[name='intro_video_check']:checked").val();
+            introVideoCheck(intro_video_check);
+        });
+
+        function introVideoCheck(intro_video_check){
+            if(intro_video_check == 1){
+                $('#video').removeClass('d-none');
+                $('.videoSource').removeClass('d-none');
+                $('.videoSourceYoutube').addClass('d-none');
+                $('#youtube_video_id').addClass('d-none');
+            }
+
+            if(intro_video_check == 2){
+                $('#video').addClass('d-none');
+                $('.videoSource').addClass('d-none');
+                $('.videoSourceYoutube').removeClass('d-none');
+                $('#youtube_video_id').removeClass('d-none');
+            }
+        }
     </script>
 @endpush

@@ -404,11 +404,11 @@
                                     @if (@$user->$userRelation->consultation_available == 1)
                                         @php $hourly_fee = 0; @endphp
                                         @if (get_currency_placement() == 'after')
-                                            @php$hourly_fee = @$user->$userRelation->hourly_rate . ' ' . get_currency_symbol() . '/h';
-                                                                                                                                            @endphp ?> ?>
+                                            @php $hourly_fee = @$user->$userRelation->hourly_rate . ' ' . get_currency_symbol() . '/h';
+                                                                                                                                            @endphp
                                         @else
-                                            @php$hourly_fee = get_currency_symbol() . ' ' . @$user->$userRelation->hourly_rate . '/h';
-                                                                                                                                            @endphp ?> ?>
+                                            @php $hourly_fee = get_currency_symbol() . ' ' . @$user->$userRelation->hourly_rate . '/h';
+                                                                                                                                            @endphp
                                         @endif
                                         <div class="instructor-bottom-item mt-20">
                                             <button type="button"

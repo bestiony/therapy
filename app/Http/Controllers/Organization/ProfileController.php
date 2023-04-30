@@ -93,8 +93,10 @@ class ProfileController extends Controller
             'gender' => $request->gender,
             'intro_video_check' => $request->intro_video_check,
             'youtube_video_id' => $request->youtube_video_id,
-            'video' => $video,
         ];
+        if ($request->video && !$video) {
+            $organization['video'] = $video;
+        }
 
         $organization = $this->model->updateByUuid($organization, $uuid); // update category
 

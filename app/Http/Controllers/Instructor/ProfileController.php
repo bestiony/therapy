@@ -80,7 +80,7 @@ class ProfileController extends Controller
         $user->name = $request->first_name . ' ' . $request->last_name;
         $user->image = $image;
         $user->languages = $request->languages;
-        
+
         $user->save();
 
         $instructor_date = [
@@ -93,9 +93,10 @@ class ProfileController extends Controller
             'gender' => $request->gender,
             'intro_video_check' => $request->intro_video_check,
             'youtube_video_id' => $request->youtube_video_id,
-            'video' => $video,
         ];
-
+        if ($request->video && !$video){
+            $instructor_date['video'] = $video;
+        }
         $instructor = $this->model->updateByUuid($instructor_date, $uuid); // update category
 
         $instructor->skills()->sync($request->skills); // Skills

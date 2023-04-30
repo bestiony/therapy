@@ -39,7 +39,11 @@ use Peopleaps\Scorm\Model\ScormModel;
 class MyCourseController extends Controller
 {
     use ImageSaveTrait, General;
-
+    const MAX_WAIT_TIME = 300;
+    public function __construct()
+    {
+        ini_set('max_execution_time', self::MAX_WAIT_TIME);
+    }
     public function myLearningCourseList(Request $request)
     {
         $data['pageTitle'] = 'My Learning Courses';
@@ -300,6 +304,7 @@ class MyCourseController extends Controller
                             $course_lecture_views = new Course_lecture_views();
                             $course_lecture_views->course_id = $lecture->course_id;
                             $course_lecture_views->course_lecture_id = $lecture->id;
+                            $course_lecture_views->enrollment_id = $data['enrollment']->id;
                             $course_lecture_views->save();
                         }
                     }
@@ -313,6 +318,8 @@ class MyCourseController extends Controller
                             $course_lecture_views = new Course_lecture_views();
                             $course_lecture_views->course_id = $lecture->course_id;
                             $course_lecture_views->course_lecture_id = $lecture->id;
+                            $course_lecture_views->enrollment_id = $data['enrollment']->id;
+
                             $course_lecture_views->save();
                         }
                     }
@@ -327,6 +334,7 @@ class MyCourseController extends Controller
                             $course_lecture_views = new Course_lecture_views();
                             $course_lecture_views->course_id = $lecture->course_id;
                             $course_lecture_views->course_lecture_id = $lecture->id;
+                            $course_lecture_views->enrollment_id = $data['enrollment']->id;
                             $course_lecture_views->save();
                         }
                     }
@@ -338,11 +346,12 @@ class MyCourseController extends Controller
                 }
 
                 $data['lecture_type'] = $lecture->type;
-                $data['lesson_id_check'] = @$lecture->lesson->id;
-                $data['lecture_id_check'] = $lecture->id;
+
                 $data['navLessonActive'] = 'on';
                 $data['subNavLectureActiveClass'] = 'show';
             }
+            $data['lesson_id_check'] = @$lecture->lesson->id;
+            $data['lecture_id_check'] = $lecture->id;
         }
 
         return view('frontend.student.course.course-details', $data);

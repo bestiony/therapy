@@ -206,7 +206,13 @@
                                                     $lock = checkStudentCourseIsLock($course_lecture_views, $course, $lecture, $enrollment, $loop->first);
                                                     @endphp
                                                     <div
-                                                        class="play-list-item @if(checkStudentCourseView($course_lecture_views, $course->id, $lecture->id)) watchFinishedCourse @elseif($lecture->id == @$lecture_id_check) watchContinuingCourse @endif d-flex align-items-center justify-content-between font-15">
+                                                        class="play-list-item
+                                                        @if(checkStudentCourseView($course_lecture_views, $course->id, $lecture->id))
+                                                        watchFinishedCourse
+                                                        @elseif($lecture->id == @$lecture_id_check)
+                                                        watchContinuingCourse
+                                                        @endif
+                                                        d-flex align-items-center justify-content-between font-15">
                                                         <div class="play-list-left d-flex align-items-center">
                                                             <div>
                                                                 @if($lecture->id == @$lecture_id_check)
@@ -298,6 +304,9 @@
                         </div>
                         <div class="course-watch-inner-title-right-part">
                             <!-- Button trigger modal -->
+                            <a type="button" class="bg-transparent theme-btn color-heading mb-3"
+                                onclick="callCompleteCourse()">{{__('Finish')}} 
+                            </a>
                             <button type="button" class="bg-transparent theme-btn color-heading mb-3"
                                 data-bs-toggle="modal" data-bs-target="#writeReviewModal">{{__('Write a review')}}
                             </button>
@@ -439,7 +448,6 @@
     </div>
     <!--Write Review Modal End-->
 </div>
-
 <input type="hidden" class="course_id" value="{{ @$course->id}}">
 <input type="hidden" class="normalVideoSource" value="{{ @$video_src }}">
 <input type="hidden" class="youTubeVideoSource" value="{{ @$youtube_video_src }}">

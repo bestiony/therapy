@@ -72,6 +72,7 @@ class MainIndexController extends Controller
                 })
                 ->with('badges')
                 ->select('users.*', 'ins.organization_id', DB::raw(selectStatement()))
+                ->orderBy('ins.rank', 'ASC')
                 ->paginate(12);
             $data['bundles'] = Bundle::with('bundleCourses')->with('user.instructor.ranking_level')->active()->latest()->take(12)->get();
             $data['consultationInstructors'] = User::query()
@@ -215,7 +216,12 @@ class MainIndexController extends Controller
             $data['pageTitle'] = __('About Student');
         }
         if ($data['user']->role == USER_ROLE_ORGANIZATION) {
-            $data['instructors'] = User::join('instructors as ins', 'ins.user_id', '=', 'users.id')->where('ins.status', STATUS_APPROVED)->where('organization_id', $data['user']->organization->id)->select('*', 'users.id')->paginate(12);
+            $data['instructors'] = User::join('instructors as ins', 'ins.user_id', '=', 'users.id')
+            ->where('ins.status', STATUS_APPROVED)
+            ->where('organization_id', $data['user']->organization->id)
+            ->select('*', 'users.id')
+            ->orderBy('ins.rank', 'ASC')
+            ->paginate(12);
             $data['consultationInstructors'] = User::join('instructors as ins', 'ins.user_id', '=', 'users.id')->where('ins.status', STATUS_APPROVED)->where('ins.consultation_available', STATUS_APPROVED)->where('organization_id', $data['user']->organization->id)->select('*', 'users.id')->paginate(12);
         }
         $data['intro_video_check'] = $user->$userRelation->intro_video_check;

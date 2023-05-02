@@ -52,12 +52,13 @@
                                     <div
                                         class="blog-item-tag position-absolute font-12 font-semi-bold text-white bg-hover radius-3">{{ __(@$blog->category->name) }}</div>
                                 </div>
-
+                                
+                                
                                 <div class="blog-item-bottom-part blog-details-content-wrap">
                                     <h3 class="card-title blog-title">{{ __($blog->title) }}</h3>
                                     <p class="blog-author-name-publish-date font-13 font-medium color-gray">{{ $blog->user->name }}
                                         / {{ $blog->created_at->format(' j  M, Y')  }}</p>
-                                    <p class="card-text blog-content">{!! $blog->details !!}</p>
+                                    <p class="card-text blog-content">{!! $blog->details  !!}</p>
 
 
                                 </div>

@@ -77,7 +77,10 @@
 
                             <div class="input__group mb-25">
                                 <label>{{__('Details')}} <span class="text-danger">*</span></label>
-                                <textarea name="details" id="summernote">{{$blog->details}}</textarea>
+                                <!--<textarea name="details" id="summernote">{{$blog->details}}</textarea>-->
+                                
+                                <textarea name="details" id="summernote">{!! $blog->details !!}</textarea>
+                                
 
                                 @if ($errors->has('details'))
                                     <span class="text-danger"><i class="fas fa-exclamation-triangle"></i> {{ $errors->first('details') }}</span>
@@ -164,7 +167,10 @@
     <script src="{{ asset('common/js/summernote/summernote-lite.min.js') }}"></script>
     <script>
         $(document).ready(function() {
-            $("#summernote").summernote({dialogsInBody: true});
+            /*$("#summernote").summernote({dialogsInBody: true});*/
+            
+            $("#summernote").summernote();
+            
             $('.dropdown-toggle').dropdown();
         });
     </script>

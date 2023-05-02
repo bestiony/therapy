@@ -81,6 +81,16 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="input__group mb-25">
+                                    <label>{{__('Rank')}} <span class="text-danger">*</span></label>
+                                    <input type="text" name="rank" value="{{$instructor->rank}}" placeholder="{{__('Rank')}}" class="form-control"
+                                           required>
+                                    @if ($errors->has('rank'))
+                                        <span class="text-danger"><i class="fas fa-exclamation-triangle"></i> {{ $errors->first('rank') }}</span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input__group mb-25">
                                     <label class="label-text-title color-heading font-medium font-16 mb-3">{{ __('Area
                                         Code')
                                         }} <span class="text-danger">*</span></label>

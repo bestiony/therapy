@@ -273,6 +273,7 @@ class InstructorController extends Controller
             'address' => 'required',
             'user_category_id' => 'required',
             'gender' => 'required',
+            'rank' => 'required',
             'about_me' => 'required',
             'image' => 'mimes:jpeg,png,jpg|file|dimensions:min_width=300,min_height=300,max_width=300,max_height=300|max:1024'
         ]);
@@ -319,6 +320,7 @@ class InstructorController extends Controller
             'city_id' => $request->city_id,
             'gender' => $request->gender,
             'about_me' => $request->about_me,
+            'rank' => $request->rank,
             'postal_code' => $request->postal_code,
             'social_link' => json_encode($request->social_link),
         ];

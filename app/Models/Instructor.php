@@ -39,6 +39,7 @@ class Instructor extends Model
         'intro_video_check',
         'youtube_video_id',
         'video',
+        'rank',
     ];
 
     public function user()

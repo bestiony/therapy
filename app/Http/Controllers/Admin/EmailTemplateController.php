@@ -120,7 +120,6 @@ class EmailTemplateController extends Controller
             $user_ids = Student::pluck('user_id')->toArray();
             $to_mails = User::whereIn('id', $user_ids)->pluck('email')->toArray();
         }
-
         if ($request->sender_type == 'from_csv')
         {
          $request->validate([

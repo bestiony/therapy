@@ -78,11 +78,26 @@ class LessonController extends Controller
         return redirect()->back();
     }
 
-    public function deleteLesson($lesson_uuid)
+    public function deleteLesson(Request $request, $lesson_uuid)
     {
-        $this->model->deleteByUuid($lesson_uuid);
+        $deleted_lessons = [];
+        $course_version_id = $request->course_version_id;
+        $lesson = $this->model->getRecordByUuid($lesson_uuid);
+        if (!$course_version_id) {
+            Course_lecture::where('lesson_id', $lesson->id)->delete();
+            $this->model->deleteByUuid($lesson_uuid);
+        } else {
+            $course_version = CourseVersion::find($course_version_id);
+            $details = $course_version->details;
+            $details['deleted_lessons'][] = $lesson->id;
+            $course_version->details = $details;
+            $course_version->save();
+            $deleted_lessons = Course_lesson::whereIn('id', $details['deleted_lessons'])->pluck('uuid')->toArray();
+        }
         $this->showToastrMessage('success', __('Deleted successful'));
-        return redirect()->back();
+        return redirect()->back()->with('deleted_lessons', $deleted_lessons);
+
+
     }
 
 

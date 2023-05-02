@@ -298,21 +298,21 @@ class MainIndexController extends Controller
             })
             ->whereNull('ins.organization_id')
             ->select('users.*', 'ins.organization_id', DB::raw(selectStatement()))
+            ->orderBy('ins.rank')
             ->paginate(30);
-
         $mapArray = array();
-        foreach ($users as $user) {
-            if ($user->lat && $user->long) {
-                array_push($mapArray, [
-                    'coordinates' => ['long' => $user->long, 'lat' => $user->lat],
-                    "properties" => [
-                        'image' => getImageFile($user->image_path),
-                        'name' => $user->name,
-                        'popup' => view('components.frontend.instructor', ['user' => $user, 'type' => INSTRUCTOR_CARD_TYPE_THREE])->render()
-                    ]
-                ]);
-            }
-        }
+        // foreach ($users as $user) {
+        //     if ($user->lat && $user->long) {
+        //         array_push($mapArray, [
+        //             'coordinates' => ['long' => $user->long, 'lat' => $user->lat],
+        //             "properties" => [
+        //                 'image' => getImageFile($user->image_path),
+        //                 'name' => $user->name,
+        //                 'popup' => view('components.frontend.instructor', ['user' => $user, 'type' => INSTRUCTOR_CARD_TYPE_THREE])->render()
+        //             ]
+        //         ]);
+        //     }
+        // }
 
         $data['countries'] = Country::all();
         $data['states'] = State::all();
@@ -466,9 +466,9 @@ class MainIndexController extends Controller
             $users->whereJsonContains('languages', $request->language_ids);
         }
         if ($request->sort_by) {
-            $users->orderBy('users.created_at', $request->sort_by);
+            $users->orderBy('ins.rank', $request->sort_by);
         } else {
-            $users->orderBy('users.created_at', 'ASC');
+            $users->orderBy('ins.rank', 'ASC');
         }
         $users->whereNull('ins.organization_id');
         $users->groupBy('users.id');

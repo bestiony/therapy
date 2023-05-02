@@ -47,8 +47,8 @@
                                     <div class="filter-box-short-icon color-gray font-15"><p>{{ __('Sort By') }}:</p></div>
                                     <select class="form-select form-select-sm filterSortBy" name="sort_by" onchange="filterData()">
                                         <option value="" selected>{{ __('Default') }}</option>
-                                        <option value="asc">{{ __('Newest') }}</option>
-                                        <option value="desc">{{ __('Oldest') }}</option>
+                                        <option value="asc">{{ __('Highest to Lowest Rank') }}</option>
+                                        <option value="desc">{{ __('Lowest to Highest Rank') }}</option>
                                     </select>
                                 </div>
                                  <div class="hidden-lg filter-box-short-icon color-gray font-15"><p><a href="#filtteer">{{ __('Filter') }} </a></p></div>

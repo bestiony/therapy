@@ -59,7 +59,7 @@ class LessonController extends Controller
 
         $this->showToastrMessage('success', __('Created successful.'));
         // dd($returned_data);
-        // edited lessons var's misson is only to separate them in the view and allow the instructor
+        // edited lessons var's mission is only to separate them in the view and allow the instructor
         // to see his new added lessons and his old ones
         return redirect()->back()->with('edited_lessons', $edited_lessons);
     }
@@ -89,10 +89,11 @@ class LessonController extends Controller
     {
         $deleted_lessons = [];
         $course_version_id = $request->course_version_id;
+        $lesson = $this->model->getRecordByUuid($lesson_uuid);
         if(!$course_version_id){
+            Course_lecture::where('lesson_id', $lesson->id)->delete();
             $this->model->deleteByUuid($lesson_uuid);
         } else{
-            $lesson = $this->model->getRecordByUuid($lesson_uuid);
             $course_version = CourseVersion::find($course_version_id);
             $details = $course_version->details;
             $details['deleted_lessons'][] = $lesson->id;

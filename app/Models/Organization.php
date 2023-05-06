@@ -137,4 +137,7 @@ class Organization extends Model
             $model->uuid =  Str::uuid()->toString();
         });
     }
+    public function instructors(){
+        return $this->hasMany(Instructor::class);
+    }
 }

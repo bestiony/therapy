@@ -10,6 +10,7 @@
                 <ul class="account-sub-menu">
                     <li><a href="{{ route('organization.instructor.index') }}" class="{{@$subNavInstructorIndexActiveClass}}">{{ __('All Instructor') }}</a></li>
                     <li><a href="{{ route('organization.instructor.create') }}" class="{{@$subNavInstructorAddActiveClass}}">{{ __('Add Instructor') }}</a></li>
+                    <li><a href="{{ route('organization.organization_messages_index') }}" class="{{@$subNavInstructorMessagesActiveClass}}">{{ __('Instructor Messages') }}</a></li>
                 </ul>
             </li>
             <li class="menu-has-children current-menu-item {{@$navStudentActiveClass}}">

@@ -30,7 +30,7 @@ Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashbo
  Route::post('my-messages/send',[MessagesController::class,'therapsit_sends_message'])->name('send_message');
  Route::post('my-messages/stop',[MessagesController::class,'therapsit_stop_conversation'])->name('stop-conversation');
  Route::post('my-messages/resume',[MessagesController::class,'therapsit_resume_conversation'])->name('resume-conversation');
-
+ Route::get('my-messages/instructors',[MessagesController::class, 'organization_index'])->name('organization_messages_index');
  //End:: messages
 Route::prefix('instructor')->group(function () {
     Route::get('/', [InstructorController::class, 'index'])->name('instructor.index');

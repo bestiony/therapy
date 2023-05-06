@@ -217,5 +217,27 @@ class MessagesController extends Controller
         $data['user'] = $user;
         return view('admin.messages.index',$data);
     }
+
+    public function organization_index(Request $request){
+        $user = auth()->user();
+        if ($user->role !=  USER_ROLE_ORGANIZATION) {
+            return back();
+        }
+        $selected_conversation = $request->convo;
+        $user = auth()->user();
+        if ($user->role != USER_ROLE_ORGANIZATION) {
+            return back();
+        }
+        $org_therapists = $user->organization->instructors->pluck('user_id')->toArray();
+        $data['conversations'] = Conversation::with(['messages', 'therapist', 'patient', 'order'])->whereIn('therapist_id', $org_therapists)->orderBy('id', 'desc')->get();
+        $data['navInstructorActiveClass'] = 'has-open';
+
+        $data['subNavInstructorMessagesActiveClass'] = 'active';
+        $data['selected_conversation'] = $selected_conversation;
+        $data['current_conversation'] = Conversation::find($selected_conversation);
+        $data['messages'] = Messages::whereConversationId($selected_conversation)->get();
+        $data['user'] = $user;
+        return view('organization.messages.instructors_index', $data);
+    }
 }
 

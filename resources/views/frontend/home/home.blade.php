@@ -282,7 +282,53 @@
         </div>
     </section>
     <!-- FAQ Area End -->
+   @if(!get_option('private_mode') || !auth()->guest())
+    @if(count($consultationInstructors) > 0)
+    <!-- One to One Consultation Area Start -->
+    <section class="courses-area courses-bundels-area one-to-one-consultation-area section-t-space section-b-85-space bg-page {{ @$home->consultation_area == 1 ? '' : 'd-none' }}">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <!-- section-left-align-->
+                    <div class="section-left-title-with-btn d-flex justify-content-between align-items-end">
+                        <div class="section-title section-title-left d-flex align-items-start">
+                            <div class="section-heading-img">
+                                <img src="{{ asset('uploads_demo/about_us_general/team-members-heading-img.png') }}" alt="Consultant">
+                            </div>
+                            <div>
+                                <h3 class="section-heading">{{ __('One to one consultation') }}</h3>
+                                <p class="section-sub-heading">{{ __('Consult with your favorite consultant!') }}</p>
+                            </div>
+                        </div>
+                        <a href="{{ route('consultationInstructorList') }}" class="theme-btn theme-button2 theme-button3">{{ __('View All') }} <i data-feather="arrow-right"></i></a>
+                    </div>
+                    <!-- section-left-align-->
+                </div>
+            </div>
 
+            <!-- One to one consultation Slider start -->
+            <div class="row">
+                <div class="col-12">
+                    <!-- Consultation instructor slider items wrap -->
+                    <div class="course-slider-items one-to-one-slider-items owl-carousel owl-theme">
+                        @foreach($consultationInstructors as $instructorUser)
+                            <!-- Course item start -->
+                            <div class="col-12 col-sm-4 col-lg-3 w-100 mt-0 mb-25">
+                                <x-frontend.instructor :user="$instructorUser" :type=INSTRUCTOR_CARD_TYPE_TWO />
+                            </div>
+                            <!-- Course item end -->
+                        @endforeach
+                    </div>
+                    <!-- Consultation instructor slider items wrap -->
+                </div>
+            </div>
+            <!-- One to one consultation Slider end -->
+
+        </div>
+    </section>
+    <!-- One to One Consultation Area End -->
+    @endif
+    @endif
     <!-- Video Area Start -->
     <section class="video-area {{ @$home->video_area == 1 ? '' : 'd-none' }}"
         style="padding-top:88px;background:#fafafa;">

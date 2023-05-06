@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\EmailTemplateRequest;
 use App\Http\Requests\Admin\SendMailRequest;
+use App\Jobs\SendEmailJob;
 use App\Mail\SendMailToUser;
 use App\Models\Email_template;
 use App\Models\Instructor;
@@ -159,7 +160,11 @@ class EmailTemplateController extends Controller
             try {
 
                 $template = Email_template::find($request->email_template_id);
-                Mail::to(array_filter($to_mails))->send(new SendMailToUser($template));
+                foreach($to_mails as $email){
+                    SendEmailJob::dispatch($email, $template);
+                    // Mail::to($email)->send(new SendMailToUser($template));
+                }
+                // Mail::to(array_filter($to_mails))->send(new SendMailToUser($template));
 
                 $this->showToastrMessage('success', __('Mail successfully send'));
                 return redirect()->back();

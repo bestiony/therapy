@@ -276,7 +276,7 @@ class MainIndexController extends Controller
             ->leftJoin('instructors as ins', 'ins.user_id', '=', 'users.id')
             ->leftJoin('organizations as org', 'org.user_id', '=', 'users.id')
             ->whereIn('users.role', [USER_ROLE_INSTRUCTOR])
-            ->whereNull('ins.organization_id')
+            // ->whereNull('ins.organization_id')
             ->where(function ($q) {
                 $q->where('ins.status', STATUS_APPROVED)
                     ->orWhere('org.status', STATUS_APPROVED);
@@ -302,7 +302,7 @@ class MainIndexController extends Controller
                 $q->where('ins.status', STATUS_APPROVED);
                 // ->orWhere('org.status', STATUS_APPROVED);
             })
-            ->whereNull('ins.organization_id')
+            // ->whereNull('ins.organization_id')
             ->select('users.*', 'ins.organization_id', DB::raw(selectStatement()))
             ->orderBy('ins.rank')
             ->paginate(30);
@@ -363,7 +363,7 @@ class MainIndexController extends Controller
             ->leftJoin('instructors as ins', 'ins.user_id', '=', 'users.id')
             // ->leftJoin('organizations as org', 'org.user_id', '=', 'users.id')
             ->whereIn('users.role', [USER_ROLE_INSTRUCTOR])
-            ->whereNull('ins.organization_id')
+            // ->whereNull('ins.organization_id')
             ->where('ins.status', STATUS_APPROVED)
             // ->orWhere('org.status', STATUS_APPROVED)
 
@@ -476,7 +476,7 @@ class MainIndexController extends Controller
         } else {
             $users->orderBy('ins.rank', 'ASC');
         }
-        $users->whereNull('ins.organization_id');
+        // $users->whereNull('ins.organization_id');
         $users->groupBy('users.id');
         $users = $users->select(
             'users.id',

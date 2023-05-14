@@ -313,10 +313,10 @@
                                             <button type="button" class="green-theme-btn theme-button1 follow-btn"
                                                 id="unAuthBtnId">{{ __('Follow') }}</button>
                                         @endauth
-                                        @if($user->role == USER_ROLE_PARENT)
-                                        <hr>
-                                        <a href="{{route('start_chat_with_parent',['user'=>$user->id])}}" class="green-theme-btn theme-button1 "
-                                            >{{ __('Chat') }}</a>
+                                        @if ($user->role == USER_ROLE_PARENT && $user->certified_parent->consultation_available == 1)
+                                            <hr>
+                                            <a href="{{ route('start_chat_with_parent', ['user' => $user->id]) }}"
+                                                class="green-theme-btn theme-button1 ">{{ __('Chat') }}</a>
                                         @endif
                                     </div>
                                 </div>
@@ -422,10 +422,10 @@
                                         @php $hourly_fee = 0; @endphp
                                         @if (get_currency_placement() == 'after')
                                             @php$hourly_fee = @$user->$userRelation->hourly_rate . ' ' . get_currency_symbol() . '/h';
-                                                                                        @endphp ?>
+                                                                                                                                                                                @endphp ?> ?> ?>
                                         @else
                                             @php$hourly_fee = get_currency_symbol() . ' ' . @$user->$userRelation->hourly_rate . '/h';
-                                                                                        @endphp ?>
+                                                                                                                                                                                @endphp ?> ?> ?>
                                         @endif
                                         <div class="instructor-bottom-item mt-20">
                                             <button type="button"
@@ -440,7 +440,7 @@
                                                 class="theme-btn theme-button1 theme-button3 w-100 bookSchedule"
                                                 data-bs-toggle="modal" data-bs-target="#consultationBookingModal">
                                                 {{ __('Book
-                                                                                                                                                                                                                                                                                            Schedule') }}
+                                                                                                                                                                                                                                                                                                                                                                                            Schedule') }}
                                             </button>
                                         </div>
                                     @endif

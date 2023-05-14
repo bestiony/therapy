@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Models\Conversation;
 use App\Models\Messages;
+use App\Traits\General;
 use Carbon\Carbon;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -11,24 +12,25 @@ use Livewire\WithFileUploads;
 class MessagesComponent extends Component
 {
     use WithFileUploads;
+    use General;
     public $selected_conversation;
     public $conversation;
     public $user_timezone;
     public $content;
     public $file;
     public $user;
-    public $is_patient = false ;
+    public $is_patient = false;
     public function mount($selected_conversation, $user_timezone)
     {
         $this->user = auth()->user();
-        if($this->user->role == USER_ROLE_STUDENT){
+        if ($this->user->role == USER_ROLE_STUDENT) {
             $this->is_patient = true;
         }
 
         $this->selected_conversation = $selected_conversation;
         $this->user_timezone = $user_timezone;
         $this->conversation = Conversation::where('id', $this->selected_conversation)
-        ->first();
+            ->first();
         // if ($this->is_patient) {
         //         ->wherePatientId($this->user->id)
         // } else {
@@ -39,6 +41,19 @@ class MessagesComponent extends Component
     }
     public function send_message()
     {
+        $therapist = $this->conversation->therapist;
+        if ($therapist->role == USER_ROLE_PARENT) {
+            if ($therapist->certified_parent->consultation_available == 0) {
+
+                $this->dispatchBrowserEvent('alert_message', [
+                    'type' => 'error',
+                    'title' => __('the certified parent has disabled recieving messages'),
+                    'text' => '',
+                ]);
+                $this->content = '';
+                return;
+            }
+        }
         $this->validate([
             'content' => 'required'
         ]);
@@ -66,13 +81,15 @@ class MessagesComponent extends Component
         ]);
         $this->reset('content');
     }
-    public function stop_conversation(){
+    public function stop_conversation()
+    {
 
         $this->conversation->status = "inactive";
         $this->conversation->save();
         session()->flash('message', 'conversation statuse changed successfully');
     }
-    public function resume_conversation(){
+    public function resume_conversation()
+    {
 
         $this->conversation->status = "active";
         $this->conversation->save();
@@ -81,10 +98,10 @@ class MessagesComponent extends Component
     public function render()
     {
         $data['reciever_name'] = '';
-        if($this->conversation){
-            if($this->is_patient){
+        if ($this->conversation) {
+            if ($this->is_patient) {
                 $data['reciever_name'] = $this->conversation->therapist->name;
-            }else{
+            } else {
                 $data['reciever_name'] = $this->conversation->patient->name;
             }
         }

@@ -43,7 +43,7 @@
                         <div class="desc-contact">
                             <p class="name">{{ $convo->therapist ? $convo->therapist->name : '' }}
                                 @if ($convo->order)
-                                [O-{{  $convo->order->id }}]
+                                    [O-{{ $convo->order->id }}]
                                 @endif
                             </p>
                             <p class="message">{{ $latestMessage ? $latestMessage->content : '' }}</p>
@@ -57,7 +57,7 @@
                 @endforelse
 
             </section>
-            @livewire('messages-component', ['selected_conversation' => $selected_conversation ,'user_timezone'=>$user_timezone])
+            @livewire('messages-component', ['selected_conversation' => $selected_conversation, 'user_timezone' => $user_timezone])
             {{-- <section id="messages" class="chat col-12 col-sm-8  vh-100 align-items-end">
                 <div class="header-chat col-12 justify-content-between pr-6">
                     <div class="d-flex ">
@@ -167,9 +167,29 @@
                     @endif
                 @endif
             </section> --}}
+            @push('script')
+                <script>
+                    window.addEventListener('alert_message', event => {
+                        console.log('asdasdas')
+                        Swal.fire('dasdasd')
+                        Swal.fire({
+                            icon: event.detail.type,
+                            title: event.detail.title,
+                            text: event.detail.text,
+                        })
+                        // swal({
+                        //     title: event.detail.title,
+                        //     icon: event.detail.type,
+                        //     text: event.detail.text,
+                        // });
+                        if (event.detail.type != 'error') {
 
+                            location.reload();
+                        }
+                    })
+                </script>
+            @endpush
 
         </div>
     </div>
-
 @endsection

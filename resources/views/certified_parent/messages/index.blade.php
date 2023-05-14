@@ -17,7 +17,7 @@
             }
         </style>
 
-     @livewireStyles
+        @livewireStyles
     @endpush
     @push('script')
         @livewireScripts
@@ -47,15 +47,15 @@
                         class="discussion {{ $selected_conversation == $convo->id ? 'message-active' : '' }} position-relative">
                         <div class="photo" style="background-image: url({{ asset($convo->patient->image) }});">
                             {{-- <div class="online"></div> --}}
-                            <a class="stretched-link"
-                                href="{{ route('parent.messages', ['convo' => $convo->id]) }}"></a>
+                            <a class="stretched-link" href="{{ route('parent.messages', ['convo' => $convo->id]) }}"></a>
                         </div>
                         <div class="desc-contact">
-                            <p class="name">{{ $convo->patient->name }} [O-{{ $convo->order ? $convo->order->id : '' }}]</p>
+                            <p class="name">{{ $convo->patient->name }} [O-{{ $convo->order ? $convo->order->id : '' }}]
+                            </p>
                             <p class="message">{{ $latestMessage ? $latestMessage->content : '' }}</p>
                         </div>
-                        @if($time)
-                        <div class="timer text-center">{{ $timeSinceLatestMessage }}</div>
+                        @if ($time)
+                            <div class="timer text-center">{{ $timeSinceLatestMessage }}</div>
                         @endif
                     </div>
                 @empty
@@ -63,7 +63,7 @@
                 @endforelse
 
             </section>
-            @livewire('messages-component', ['selected_conversation' => $selected_conversation ,'user_timezone'=>$user_timezone])
+            @livewire('messages-component', ['selected_conversation' => $selected_conversation, 'user_timezone' => $user_timezone])
 
             {{-- <section id="messages" class="chat col-12 col-sm-8  vh-100 align-items-end">
                 <div class="header-chat col-12 justify-content-between pr-6">
@@ -196,9 +196,23 @@
                     @endif
                 @endif
             </section> --}}
+            @push('script')
+                <script>
+                    window.addEventListener('alert_message', event => {
+                        console.log('asdasdas')
+                        swal({
+                            title: event.detail.title,
+                            icon: event.detail.type,
+                            text: event.detail.text,
+                        });
+                        if (event.detail.type != 'error') {
 
+                            location.reload();
+                        }
+                    })
+                </script>
+            @endpush
 
         </div>
     </div>
-
 @endsection

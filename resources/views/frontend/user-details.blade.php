@@ -66,8 +66,7 @@
                                     @if ($video)
                                         <div class="col-md-12 mb-30  videoSource">
                                             <div class="video-player-area ">
-                                                <video id="player" playsinline controls
-                                                {{-- data-poster="{{ getImageFile(@$instructor->image) }}" --}}
+                                                <video id="player" playsinline controls {{-- data-poster="{{ getImageFile(@$instructor->image) }}" --}}
                                                     controlsList="nodownload">
                                                     <source src="{{ getVideoFile(@$video) }}" type="video/mp4">
                                                 </video>
@@ -79,7 +78,8 @@
                                         <div class="col-md-12 mb-30  videoSourceYoutube">
                                             <div class="video-player-area ">
                                                 <div class="plyr__video-embed " height="400px" id="playerVideoYoutube">
-                                                    <iframe class="col-12 " height="400px" src="https://www.youtube.com/embed/{{ @$youtube_video_id }}"
+                                                    <iframe class="col-12 " height="400px"
+                                                        src="https://www.youtube.com/embed/{{ @$youtube_video_id }}"
                                                         allowfullscreen allowtransparency allow="autoplay">
                                                     </iframe>
                                                 </div>
@@ -96,7 +96,10 @@
                                 <div class="instructor-skills-box mt-25">
                                     <h5 class="instructor-details-inner-title">{{ __('Skills') }}</h5>
                                     <ul class="instructor-skills-tag d-inline-flex align-items-center flex-wrap">
-                                        @forelse ($user->$userRelation->skills as $skill)
+                                        @php
+                                            $user_skills = $user->$userRelation->skills ?? [];
+                                        @endphp
+                                        @forelse ($user_skills as $skill)
                                             <li class="bg-page instructor-skills-tag-item">
                                                 {{ $skill->title }}</li>
                                         @empty
@@ -126,7 +129,10 @@
                                         <h5 class="instructor-details-inner-title">{{ __('Certifications') }}
                                         </h5>
                                         <ul>
-                                            @forelse(@$user->$userRelation->certificates as $certificate)
+                                            @php
+                                                $user_certificates = $user->$userRelation->certificates ?? [];
+                                            @endphp
+                                            @forelse($user_certificates as $certificate)
                                                 <li class="font-15"><span
                                                         class="color-heading">{{ $certificate->passing_year }}</span>{{ $certificate->name }}
                                                 </li>
@@ -140,7 +146,10 @@
                                     <div class="col-md-6 certificate-awards-inner">
                                         <h5 class="instructor-details-inner-title">{{ __('Awards') }}</h5>
                                         <ul>
-                                            @forelse(@$user->$userRelation->awards as $award)
+                                            @php
+                                                $user_awards = $user->$userRelation->awards ?? [];
+                                            @endphp
+                                            @forelse($user_awards as $award)
                                                 <li class="font-15"><span
                                                         class="color-heading">{{ $award->winning_year }}</span>{{ $award->name }}
                                                 </li>
@@ -304,6 +313,11 @@
                                             <button type="button" class="green-theme-btn theme-button1 follow-btn"
                                                 id="unAuthBtnId">{{ __('Follow') }}</button>
                                         @endauth
+                                        @if($user->role == USER_ROLE_PARENT)
+                                        <hr>
+                                        <a href="{{route('start_chat_with_parent',['user'=>$user->id])}}" class="green-theme-btn theme-button1 "
+                                            >{{ __('Chat') }}</a>
+                                        @endif
                                     </div>
                                 </div>
 
@@ -329,42 +343,45 @@
                                                     {{ __('(Ranking)') }}</span>
                                             </li>
                                         @endif
-                                        <li>
-                                            <span class="iconify" data-icon="akar-icons:book-close"></span>
-                                            <span>{{ @$user->courses->count() }} {{ __('Courses') }}</span>
-                                        </li>
-                                        <li>
-                                            <span class="iconify" data-icon="bi:camera-video"></span>
-                                            <span>{{ @$total_lectures }} {{ __('Video Lectures') }}</span>
-                                        </li>
-                                        <li>
-                                            <span class="iconify" data-icon="la:book-reader"></span>
-                                            <span>{{ @$totalStudent }} {{ __('Students') }}</span>
-                                        </li>
-                                        <li style="display:none;">
-                                            <span class="iconify"
-                                                data-icon="healthicons:i-exam-multiple-choice-outline"></span>
-                                            <span>{{ @$total_quizzes }} {{ __('Quizzes') }}</span>
-                                        </li>
-                                        <li>
-                                            <span class="iconify" data-icon="bi:book"></span>
-                                            <span>{{ @$total_assignments }} {{ __('Assignments') }}</span>
-                                        </li>
-                                        <li>
-                                            <span class="iconify"
-                                                data-icon="fluent:device-meeting-room-remote-24-regular"></span>
-                                            <span>{{ $totalMeeting }} {{ __(' Online Consultions') }}</span>
-                                        </li>
-                                        <li style="display:none;">
-                                            <span class="iconify" data-icon="bi:star"></span>
-                                            <span>{{ $total_rating }} Reviews
-                                                ({{ number_format(@$average_rating, 1) }}
-                                                average)</span>
-                                        </li>
+                                        @if ($user->role != USER_ROLE_PARENT)
+                                            <li>
+                                                <span class="iconify" data-icon="akar-icons:book-close"></span>
+                                                <span>{{ @$user->courses->count() }} {{ __('Courses') }}</span>
+                                            </li>
+                                            <li>
+                                                <span class="iconify" data-icon="bi:camera-video"></span>
+                                                <span>{{ @$total_lectures }} {{ __('Video Lectures') }}</span>
+                                            </li>
+                                            <li>
+                                                <span class="iconify" data-icon="la:book-reader"></span>
+                                                <span>{{ @$totalStudent }} {{ __('Students') }}</span>
+                                            </li>
+                                            <li style="display:none;">
+                                                <span class="iconify"
+                                                    data-icon="healthicons:i-exam-multiple-choice-outline"></span>
+                                                <span>{{ @$total_quizzes }} {{ __('Quizzes') }}</span>
+                                            </li>
+                                            <li>
+                                                <span class="iconify" data-icon="bi:book"></span>
+                                                <span>{{ @$total_assignments }} {{ __('Assignments') }}</span>
+                                            </li>
+                                            <li>
+                                                <span class="iconify"
+                                                    data-icon="fluent:device-meeting-room-remote-24-regular"></span>
+                                                <span>{{ $totalMeeting }} {{ __(' Online Consultions') }}</span>
+                                            </li>
+                                            <li style="display:none;">
+                                                <span class="iconify" data-icon="bi:star"></span>
+                                                <span>{{ $total_rating }} Reviews
+                                                    ({{ number_format(@$average_rating, 1) }}
+                                                    average)</span>
+                                            </li>
+                                        @endif
                                         <li>
                                             <span class="iconify" data-icon="codicon:globe"></span>
                                             <span>{{ @$user->$userRelation->address }}</span>
                                         </li>
+
                                     </ul>
                                 </div>
                                 @php
@@ -404,11 +421,11 @@
                                     @if (@$user->$userRelation->consultation_available == 1)
                                         @php $hourly_fee = 0; @endphp
                                         @if (get_currency_placement() == 'after')
-                                            @php $hourly_fee = @$user->$userRelation->hourly_rate . ' ' . get_currency_symbol() . '/h';
-                                                                                                                                            @endphp
+                                            @php$hourly_fee = @$user->$userRelation->hourly_rate . ' ' . get_currency_symbol() . '/h';
+                                                                                        @endphp ?>
                                         @else
-                                            @php $hourly_fee = get_currency_symbol() . ' ' . @$user->$userRelation->hourly_rate . '/h';
-                                                                                                                                            @endphp
+                                            @php$hourly_fee = get_currency_symbol() . ' ' . @$user->$userRelation->hourly_rate . '/h';
+                                                                                        @endphp ?>
                                         @endif
                                         <div class="instructor-bottom-item mt-20">
                                             <button type="button"
@@ -423,7 +440,7 @@
                                                 class="theme-btn theme-button1 theme-button3 w-100 bookSchedule"
                                                 data-bs-toggle="modal" data-bs-target="#consultationBookingModal">
                                                 {{ __('Book
-                                                                                                                                                                                            Schedule') }}
+                                                                                                                                                                                                                                                                                            Schedule') }}
                                             </button>
                                         </div>
                                     @endif

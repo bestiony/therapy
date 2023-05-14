@@ -13,6 +13,7 @@ use App\Http\Middleware\LocalizationMiddleware;
 use App\Http\Middleware\PrivateModeMiddleware;
 use App\Http\Middleware\SaasCheck;
 use App\Http\Middleware\Organization;
+use App\Http\Middleware\CertifiedParent;
 use App\Http\Middleware\Student;
 use App\Http\Middleware\VersionUpdate;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
@@ -83,6 +84,7 @@ class Kernel extends HttpKernel
         'common' => Common::class,
         'student' => Student::class,
         'instructor' => Instrucotr::class,
+        'parent' => CertifiedParent::class,
         'organization' => Organization::class,
         'affiliate' => Affiliator::class,
         'admin' => Admin::class,

@@ -833,7 +833,12 @@ if (!function_exists('getUserRoleRelation')) {
             $return = 'instructor';
         } elseif ($user->role == USER_ROLE_ORGANIZATION) {
             $return = 'organization';
-        } else {
+
+        }
+        elseif ($user->role == USER_ROLE_PARENT) {
+            $return = 'certified_parent';
+        }
+        else {
             $return = 'student';
         }
 
@@ -905,7 +910,7 @@ if (!function_exists('setBadge')) {
     function setBadge($id)
     {
         $user = User::whereId($id)->with('instructor.enrollments.order')->with('organization.enrollments.order')->first();
-        if ($user->role == USER_ROLE_INSTRUCTOR || $user->role == USER_ROLE_ORGANIZATION) {
+        if ($user->role == USER_ROLE_INSTRUCTOR || $user->role == USER_ROLE_ORGANIZATION ) {
             $badges = RankingLevel::all();
             $relation = getUserRoleRelation($user);
 
@@ -1120,11 +1125,13 @@ function createPhoneVerification($phone_number)
 function notify_user_about_chat_message($conversation, $sender, $is_patient)
 {
     $text = 'you have a new message from ' . $sender->name;
-
+    $therapist = $conversation->therapist;
     if ($is_patient) {
-        $url = route('instructor.messages', ['convo' => $conversation->id]);
+        $route = MODELS_KEY[$therapist->role]. '.messages';
+
+        $url = route($route, ['convo' => $conversation->id]);
         $reciever = $conversation->therapist_id;
-        send($text, USER_ROLE_INSTRUCTOR, $url, $reciever);
+        send($text, $therapist->role, $url, $reciever);
     } else {
         $url = route('student.messages', ['convo' => $conversation->id]);
         $reciever = $conversation->patient_id;
@@ -1196,4 +1203,4 @@ function get_instructor_share(Course $course, User $instructor){
     return CourseInstructor::where('course_id', $course->id)->where('instructor_id', $instructor->id)->first()->share;
 }
 
-// function 
+// function

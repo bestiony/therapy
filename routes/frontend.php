@@ -12,6 +12,7 @@ use App\Http\Controllers\Frontend\MainIndexController;
 use App\Http\Controllers\Frontend\RegistrationController;
 use App\Http\Controllers\Frontend\SupportTicketController;
 use App\Http\Controllers\Instructor\LiveClassController;
+use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\Student\MyCourseController;
 use App\Providers\RouteServiceProvider;
 use Google\Service\Classroom\Registration;
@@ -25,6 +26,7 @@ Route::group(['middleware' => 'guest'], function () {
 
 });
 
+Route::get('parent/chat/{user}', [MessagesController::class, 'start_chat_with_parent'])->middleware('auth')->name('start_chat_with_parent');
 Route::get('forget-password', [LoginController::class, 'forgetPassword'])->name('forget-password');
 Route::post('forget-password', [LoginController::class, 'forgetPasswordEmail'])->name('forget-password.email')->middleware('isDemo');
 Route::get('reset-password', [LoginController::class, 'resetPassword'])->name('reset-password');
@@ -63,6 +65,10 @@ Route::group(['middleware' => 'private.mode'], function () {
     Route::get('instructor', [MainIndexController::class, 'instructor'])->name('instructor');
     Route::get('filter-instructor', [MainIndexController::class, 'filterInstructor'])->name('filter.instructor');
     Route::get('instructor-more', [MainIndexController::class, 'instructorMore'])->name('instructor_more');
+    
+    Route::get('parent', [MainIndexController::class, 'parent'])->name('parent');
+    Route::get('filter-parent', [MainIndexController::class, 'filterParent'])->name('filter.parent');
+    Route::get('parent-more', [MainIndexController::class, 'parentMore'])->name('parent_more');
 
 
     /**START ORGANIZATION */

@@ -24,7 +24,7 @@ class Student
          */
 
         if (file_exists(storage_path('installed'))) {
-            if (in_array(auth()->user()->role, [USER_ROLE_STUDENT, USER_ROLE_INSTRUCTOR, USER_ROLE_ORGANIZATION])) {
+            if (in_array(auth()->user()->role, [USER_ROLE_STUDENT, USER_ROLE_INSTRUCTOR, USER_ROLE_ORGANIZATION, USER_ROLE_PARENT])) {
                 if (auth()->user()->student->status == STATUS_APPROVED) {
                     return $next($request);
                 } else {

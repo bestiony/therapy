@@ -13,6 +13,17 @@
                     <li><a href="{{ route('organization.organization_messages_index') }}" class="{{@$subNavInstructorMessagesActiveClass}}">{{ __('Instructor Messages') }}</a></li>
                 </ul>
             </li>
+            <li class="menu-has-children current-menu-item {{@$navCertifiedParentActiveClass}}">
+                <span class="toggle-account-menu">
+                    <span class="iconify" data-icon="fontisto:angle-down"></span>
+                </span>
+                <a href="#" class="{{@$navCertifiedParentActiveClass}}"><span class="iconify mr-15" data-icon="mdi:teacher"></span>{{ __('Manage Certified Parents') }}</a>
+                <ul class="account-sub-menu">
+                    <li><a href="{{ route('organization.certified_parent.index') }}" class="{{@$subNavCertifiedParentIndexActiveClass}}">{{ __('All Certified Parents') }}</a></li>
+                    <li><a href="{{ route('organization.certified_parent.create') }}" class="{{@$subNavCertifiedParentAddActiveClass}}">{{ __('Add Certified Parents') }}</a></li>
+                    <li><a href="{{ route('organization.organization_messages_index') }}" class="{{@$subNavInstructorMessagesActiveClass}}">{{ __('Certified Parents Messages') }}</a></li>
+                </ul>
+            </li>
             <li class="menu-has-children current-menu-item {{@$navStudentActiveClass}}">
                 <span class="toggle-account-menu">
                     <span class="iconify" data-icon="fontisto:angle-down"></span>

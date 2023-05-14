@@ -19,7 +19,7 @@ class FollowController extends Controller
             $status = 403;
         }
 
-        $response['msg'] = $msg;
+    $response['msg'] = $msg;
         $response['status'] = $status;
         return response()->json($response, $status);
 

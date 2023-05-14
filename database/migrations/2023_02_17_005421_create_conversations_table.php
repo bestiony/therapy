@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('patient_id')->unsigned();
             $table->bigInteger('therapist_id')->unsigned();
-            $table->bigInteger('order_id')->unsigned();
+            $table->bigInteger('order_id')->unsigned()->nullable();
             $table->string('status')->default('active');
             $table->text('notes')->nullable();
             $table->timestamps();

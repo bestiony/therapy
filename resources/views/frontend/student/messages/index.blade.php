@@ -42,7 +42,10 @@
                         </div>
                         <div class="desc-contact">
                             <p class="name">{{ $convo->therapist ? $convo->therapist->name : '' }}
-                                [O-{{ $convo->order->id }}]</p>
+                                @if ($convo->order)
+                                [O-{{  $convo->order->id }}]
+                                @endif
+                            </p>
                             <p class="message">{{ $latestMessage ? $latestMessage->content : '' }}</p>
                         </div>
                         @if ($time)

@@ -5,6 +5,7 @@ use App\Http\Controllers\Organization\AccountController;
 use App\Http\Controllers\Organization\AssignmentController;
 use App\Http\Controllers\Organization\BundleCourseController;
 use App\Http\Controllers\Organization\CertificateController;
+use App\Http\Controllers\Organization\CertifiedParentController;
 use App\Http\Controllers\Organization\CourseController;
 use App\Http\Controllers\Organization\ExamController;
 use App\Http\Controllers\Organization\LessonController;
@@ -40,6 +41,16 @@ Route::prefix('instructor')->group(function () {
     Route::post('update/{uuid}', [InstructorController::class, 'update'])->name('instructor.update');
     Route::delete('delete/{uuid}', [InstructorController::class, 'delete'])->name('instructor.delete')->middleware('isDemo');
     Route::post('status', [InstructorController::class, 'status'])->name('instructor.status')->middleware('isDemo');
+});
+
+Route::prefix('certified_parent')->group(function () {
+    Route::get('/', [CertifiedParentController::class, 'index'])->name('certified_parent.index');
+    Route::get('create', [CertifiedParentController::class, 'create'])->name('certified_parent.create');
+    Route::post('store', [CertifiedParentController::class, 'store'])->name('certified_parent.store')->middleware('isDemo');
+    Route::get('edit/{uuid}', [CertifiedParentController::class, 'edit'])->name('certified_parent.edit');
+    Route::post('update/{uuid}', [CertifiedParentController::class, 'update'])->name('certified_parent.update');
+    Route::delete('delete/{uuid}', [CertifiedParentController::class, 'delete'])->name('certified_parent.delete')->middleware('isDemo');
+    Route::post('status', [CertifiedParentController::class, 'status'])->name('certified_parent.status')->middleware('isDemo');
 });
 
 Route::prefix('student')->group(function () {

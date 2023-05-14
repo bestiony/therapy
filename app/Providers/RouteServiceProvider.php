@@ -60,6 +60,11 @@ class RouteServiceProvider extends ServiceProvider
                 ->namespace($this->namespace. '\Instructor')
                 ->group(base_path('routes/instructor.php'));
 
+            Route::middleware(['web', 'auth', 'parent', 'local','version.update','verifiedphone'])
+                ->prefix('parent')
+                ->namespace($this->namespace. '\parent')
+                ->group(base_path('routes/parent.php'));
+
             Route::middleware(['web', 'auth', 'organization', 'local','version.update','verifiedphone'])
                 ->prefix('organization')
                 ->as('organization.')

@@ -6,6 +6,7 @@ const USER_ROLE_ADMIN = 1;
 const USER_ROLE_INSTRUCTOR = 2;
 const USER_ROLE_STUDENT = 3;
 const USER_ROLE_ORGANIZATION = 4;
+const USER_ROLE_PARENT = 5;
 
 
 
@@ -97,6 +98,7 @@ const GMEET_AUTHORIZE = 1;
 const PACKAGE_TYPE_SUBSCRIPTION = 1;
 const PACKAGE_TYPE_SAAS_INSTRUCTOR = 2;
 const PACKAGE_TYPE_SAAS_ORGANIZATION = 3;
+const PACKAGE_TYPE_SAAS_CERTIFIED_PARENT = 4;
 
 // package Status
 const PACKAGE_STATUS_DISABLED = 0;
@@ -185,4 +187,10 @@ const MODELS = [
     'difficulty_level' => 'App\Models\Difficulty_level',
     'lesson' => 'App\Models\Course_lesson',
     'user' => 'App\Models\User',
+];
+
+const MODELS_KEY = [
+    USER_ROLE_PARENT => 'parent',
+USER_ROLE_INSTRUCTOR => 'instructor',
+USER_ROLE_ORGANIZATION => 'organziation',
 ];

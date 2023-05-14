@@ -114,7 +114,7 @@
                     <span>{{ __('Subscription Mode') }}</span>
                 </a>
             </li>
-            <li style="display:none;">
+            <li >
                 <a href="{{ route('settings.saas_mode') }}" class="list-item {{ @$saasModeActiveClass }}">
                     <img src="{{ asset('admin/images/heroicon/outline/cog.svg') }}" alt="icon">
                     <span>{{ __('SaaS Mode') }}</span>

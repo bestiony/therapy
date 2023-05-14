@@ -17,7 +17,7 @@ class MessagesController extends Controller
 {
     use General;
     use SendNotification;
-    public  $views = [USER_ROLE_INSTRUCTOR => 'instructor', USER_ROLE_ORGANIZATION => 'organization'];
+    public  $views = [USER_ROLE_INSTRUCTOR => 'instructor', USER_ROLE_ORGANIZATION => 'organization', USER_ROLE_PARENT => 'certified_parent'];
 
     public function patient_index(Request $request){
         $selected_conversation = $request->convo;
@@ -121,6 +121,45 @@ class MessagesController extends Controller
         });
         $data['user'] = $user;
         return view( $this->views[$user->role].'.messages.index',$data);
+    }
+    public function start_chat_with_parent(User $user){
+        $patient = auth()->user();
+        if($patient->id == $user->id){
+            return back()->with('error',__("you can't chat with yourself !"));
+        }
+        $conversation = Conversation::firstOrCreate([
+                    'therapist_id' => $user->id,
+                    'patient_id' => $patient->id,
+                    'order_id' => null,
+        ]);
+        return redirect()->route('student.messages',['convo'=>$conversation->id]);
+    }
+    public function parent_index(Request $request){
+        $selected_conversation = $request->convo;
+        $user = auth()->user();
+        if( !in_array( $user->role ,[USER_ROLE_PARENT, USER_ROLE_ORGANIZATION] )){
+            return back();
+        }
+        $conversation = Conversation::where('id', $request->conversation_id)->wherePatientId($user->id)->whereStatus('active')->first();
+        if ($conversation) {
+            if ($conversation->therapist_id != $user->id) {
+                $this->showToastrMessage('warning', 'you are not a part of this conversation');
+                return back();
+            }
+        }
+        $data['conversations'] = Conversation::with(['messages','therapist','patient','order'])->whereTherapistId($user->id)->orderBy('id','desc')->get();
+        $data['selected_conversation'] = $selected_conversation;
+        $data['current_conversation'] = Conversation::find($selected_conversation);
+
+        $data['messages'] = Messages::whereConversationId($selected_conversation)->get();
+        $data['messages']->each(function($item, $key) use($user){
+            if($item->sender_id != $user->id){
+                $item->is_seen = true;
+                $item->update();
+            }
+        });
+        $data['user'] = $user;
+        return view('certified_parent.messages.index',$data);
     }
 
     public function therapsit_sends_message(Request $request){

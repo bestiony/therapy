@@ -435,6 +435,7 @@
                                     <hr class="dropdown-divider">
                                 </li>
                                 <li><a href="{{ route('instructor') }}"> {{ __('All Our Therapists') }}</a></li>
+                                <li><a href="{{ route('parent') }}"> {{ __('All Our Certified Parents') }}</a></li>
                             </ul>
                         </li>
                         <li style="display:none;" class="nav-item dropdown">
@@ -719,7 +720,7 @@
                                                                                                                                                                                                                 Instructor') }}</a>
                                     </li>
                                 @endif
-                            @elseif(@$authUser->role == USER_ROLE_INSTRUCTOR || @$authUser->role == USER_ROLE_ORGANIZATION)
+                            @elseif(@$authUser->role == USER_ROLE_INSTRUCTOR || @$authUser->role == USER_ROLE_ORGANIZATION || @$authUser->role == USER_ROLE_PARENT)
                                 <!-- Status 1 = Approved,  Status 2 = Blocked,  Status 0 = Pending -->
                                 @if (@$authUser->instructor->status == STATUS_APPROVED)
                                     @if (\Illuminate\Support\Str::contains(url()->current(), 'instructor'))
@@ -743,6 +744,18 @@
                                         <li class="nav-item">
                                             <a class="nav-link"
                                                 href="{{ route('organization.dashboard') }}">{{ __('Organization Panel') }}</a>
+                                        </li>
+                                    @endif
+                                @elseif(@$authUser->certified_parent->status == STATUS_APPROVED)
+                                    @if (\Illuminate\Support\Str::contains(url()->current(), 'parent'))
+                                        <li class="nav-item">
+                                            <a class="nav-link"
+                                                href="{{ route('student.dashboard') }}">{{ __('Student Panel') }}</a>
+                                        </li>
+                                    @else
+                                        <li class="nav-item">
+                                            <a class="nav-link"
+                                                href="{{ route('parent.dashboard') }}">{{ __('Parent Panel') }}</a>
                                         </li>
                                     @endif
                                 @elseif(@$authUser->instructor->status == STATUS_REJECTED)

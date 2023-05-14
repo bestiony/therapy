@@ -132,6 +132,10 @@ class User extends Authenticatable
     {
         return $this->hasOne(Instructor::class);
     }
+    public function certified_parent()
+    {
+        return $this->hasOne(CertifiedParent::class);
+    }
 
     public function organization()
     {
@@ -225,5 +229,8 @@ class User extends Authenticatable
     public function userPhoneVerified()
     {
     return $this->phone_is_verified;
+    }
+    public function conversations(){
+        return $this->hasMany(Conversation::class, 'therapist_id');
     }
 }

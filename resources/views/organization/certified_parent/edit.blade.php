@@ -17,7 +17,7 @@
 
 @section('content')
     <div class="instructor-profile-right-part">
-        <form method="POST" action="{{ route('organization.instructor.update', $instructor->uuid) }}"
+        <form method="POST" action="{{ route('organization.certified_parent.update', $instructor->uuid) }}"
             enctype="multipart/form-data" autocomplete="off">
             @csrf
             <div class="instructor-profile-info-box">

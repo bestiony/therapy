@@ -30,9 +30,9 @@
                                     <tr>
                                         <th scope="col">{{ __('Image') }}</th>
                                         <th scope="col">{{ __('Name') }}</th>
-                                        <th scope="col">{{ __('Courses') }}</th>
-                                        <th scope="col">{{ __('Sales') }}</th>
-                                        <th scope="col">{{ __('Sales Amount') }}</th>
+                                        {{-- <th scope="col">{{ __('Courses') }}</th> --}}
+                                        {{-- <th scope="col">{{ __('Sales') }}</th> --}}
+                                        <th scope="col">{{ __('Conversations') }}</th>
                                         <th scope="col">{{ __('Email') }}</th>
                                         <th scope="col">{{ __('Phone Number') }}</th>
                                         <th scope="col">{{ __('Status') }}</th>
@@ -50,9 +50,10 @@
                                                 </div>
                                             </td>
                                             <td>{{ $instructor->user->name }}</td>
-                                            <td>{{ number_format($instructor->total_course) }}</td>
-                                            <td>{{ number_format($instructor->total_sale) }}</td>
-                                            <td>{{ number_format($instructor->sub_total) }}</td>
+                                            {{-- <td>{{ number_format($instructor->total_course) }}</td> --}}
+                                            {{-- <td>{{ number_format($instructor->total_sale) }}</td> --}}
+                                            {{-- <td>{{ number_format($instructor->sub_total) }}</td> --}}
+                                            <td>{{ count($instructor->user->conversations) }}</td>
                                             <td>{{ $instructor->user->email }}</td>
                                             <td>{{ $instructor->user->mobile_number }}</td>
                                             <td>
@@ -63,7 +64,7 @@
                                                 </select>
                                             </td>
                                             <td>
-                                                <a href="{{ route('organization.instructor.edit', $instructor->uuid) }}"
+                                                <a href="{{ route('organization.certified_parent.edit', $instructor->uuid) }}"
                                                     class=""><img src="{{ asset('admin/images/icons/edit-2.svg') }}"
                                                         alt="eye"></a>
                                                 <a href="{{ route('userProfile', $instructor->user_id) }}" target="_blank"
@@ -116,7 +117,7 @@
                 if (result.value) {
                     $.ajax({
                         type: "POST",
-                        url: "{{ route('organization.instructor.status') }}",
+                        url: "{{ route('organization.certified_parent.status') }}",
                         data: {
                             "status": status_value,
                             "id": id,

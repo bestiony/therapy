@@ -208,6 +208,62 @@
                 </ul>
             </li>
         @endcanany
+        {{-- @canany(['manage_instructor', 'pending_instructor', 'approved_instructor', 'all_instructor'])
+            <li>
+                <a class="has-arrow" href="#">
+                    <span class="iconify" data-icon="la:chalkboard-teacher"></span>
+                    <span>{{__('Manage Certified Parents')}}</span>
+                </a>
+                <ul>
+                    @can('pending_instructor')
+                        <li class="{{ active_if_match('admin/instructor/pending') }}">
+                            <a href="{{route('instructor.pending')}}">
+                                <i class="fa fa-circle"></i>
+                                <span>{{__('Pending Instructor')}}</span>
+                            </a>
+                        </li>
+                    @endcan
+
+                    @can('approved_instructor')
+                        <li class="{{ active_if_match('admin/instructor/approved') }}">
+                            <a href="{{route('instructor.approved')}}">
+                                <i class="fa fa-circle"></i>
+                                <span>{{__('Approved Instructors')}}</span>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('approved_instructor')
+                        <li class="{{ active_if_match('admin/instructor/blocked') }}">
+                            <a href="{{route('instructor.blocked')}}">
+                                <i class="fa fa-circle"></i>
+                                <span>{{__('Blocked Instructors')}}</span>
+                            </a>
+                        </li>
+                    @endcan
+
+                    @can('all_instructor')
+
+                        <li class="
+                        {{ active_if_full_match('admin/instructor') }}
+                        {{ active_if_match('admin/instructor/view/*') }}
+                    ">
+                            <a href="{{route('instructor.index')}}">
+                                <i class="fa fa-circle"></i>
+                                <span>{{__('All Instructors')}}</span>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('add_instructor')
+                    <li class="{{ active_if_match('admin/instructor/create') }}">
+                        <a href="{{route('instructor.create')}}">
+                            <i class="fa fa-circle"></i>
+                            <span>{{ __('Add Instructor') }}</span>
+                        </a>
+                    </li>
+                    @endcan
+                </ul>
+            </li>
+        @endcanany --}}
 
         @canany(['manage_organization', 'pending_organization', 'approved_organization', 'all_organization'])
             <li>

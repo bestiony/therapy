@@ -27,6 +27,7 @@ class CertifiedParent extends Model
         'first_name',
         'last_name',
         'professional_title',
+        'user_category_id',
         'phone_number',
         'postal_code',
         'address',
@@ -55,5 +56,9 @@ class CertifiedParent extends Model
     public function organization()
     {
         return $this->belongsTo(Organization::class);
+    }
+    public function category()
+    {
+        return $this->hasOne(Category::class, 'id', 'user_category_id');
     }
 }

@@ -154,6 +154,25 @@ Route::prefix('instructor')->group(function () {
     Route::post('store', [InstructorController::class, 'store'])->name('instructor.store')->middleware('isDemo');
 });
 
+// Route::prefix('certified_parent')->group(function () {
+//     Route::get('/', [CertifiedParentController::class, 'index'])->name('certified_parent.index');
+//     Route::get('view/{uuid}', [CertifiedParentController::class, 'view'])->name('certified_parent.view');
+//     Route::get('edit/{uuid}', [CertifiedParentController::class, 'edit'])->name('certified_parent.edit');
+//     Route::post('update/{uuid}', [CertifiedParentController::class, 'update'])->name('certified_parent.update');
+//     Route::get('pending', [CertifiedParentController::class, 'pending'])->name('certified_parent.pending');
+//     Route::get('approved', [CertifiedParentController::class, 'approved'])->name('certified_parent.approved');
+//     Route::get('blocked', [CertifiedParentController::class, 'blocked'])->name('certified_parent.blocked');
+//     Route::get('change-status/{uuid}/{status}', [CertifiedParentController::class, 'changeStatus'])->name('certified_parent.status-change')->middleware('isDemo');
+//     Route::post('change-certified_parent-status', [CertifiedParentController::class, 'changeCertifiedParentStatus'])->name('admin.certified_parent.changeCertifiedParentStatus')->middleware('isDemo');
+//     Route::get('delete/{uuid}', [CertifiedParentController::class, 'delete'])->name('certified_parent.delete')->middleware('isDemo');
+
+//     Route::get('get-state-by-country/{country_id}', [CertifiedParentController::class, 'getStateByCountry']);
+//     Route::get('get-city-by-state/{state_id}', [CertifiedParentController::class, 'getCityByState']);
+
+//     Route::get('create', [CertifiedParentController::class, 'create'])->name('certified_parent.create');
+//     Route::post('store', [CertifiedParentController::class, 'store'])->name('certified_parent.store')->middleware('isDemo');
+// });
+
 
 Route::prefix('organizations')->as('organizations.')->group(function () {
     Route::get('/', [OrganizationController::class, 'index'])->name('index');

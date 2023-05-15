@@ -123,7 +123,7 @@ class CertifiedParentController extends Controller
             'status' => STATUS_APPROVED,
             'country_id' => $request->country_id,
             'state_id' => $request->state_id,
-            // 'user_category_id' => $request->user_category_id,
+            'user_category_id' => $request->user_category_id,
             'city_id' => $request->city_id,
             'gender' => $request->gender,
             'about_me' => $request->about_me,
@@ -184,7 +184,7 @@ class CertifiedParentController extends Controller
             $data['cities'] = City::where('state_id', old('state_id'))->orderBy('name', 'asc')->get();
         }
 
-        return view('organization.instructor.edit', $data);
+        return view('organization.certified_parent.edit', $data);
     }
 
     public function update(Request $request, $uuid)
@@ -256,7 +256,7 @@ class CertifiedParentController extends Controller
         $this->certifiedParentModel->updateByUuid($instructor_data, $uuid);
 
         $this->showToastrMessage('success', __('Updated Successfully'));
-        return redirect()->route('organization.instructor.index');
+        return redirect()->route('organization.certified_parent.index');
     }
 
     public function status(Request $request)

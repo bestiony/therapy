@@ -324,6 +324,15 @@
                                     <h6 class="instructor-details-name">{{ $user->$userRelation->name }}</h6>
                                     <p class="instructor-details-designation font-12 font-semi-bold mb-15">
                                         {{ $user->$userRelation->professional_title }}</p>
+                                        @if($user->$userRelation->category)
+                                        <button type="button" class="btn btn-outline-primary px-2 py-1" disabled>{{$user->$userRelation->category->name}}</button>
+                                        @endif
+                                    @if(in_array($user->role, [USER_ROLE_PARENT, USER_ROLE_INSTRUCTOR]) && $user->$userRelation->organization_id)
+                                        @php
+                                            $organization = $user->$userRelation->organization;
+                                        @endphp
+                                        <a href="{{route('userProfile', $organization->user_id)}}" type="button" class=" m-2">{{$organization->name}}</a>
+                                    @endif
                                     <div
                                         class="search-instructor-award-img d-inline-flex flex-wrap justify-content-center">
                                         @foreach ($user->badges as $badge)

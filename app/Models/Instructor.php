@@ -165,4 +165,7 @@ class Instructor extends Model
     {
         return $this->hasOne(Category::class, 'id', 'user_category_id');
     }
+    public function organization(){
+        return $this->belongsTo(Organization::class);
+    }
 }

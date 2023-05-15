@@ -52,4 +52,8 @@ class CertifiedParent extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class);
+    }
 }

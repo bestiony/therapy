@@ -331,7 +331,7 @@
                                         @php
                                             $organization = $user->$userRelation->organization;
                                         @endphp
-                                        <a href="{{route('userProfile', $organization->user_id)}}" type="button" class=" m-2">{{$organization->name}}</a>
+                                        <a href="{{route('userProfile', $organization->user_id)}}" type="button" class=" m-2"  style="color:var(--theme-color);background:#fff;font-weight:bold;margin-bottom:4px;padding:3px;border:none!important;">{{$organization->name}} {{ __('organization') }} </a>
                                     @endif
                                     <div
                                         class="search-instructor-award-img d-inline-flex flex-wrap justify-content-center">

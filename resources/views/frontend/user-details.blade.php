@@ -462,7 +462,8 @@
                                                 $hourly_fee = get_currency_symbol() . ' ' . @$user->$userRelation->hourly_rate . '/h';
                                             @endphp
                                         @endif
-                                        <div class="instructor-bottom-item mt-20">
+                                          @if ($user->role != USER_ROLE_PARENT)
+                                        <div class="instructor-bottom-item mt-20" >
                                             <button type="button"
                                                 data-type="{{ @$user->$userRelation->available_type }}"
                                                 data-booking_instructor_user_id="{{ @$user->$userRelation->user_id }}"
@@ -478,6 +479,7 @@
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             Schedule') }}
                                             </button>
                                         </div>
+                                    @endif
                                     @endif
                                 @endif
                             </div>

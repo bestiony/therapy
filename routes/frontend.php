@@ -60,12 +60,13 @@ Route::group(['middleware' => 'private.mode'], function () {
     Route::get('users/{user}/profile', [MainIndexController::class, 'userProfile'])->name('userProfile');
     Route::post('instructor-course-paginate/{id}', [MainIndexController::class, 'instructorCoursePaginate'])->name('instructorCoursePaginate');
     Route::post('organization-instructor-paginate/{user}', [MainIndexController::class, 'organizationInstructorPaginate'])->name('organizationInstructorPaginate');
+    Route::post('organization-parent-paginate/{user}', [MainIndexController::class, 'organizationParentPaginate'])->name('organizationParentPaginate');
 
     Route::get('all-instructor', [MainIndexController::class, 'allInstructor'])->name('allInstructor');
     Route::get('instructor', [MainIndexController::class, 'instructor'])->name('instructor');
     Route::get('filter-instructor', [MainIndexController::class, 'filterInstructor'])->name('filter.instructor');
     Route::get('instructor-more', [MainIndexController::class, 'instructorMore'])->name('instructor_more');
-    
+
     Route::get('parent', [MainIndexController::class, 'parent'])->name('parent');
     Route::get('filter-parent', [MainIndexController::class, 'filterParent'])->name('filter.parent');
     Route::get('parent-more', [MainIndexController::class, 'parentMore'])->name('parent_more');

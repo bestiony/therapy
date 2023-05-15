@@ -46,6 +46,33 @@
             datatype: "json",
             success: function (res) {
                 if(res.status == true){
+                    $('#appendOrganizationParents').append(res.data.appendOrganizationInstructors);
+                    if(res.lastPage == true){
+                        $("#organizationLoadMoreBtn").removeClass('d-block')
+                        $("#organizationLoadMoreBtn").addClass('d-none')
+                    }
+                }
+            }
+        });
+    });
+    let parentLoadMorePageCount;
+    $(function () {
+        parentLoadMorePageCount = 1;
+    });
+
+    $(document).on('click', '.parentLoadMore', function () {
+        var organizationParentsPaginateRoute = $('.organizationParentsPaginateRoute').val();
+        parentLoadMorePageCount++;
+        $.ajax({
+            type: "POST",
+            url: organizationParentsPaginateRoute,
+            data: {
+                'page': parentLoadMorePageCount,
+                '_token': $('meta[name="csrf-token"]').attr('content')
+            },
+            datatype: "json",
+            success: function (res) {
+                if(res.status == true){
                     $('#appendOrganizationInstructors').append(res.data.appendOrganizationInstructors);
                     if(res.lastPage == true){
                         $("#organizationLoadMoreBtn").removeClass('d-block')

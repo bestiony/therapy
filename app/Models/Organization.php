@@ -140,4 +140,7 @@ class Organization extends Model
     public function instructors(){
         return $this->hasMany(Instructor::class);
     }
+    public function certified_parents(){
+        return $this->hasMany(CertifiedParent::class);
+    }
 }

@@ -278,5 +278,29 @@ class MessagesController extends Controller
         $data['user'] = $user;
         return view('organization.messages.instructors_index', $data);
     }
+    public function organization_parents_index(Request $request){
+        $data['title'] = 'All Certified Parents';
+        $data['navCertifiedParentActiveClass'] = 'has-open';
+        $data['subNavParentsMessagesActiveClass'] = 'active';
+        $user = auth()->user();
+        if ($user->role !=  USER_ROLE_ORGANIZATION) {
+            return back();
+        }
+        $selected_conversation = $request->convo;
+        $user = auth()->user();
+        if ($user->role != USER_ROLE_ORGANIZATION) {
+            return back();
+        }
+        $org_therapists = $user->organization->certified_parents->pluck('user_id')->toArray();
+        $data['conversations'] = Conversation::with(['messages', 'therapist', 'patient', 'order'])->whereIn('therapist_id', $org_therapists)->orderBy('id', 'desc')->get();
+        $data['navInstructorActiveClass'] = 'has-open';
+
+        $data['subNavInstructorMessagesActiveClass'] = 'active';
+        $data['selected_conversation'] = $selected_conversation;
+        $data['current_conversation'] = Conversation::find($selected_conversation);
+        $data['messages'] = Messages::whereConversationId($selected_conversation)->get();
+        $data['user'] = $user;
+        return view('organization.messages.parents_index', $data);
+    }
 }
 

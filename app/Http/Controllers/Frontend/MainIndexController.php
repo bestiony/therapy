@@ -7,6 +7,7 @@ use App\Models\AboutUsGeneral;
 use App\Models\Assignment;
 use App\Models\Bundle;
 use App\Models\Category;
+use App\Models\CertifiedParent;
 use App\Models\City;
 use App\Models\ClientLogo;
 use App\Models\ContactUs;
@@ -220,6 +221,12 @@ class MainIndexController extends Controller
             $data['pageTitle'] = __('About Student');
         }
         if ($data['user']->role == USER_ROLE_ORGANIZATION) {
+            $data['parents'] = User::join('certified_parents as certp', 'certp.user_id', '=', 'users.id')
+            ->where('certp.status', STATUS_APPROVED)
+            ->where('organization_id', $data['user']->organization->id)
+            ->select('*', 'users.id')
+            ->orderBy('certp.rank', 'ASC')
+            ->paginate(12);
             $data['instructors'] = User::join('instructors as ins', 'ins.user_id', '=', 'users.id')
             ->where('ins.status', STATUS_APPROVED)
             ->where('organization_id', $data['user']->organization->id)
@@ -249,6 +256,19 @@ class MainIndexController extends Controller
                 $lastPage = true;
             }
             $response['appendOrganizationInstructors'] = View::make('frontend.instructor.render-organization-instructors', $data)->render();
+            return response()->json(['status' => true, 'data' => $response, 'lastPage' => $lastPage]);
+        }
+    }
+    public function organizationParentPaginate(Request $request, User $user)
+    {
+        $data['user'] = $user;
+        if ($data['user']->role == USER_ROLE_ORGANIZATION) {
+            $lastPage = false;
+            $data['parents'] = CertifiedParent::where('organization_id', $data['user']->organization->id)->approved()->paginate(12);
+            if ($data['parents']->lastPage() == $request->page) {
+                $lastPage = true;
+            }
+            $response['appendOrganizationParents'] = View::make('frontend.instructor.render-organization-instructors', $data)->render();
             return response()->json(['status' => true, 'data' => $response, 'lastPage' => $lastPage]);
         }
     }

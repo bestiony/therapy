@@ -197,15 +197,20 @@
                                                 </li>
                                                 <li class="nav-item" role="presentation">
                                                     <a class="nav-link " id="Courses-tab" data-bs-toggle="tab"
-                                                        href="#Courses" role="tab" aria-controls="Courses"
-                                                        aria-selected="true"> Therapy Tutorials</a>
+                                                    href="#Courses" role="tab" aria-controls="Courses"
+                                                    aria-selected="true"> Therapy Tutorials</a>
                                                 </li>
 
                                                 <li class="nav-item" role="presentation">
                                                     <a class="nav-link" id="ReserveMeeting-tab" data-bs-toggle="tab"
-                                                        href="#ReserveMeeting" role="tab"
-                                                        aria-controls="ReserveMeeting" aria-selected="false">Reserve a
-                                                        meeting</a>
+                                                    href="#ReserveMeeting" role="tab"
+                                                    aria-controls="ReserveMeeting" aria-selected="false">Reserve a
+                                                    meeting</a>
+                                                </li>
+                                                <li class="nav-item" role="presentation">
+                                                    <a class="nav-link" id="Parents-tab" data-bs-toggle="tab"
+                                                        href="#Parents" role="tab" aria-controls="Parents"
+                                                        aria-selected="false">{{__('Certified Parents')}}</a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -255,6 +260,7 @@
                                                 </div>
                                                 <!-- organization instructors tab-pane start -->
                                             </div>
+
                                             <div class="tab-pane fade" id="ReserveMeeting" role="tabpanel"
                                                 aria-labelledby="ReserveMeeting-tab">
                                                 <!-- organization reserve-meeting tab-pane start -->
@@ -271,6 +277,33 @@
                                                     </div>
                                                 </div>
                                                 <!-- organization reserve-meeting tab-pane end -->
+                                            </div>
+
+                                            {{-- Parents --}}
+                                            <div class="tab-pane fade " id="Parents" role="tabpanel"
+                                                aria-labelledby="Parents-tab">
+                                                <!-- organization instructors tab-pane start -->
+                                                <div class="organization-instructors-tab">
+                                                    <div class="row top-instructor-content-wrap"
+                                                        id="appendOrganizationParents">
+                                                        @foreach ($parents as $parentUser)
+                                                            <div class="col-sm-6 col-md-6 col-lg-6 col-xl-4 mt-0 mb-25">
+                                                                <x-frontend.instructor :user="$parentUser"
+                                                                    :type=INSTRUCTOR_CARD_TYPE_ONE />
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                    @if ($parents->hasPages())
+                                                        <!-- Load More Button-->
+                                                        <div class="d-block" id="organizationLoadMoreBtn">
+                                                            <button type="button"
+                                                                class="theme-btn theme-button2 load-more-btn parentLoadMore">{{ __('Load More') }}
+                                                                <span class="iconify"
+                                                                    data-icon="icon-park-outline:loading-one"></span></button>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                                <!-- organization instructors tab-pane start -->
                                             </div>
                                         </div>
                                     </div>
@@ -421,11 +454,13 @@
                                     @if (@$user->$userRelation->consultation_available == 1)
                                         @php $hourly_fee = 0; @endphp
                                         @if (get_currency_placement() == 'after')
-                                            @php$hourly_fee = @$user->$userRelation->hourly_rate . ' ' . get_currency_symbol() . '/h';
-                                                                                                                                                                                @endphp ?> ?> ?>
+                                            @php
+                                                $hourly_fee = @$user->$userRelation->hourly_rate . ' ' . get_currency_symbol() . '/h';
+                                            @endphp
                                         @else
-                                            @php$hourly_fee = get_currency_symbol() . ' ' . @$user->$userRelation->hourly_rate . '/h';
-                                                                                                                                                                                @endphp ?> ?> ?>
+                                            @php
+                                                $hourly_fee = get_currency_symbol() . ' ' . @$user->$userRelation->hourly_rate . '/h';
+                                            @endphp
                                         @endif
                                         <div class="instructor-bottom-item mt-20">
                                             <button type="button"
@@ -440,7 +475,7 @@
                                                 class="theme-btn theme-button1 theme-button3 w-100 bookSchedule"
                                                 data-bs-toggle="modal" data-bs-target="#consultationBookingModal">
                                                 {{ __('Book
-                                                                                                                                                                                                                                                                                                                                                                                            Schedule') }}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            Schedule') }}
                                             </button>
                                         </div>
                                     @endif
@@ -459,6 +494,8 @@
         value="{{ route('instructorCoursePaginate', $user->id) }}">
     <input type="hidden" class="organizationInstructorsPaginateRoute"
         value="{{ route('organizationInstructorPaginate', $user->id) }}">
+    <input type="hidden" class="organizationParentsPaginateRoute"
+        value="{{ route('organizationParentPaginate', $user->id) }}">
 
     @include('frontend.home.partial.consultation-booking-schedule-modal')
 @endsection

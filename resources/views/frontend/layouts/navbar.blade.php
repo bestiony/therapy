@@ -703,7 +703,9 @@
                         @if (
                             @$authUser->role == USER_ROLE_INSTRUCTOR ||
                                 @$authUser->role == USER_ROLE_STUDENT ||
-                                @$authUser->role == USER_ROLE_ORGANIZATION)
+                                @$authUser->role == USER_ROLE_ORGANIZATION ||
+                                @$authUser->role == USER_ROLE_PARENT
+                                )
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('forum.index') }}">{{ __('Forum') }}</a>
                             </li>

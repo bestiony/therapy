@@ -48,7 +48,7 @@
                         <div class="photo" style="background-image: url({{ asset($convo->patient->image) }});">
                             {{-- <div class="online"></div> --}}
                             <a class="stretched-link"
-                                href="{{ route('organization.organization_messages_index', ['convo' => $convo->id]) }}"></a>
+                                href="{{ route('organization.organization_parents_messages_index', ['convo' => $convo->id]) }}"></a>
                         </div>
                         <div class="desc-contact">
                             <p class="name">{{ $convo->patient->name }}

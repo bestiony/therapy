@@ -75,7 +75,7 @@ class CourseController extends Controller
             ->paginate(10);
         $data['navCourseOrganizationActiveClass'] = 'active';
         $data['number_of_course'] = count($courseInstructorIds);
-        return view('instructor.course.index', $data);
+        return view('certified_parent.course.index', $data);
     }
 
     public function create()

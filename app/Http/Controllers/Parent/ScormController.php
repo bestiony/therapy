@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Instructor;
+namespace App\Http\Controllers\Parent;
 
 use App\Http\Controllers\Controller;
 use App\Models\Course;
@@ -105,7 +105,7 @@ class ScormController extends Controller
             }
         }
         else{
-            
+
             if ($course->scorm_course) {
                 $course->scorm_course->course_id = $course->id;
                 $course->scorm_course->duration = $request->duration;

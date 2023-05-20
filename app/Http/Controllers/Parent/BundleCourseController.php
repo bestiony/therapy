@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Instructor;
+namespace App\Http\Controllers\Parent;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bundle;
@@ -58,7 +58,7 @@ class BundleCourseController extends Controller
         $bundle->price = $request->price;
         $bundle->access_period = ($request->access_period || $request->access_period < 1) ? 0 : $request->access_period;
         $bundle->status = $request->status;
-        
+
         if(get_option('subscription_mode')){
             $bundle->is_subscription_enable = $request->is_subscription_enable;
         }

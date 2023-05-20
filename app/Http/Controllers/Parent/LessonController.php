@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Instructor;
+namespace App\Http\Controllers\Parent;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Instructor\LessionRequest;

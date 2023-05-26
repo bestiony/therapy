@@ -36,6 +36,12 @@ class StudentController extends Controller
         return view('admin.student.list', $data);
     }
 
+    public function student_courses(){
+        $data['title'] = 'Student Courses';
+
+        //  $this->studentModel->getOrderById('DESC', 25);
+        return view('admin.student.enrolled_students', $data);
+    }
     public function pending_list()
     {
         $data['title'] = 'Pending Student';

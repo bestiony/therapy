@@ -337,10 +337,16 @@
                         </a>
                     </li>
                     @endif
-                    <li class="{{ active_if_match('admin/student') }}">
+                    <li class="{{ active_if_match('admin/student/all') }}">
                         <a href="{{route('student.index')}}">
                             <i class="fa fa-circle"></i>
                             <span>{{ __('All Student') }}</span>
+                        </a>
+                    </li>
+                    <li class="{{ active_if_match('admin/student/courses') }}">
+                        <a href="{{route('student.courses')}}">
+                            <i class="fa fa-circle"></i>
+                            <span>{{ __('Students Courses') }}</span>
                         </a>
                     </li>
                     <li class="{{ active_if_match('admin/student/create') }}">

@@ -171,7 +171,7 @@
                 <script>
                     window.addEventListener('alert_message', event => {
                         console.log('asdasdas')
-                        Swal.fire('dasdasd')
+                        // Swal.fire('dasdasd')
                         Swal.fire({
                             icon: event.detail.type,
                             title: event.detail.title,

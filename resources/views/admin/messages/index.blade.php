@@ -56,7 +56,11 @@
                             <a class="stretched-link" href="{{ route('admin.messages', ['convo' => $convo->id]) }}"></a>
                         </div>
                         <div class="desc-contact">
-                            <p class="name">{{ $convo->patient->name }} [O-{{ $convo->order->id }}]</p>
+                            <p class="name">{{ $convo->patient->name }}
+                                @if($convo->order)
+                                [O-{{ $convo->order->id }}]
+                                @endif
+                            </p>
                             <p class="message">{{ $latestMessage ? $latestMessage->content : '' }}</p>
                         </div>
                         @if($time)

@@ -43,7 +43,9 @@ use App\Http\Controllers\Admin\SaasController;
 use App\Http\Controllers\Admin\SubscriptionController;
 use App\Http\Controllers\VersionUpdateController;
 use App\Http\Controllers\MessagesController;
+use App\Http\Livewire\StudentCoursesComponent;
 use Illuminate\Support\Facades\Route;
+use Livewire\Livewire;
 
 Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('admin.dashboard');
 Route::group(['prefix'=>'messages','as'=>'admin.'], function(){
@@ -189,7 +191,12 @@ Route::prefix('organizations')->as('organizations.')->group(function () {
 });
 
 Route::prefix('student')->group(function () {
-    Route::get('/', [StudentController::class, 'index'])->name('student.index');
+    Route::get('courses', [StudentController::class, 'student_courses'])->name('student.courses');
+    // Route::get('courses', StudentCoursesComponent::class)->name('students_courses');
+    // Route::get('courses',function (){
+    //     return Livewire::component(StudentCoursesComponent::class);
+    // })->name('students_courses');
+    Route::get('/all', [StudentController::class, 'index'])->name('student.index');
     Route::get('pending', [StudentController::class, 'pending_list'])->name('student.pending_list');
     Route::get('create', [StudentController::class, 'create'])->name('student.create');
     Route::post('store', [StudentController::class, 'store'])->name('student.store')->middleware('isDemo');

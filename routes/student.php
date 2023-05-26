@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Frontend\OrganizationSupportTicketController;
 use App\Http\Controllers\Student\SubscriptionController;
 use App\Http\Controllers\Frontend\SupportTicketController;
 use App\Http\Controllers\HomeController;
@@ -98,6 +99,13 @@ Route::group(['as' => 'student.'], function () {
         Route::get('show-details/{uuid}', [SupportTicketController::class, 'show'])->name('show');
         Route::post('ticket-message-store', [SupportTicketController::class, 'messageStore'])->name('message.store')->middleware('isDemo');
         Route::get('get-tickets/fetch-data', [SupportTicketController::class, 'paginationFetchData'])->name('fetch-data');
+        Route::group(['prefix' => 'organization/{organization}', 'as' => 'organization.'], function () {
+            Route::get('create-tickets', [OrganizationSupportTicketController::class, 'create'])->name('create');
+            Route::post('store-tickets', [OrganizationSupportTicketController::class, 'store'])->name('store')->middleware('isDemo');
+            // Route::get('show-details/{uuid}', [OrganizationSupportTicketController::class, 'show'])->name('show');
+            // Route::post('ticket-message-store', [OrganizationSupportTicketController::class, 'messageStore'])->name('message.store')->middleware('isDemo');
+            // Route::get('get-tickets/fetch-data', [OrganizationSupportTicketController::class, 'paginationFetchData'])->name('fetch-data');
+        });
     });
 
     Route::get('thank-you', [MyCourseController::class, 'thankYou'])->name('thank-you');

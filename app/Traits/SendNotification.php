@@ -13,7 +13,7 @@ trait SendNotification
         $notification->text = $text;
         $notification->target_url = $target_url;
         $notification->user_type = $user_type;
-        $notification->save();
+    $notification->save();
         return $notification;
     }
 }

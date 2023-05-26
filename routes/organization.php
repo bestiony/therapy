@@ -22,10 +22,21 @@ use App\Http\Controllers\Organization\LiveClassController;
 use App\Http\Controllers\Organization\NoticeBoardController;
 use App\Http\Controllers\Organization\ProfileController;
 use App\Http\Controllers\Organization\StudentController;
+use App\Http\Controllers\Organization\SupportTicketController;
 use App\Http\Controllers\Organization\ZoomSettingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
+/** SUPPORT STARTS */
+Route::group(['prefix' => 'support-ticket', 'as' => 'support-ticket.'], function () {
+    Route::get('index', [SupportTicketController::class, 'ticketIndex'])->name('index');
+    Route::get('open', [SupportTicketController::class, 'ticketOpen'])->name('open');
+    Route::get('show/{uuid}', [SupportTicketController::class, 'ticketShow'])->name('show');
+    Route::get('delete/{uuid}', [SupportTicketController::class, 'ticketDelete'])->name('delete')->middleware('isDemo');
+    Route::post('change-ticket-status', [SupportTicketController::class, 'changeTicketStatus'])->name('changeTicketStatus')->middleware('isDemo');
+    Route::post('message-store', [SupportTicketController::class, 'messageStore'])->name('messageStore')->middleware('isDemo');
+});
+/** SUPPORT ENDS */
  //Start:: messages
  Route::get('my-messages',[MessagesController::class,'therapist_index'])->name('messages');
  Route::post('my-messages/send',[MessagesController::class,'therapsit_sends_message'])->name('send_message');

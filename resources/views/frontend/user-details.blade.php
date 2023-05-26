@@ -471,7 +471,7 @@
                                                 $hourly_fee = get_currency_symbol() . ' ' . @$user->$userRelation->hourly_rate . '/h';
                                             @endphp
                                         @endif
-                                          @if ($user->role != USER_ROLE_PARENT)
+                                          @if ($user->role != USER_ROLE_PARENT && $user->id != auth()->id())
                                         <div class="instructor-bottom-item mt-20" >
                                             <button type="button"
                                                 data-type="{{ @$user->$userRelation->available_type }}"
@@ -484,10 +484,18 @@
                                                 data-get_off_days_route="{{ route('getOffDays', @$user->$userRelation->user_id) }}"
                                                 class="theme-btn theme-button1 theme-button3 w-100 bookSchedule"
                                                 data-bs-toggle="modal" data-bs-target="#consultationBookingModal">
-                                                {{ __('Book
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            Schedule') }}
+                                                {{ __('Book Schedule') }}
                                             </button>
                                         </div>
+                                        @if($user->role == USER_ROLE_ORGANIZATION && $user->organization && $user->id != auth()->id())
+
+                                        <div class="instructor-bottom-item mt-20 " >
+                                            <a class="dropdown-item" href="{{ route('student.support-ticket.organization.create',['organization'=>$user->organization->id]) }}"><span
+                                                        class="iconify"
+                                                        data-icon="bx:bx-help-circle"></span>{{ __('Help Support') }}
+                                            </a>
+                                        </div>
+                                        @endif
                                     @endif
                                     @endif
                                 @endif

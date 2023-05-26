@@ -191,6 +191,17 @@ const MODELS = [
 
 const MODELS_KEY = [
     USER_ROLE_PARENT => 'parent',
-USER_ROLE_INSTRUCTOR => 'instructor',
-USER_ROLE_ORGANIZATION => 'organziation',
+    USER_ROLE_INSTRUCTOR => 'instructor',
+    USER_ROLE_ORGANIZATION => 'organziation',
+];
+const USER_MESSAGES_ROUTES = [
+    USER_ROLE_STUDENT => 'student.messages',
+    USER_ROLE_INSTRUCTOR => 'instructor.messages',
+    USER_ROLE_ORGANIZATION => 'organization.messages',
+    USER_ROLE_PARENT => 'parent.messages',
+];
+
+const ADMIN_SUPPORT_ROUTES = [
+    USER_ROLE_ADMIN  => 'student.support-ticket.show',
+    USER_ROLE_ORGANIZATION => '',
 ];

@@ -208,7 +208,7 @@
                                                         data-icon="bx:bx-heart"></span>{{ __('Wishlist') }}</a>
                                             </li>
                                             <li><a class="dropdown-item"
-                                                    href="{{ $authUser->role == USER_ROLE_STUDENT ? route('student.messages') : route('instructor.messages') }}"><span
+                                                    href="{{ route(USER_MESSAGES_ROUTES[$authUser->role]) }}"><span
                                                         class="iconify"
                                                         data-icon="uil:message"></span>{{ __('My Messages') }}</a>
                                             </li>
@@ -987,7 +987,7 @@
                                                             data-icon="bx:bx-heart"></span>{{ __('Wishlist') }}</a>
                                                 </li>
                                                 <li><a class="dropdown-item"
-                                                        href="{{ $authUser->role == USER_ROLE_STUDENT ? route('student.messages') : route('instructor.messages') }}"><span
+                                                        href="{{ route(USER_MESSAGES_ROUTES[$authUser->role]) }}"><span
                                                             class="iconify"
                                                             data-icon="uil:message"></span>{{ __('My Messages') }}</a>
                                                 </li>
@@ -1108,8 +1108,7 @@
                                         <ul class="user-dropdown-item-box">
                                             <li><a class="dropdown-item" href="{{ route('support-ticket-faq') }}"><span
                                                         class="iconify"
-                                                        data-icon="bx:bx-help-circle"></span>{{ __('Help
-                                                                                                                                                                                                                                                                            Support') }}
+                                                        data-icon="bx:bx-help-circle"></span>{{ __('Help Support') }}
                                                 </a></li>
                                             <li><a class="dropdown-item" href="{{ route('logout') }}"><span
                                                         class="iconify"

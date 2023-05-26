@@ -96,6 +96,8 @@ class MessagesController extends Controller
     }
 
     public function therapist_index(Request $request){
+        $data['navConsultationActiveClass'] = 'has-open';
+        $data['subNavMyMessagesActiveClass'] = 'active';
         $selected_conversation = $request->convo;
         $user = auth()->user();
         if( !in_array( $user->role ,[USER_ROLE_INSTRUCTOR, USER_ROLE_ORGANIZATION] )){

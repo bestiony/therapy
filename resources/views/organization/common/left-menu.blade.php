@@ -56,7 +56,17 @@
                     <li><a href="{{ route('organization.consultation.dashboard') }}" class="{{@$subNavConsultationDashboardActiveClass}}">{{ __('Dashboard') }}</a></li>
                     <li><a href="{{ route('organization.bookingRequest') }}" class="{{ @$subNavBookingRequestActiveClass }}">{{ __('Booking Request') }}</a></li>
                     <li><a href="{{ route('organization.bookingHistory') }}" class="{{ @$subNavBookingHistoryActiveClass }}">{{ __('Booking History') }}</a></li>
-                    <li><a href="{{ route('organization.messages') }}" class="{{ @$subNavBookingHistoryActiveClass }}">{{ __('My Messages') }}</a></li>
+                    <li><a href="{{ route('organization.messages') }}" class="{{ @$subNavMyMessagesActiveClass }}">{{ __('My Messages') }}</a></li>
+                </ul>
+            </li>
+            <li class="menu-has-children current-menu-item {{@$navSupportTicketParentActiveClass}}">
+                <span class="toggle-account-menu">
+                    <span class="iconify" data-icon="fontisto:angle-down"></span>
+                </span>
+                <a href="#" class="{{@$navSupportTicketParentActiveClass}}"><span class="iconify mr-15" data-icon="bx:bx-help-circle"></span>{{ __('Support') }}</a>
+                <ul class="account-sub-menu">
+                    <li><a href="{{ route('organization.support-ticket.index') }}" class="{{@$subNavSupportTicketIndexActiveClass}}">{{ __('All Tickets') }}</a></li>
+                    <li><a href="{{ route('organization.support-ticket.open') }}" class="{{ @$subNavSupportTicketOpenActiveClass }}">{{ __('Open Tickets') }}</a></li>
                 </ul>
             </li>
             <li ><a href="{{route('organization.certificate.index')}}" class="{{ @$navCertificateActiveClass }}" ><span class="iconify mr-15" data-icon="fluent:certificate-20-regular"></span>{{__('Certificate')}}</a></li>

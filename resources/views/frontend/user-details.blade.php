@@ -493,11 +493,12 @@
                                             </div>
                                             @if ($user->role == USER_ROLE_ORGANIZATION && $user->organization && $user->id != auth()->id())
                                                 <div class="instructor-bottom-item mt-20 ">
-                                                    <a class="dropdown-item"
-                                                        href="{{ route('student.support-ticket.organization.create', ['organization' => $user->organization->id]) }}"><span
-                                                            class="iconify"
-                                                            data-icon="bx:bx-help-circle"></span>{{ __('Help Support') }}
-                                                    </a>
+                                                    <button
+
+                                                        class="theme-btn   w-100 btn btn-danger">
+                                                        <a href="{{ route('student.support-ticket.organization.create', ['organization' => $user->organization->id]) }}">{{ __('Help Support') }}
+                                                        </a>
+                                                    </button>
                                                 </div>
                                             @endif
                                         @endif

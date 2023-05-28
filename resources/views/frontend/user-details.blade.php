@@ -197,20 +197,20 @@
                                                 </li>
                                                 <li class="nav-item" role="presentation">
                                                     <a class="nav-link " id="Courses-tab" data-bs-toggle="tab"
-                                                    href="#Courses" role="tab" aria-controls="Courses"
-                                                    aria-selected="true"> Therapy Tutorials</a>
+                                                        href="#Courses" role="tab" aria-controls="Courses"
+                                                        aria-selected="true"> Therapy Tutorials</a>
                                                 </li>
 
                                                 <li class="nav-item" role="presentation">
                                                     <a class="nav-link" id="ReserveMeeting-tab" data-bs-toggle="tab"
-                                                    href="#ReserveMeeting" role="tab"
-                                                    aria-controls="ReserveMeeting" aria-selected="false">Reserve a
-                                                    meeting</a>
+                                                        href="#ReserveMeeting" role="tab"
+                                                        aria-controls="ReserveMeeting" aria-selected="false">Reserve a
+                                                        meeting</a>
                                                 </li>
                                                 <li class="nav-item" role="presentation">
                                                     <a class="nav-link" id="Parents-tab" data-bs-toggle="tab"
                                                         href="#Parents" role="tab" aria-controls="Parents"
-                                                        aria-selected="false">{{__('Certified Parents')}}</a>
+                                                        aria-selected="false">{{ __('Certified Parents') }}</a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -324,14 +324,18 @@
                                     <h6 class="instructor-details-name">{{ $user->$userRelation->name }}</h6>
                                     <p class="instructor-details-designation font-12 font-semi-bold mb-15">
                                         {{ $user->$userRelation->professional_title }}</p>
-                                        @if($user->$userRelation->category)
-                                        <button type="button" class="btn btn-outline-primary px-2 py-1" disabled>{{$user->$userRelation->category->name}}</button>
-                                        @endif
-                                    @if(in_array($user->role, [USER_ROLE_PARENT, USER_ROLE_INSTRUCTOR]) && $user->$userRelation->organization_id)
+                                    @if ($user->$userRelation->category)
+                                        <button type="button" class="btn btn-outline-primary px-2 py-1"
+                                            disabled>{{ $user->$userRelation->category->name }}</button>
+                                    @endif
+                                    @if (in_array($user->role, [USER_ROLE_PARENT, USER_ROLE_INSTRUCTOR]) && $user->$userRelation->organization_id)
                                         @php
                                             $organization = $user->$userRelation->organization;
                                         @endphp
-                                        <a href="{{route('userProfile', $organization->user_id)}}" type="button" class=" m-2"  style="color:var(--theme-color);background:#fff;font-weight:bold;margin-bottom:4px;padding:3px;border:none!important;">{{$organization->name}} {{ __('organization') }} </a>
+                                        <a href="{{ route('userProfile', $organization->user_id) }}" type="button"
+                                            class=" m-2"
+                                            style="color:var(--theme-color);background:#fff;font-weight:bold;margin-bottom:4px;padding:3px;border:none!important;">{{ $organization->name }}
+                                            {{ __('organization') }} </a>
                                     @endif
                                     <div
                                         class="search-instructor-award-img d-inline-flex flex-wrap justify-content-center">
@@ -471,32 +475,32 @@
                                                 $hourly_fee = get_currency_symbol() . ' ' . @$user->$userRelation->hourly_rate . '/h';
                                             @endphp
                                         @endif
-                                          @if ($user->role != USER_ROLE_PARENT && $user->id != auth()->id())
-                                        <div class="instructor-bottom-item mt-20" >
-                                            <button type="button"
-                                                data-type="{{ @$user->$userRelation->available_type }}"
-                                                data-booking_instructor_user_id="{{ @$user->$userRelation->user_id }}"
-                                                data-hourly_fee="{{ $hourly_fee }}"
-                                                data-hours_per_month="{{ $hours_per_month }}"
-                                                data-monthly_rate="{{ get_currency_symbol() . ' ' . $user->$userRelation->monthly_rate . '/' . $hours_per_month . __('Session') }}"
-                                                data-hourly_rate="{{ @$user->$userRelation->hourly_rate }}"
-                                                data-monthly_rate-pure="{{ $user->$userRelation->monthly_rate }}"
-                                                data-get_off_days_route="{{ route('getOffDays', @$user->$userRelation->user_id) }}"
-                                                class="theme-btn theme-button1 theme-button3 w-100 bookSchedule"
-                                                data-bs-toggle="modal" data-bs-target="#consultationBookingModal">
-                                                {{ __('Book Schedule') }}
-                                            </button>
-                                        </div>
-                                        @if($user->role == USER_ROLE_ORGANIZATION && $user->organization && $user->id != auth()->id())
-
-                                        <div class="instructor-bottom-item mt-20 " >
-                                            <a class="dropdown-item" href="{{ route('student.support-ticket.organization.create',['organization'=>$user->organization->id]) }}"><span
-                                                        class="iconify"
-                                                        data-icon="bx:bx-help-circle"></span>{{ __('Help Support') }}
-                                            </a>
-                                        </div>
+                                        @if ($user->role != USER_ROLE_PARENT && $user->id != auth()->id())
+                                            <div class="instructor-bottom-item mt-20">
+                                                <button type="button"
+                                                    data-type="{{ @$user->$userRelation->available_type }}"
+                                                    data-booking_instructor_user_id="{{ @$user->$userRelation->user_id }}"
+                                                    data-hourly_fee="{{ $hourly_fee }}"
+                                                    data-hours_per_month="{{ $hours_per_month }}"
+                                                    data-monthly_rate="{{ get_currency_symbol() . ' ' . $user->$userRelation->monthly_rate . '/' . $hours_per_month . __('Session') }}"
+                                                    data-hourly_rate="{{ @$user->$userRelation->hourly_rate }}"
+                                                    data-monthly_rate-pure="{{ $user->$userRelation->monthly_rate }}"
+                                                    data-get_off_days_route="{{ route('getOffDays', @$user->$userRelation->user_id) }}"
+                                                    class="theme-btn theme-button1 theme-button3 w-100 bookSchedule"
+                                                    data-bs-toggle="modal" data-bs-target="#consultationBookingModal">
+                                                    {{ __('Book Schedule') }}
+                                                </button>
+                                            </div>
+                                            @if ($user->role == USER_ROLE_ORGANIZATION && $user->organization && $user->id != auth()->id())
+                                                <div class="instructor-bottom-item mt-20 ">
+                                                    <a class="dropdown-item"
+                                                        href="{{ route('student.support-ticket.organization.create', ['organization' => $user->organization->id]) }}"><span
+                                                            class="iconify"
+                                                            data-icon="bx:bx-help-circle"></span>{{ __('Help Support') }}
+                                                    </a>
+                                                </div>
+                                            @endif
                                         @endif
-                                    @endif
                                     @endif
                                 @endif
                             </div>

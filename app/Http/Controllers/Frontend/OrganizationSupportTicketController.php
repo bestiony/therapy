@@ -53,7 +53,6 @@ class OrganizationSupportTicketController extends Controller
 
     public function store(TicketRequest $request, Organization $organization)
     {
-
         $ticket = new Ticket();
         $ticket->ticket_number = 100;
         $ticket->name = $request->name;
@@ -64,6 +63,7 @@ class OrganizationSupportTicketController extends Controller
         // $ticket->department_id = $request->department_id;
         // $ticket->related_service_id = $request->related_service_id;
         // $ticket->priority_id = $request->priority_id;
+
         $ticket->save();
         $ticket->ticket_number = $ticket->id + 100;
         $ticket->save();

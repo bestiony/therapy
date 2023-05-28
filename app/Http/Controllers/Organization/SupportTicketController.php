@@ -59,7 +59,8 @@ class SupportTicketController extends Controller
         $data['title'] = 'Support Ticket List';
         $data['navSupportTicketParentActiveClass'] = 'has-open';
         $data['subNavSupportTicketOpenActiveClass'] = 'active';
-        $data['tickets'] = Ticket::where('status', 1)->paginate(25);
+        $data['tickets'] = Ticket::where('organization_user_id', auth()->id())->where('status', 1)->paginate(25);
+
 
         return view('organization.support_ticket.open', $data);
     }

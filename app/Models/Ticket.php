@@ -24,6 +24,12 @@ class Ticket extends Model
     {
         return $this->belongsTo(TicketRelatedService::class, 'related_service_id');
     }
+    public function organization(){
+        return $this->belongsTo(User::class, 'organization_user_id');
+    }
+    public function instructor(){
+        return $this->belongsTo(User::class, 'instructor_user_id');
+    }
 
     protected static function boot()
     {

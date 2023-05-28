@@ -88,7 +88,7 @@
                                         <div class="col-md-12 mb-30">
                                             <label class="label-text-title color-heading font-medium font-16 mb-3">{{__('Instructor')}}
                                             </label>
-                                            <select class="form-select" name="instructor_id">
+                                            <select class="form-select" name="instructor_user_id">
                                                 <option value="">{{__('Select Option')}}</option>
                                                 @foreach($organization_instructors as $instructor)
                                                 <option value="{{ $instructor->user_id }}" @if($instructor->id == old('instructor_id')) selected @endif>{{ $instructor->name }}</option>

@@ -2,7 +2,7 @@
 
 @section('content')
     <!-- Page content area start -->
-    <div class="page-content">
+    <div class="page-content mt-0">
         <div class="container-fluid">
             {{-- <div class="row">
                 <div class="col-md-12">
@@ -30,33 +30,33 @@
                             <h2>{{ __(@$title) }}</h2>
                         </div>
                         <div class="customers__table">
-                            <table id="customers-table" class="row-border data-table-filter table-style">
+                            <table style="width:100%" id="support-tickets-table" class="row-border data-table-filter table-style">
                                 <thead>
                                 <tr>
+                                    <th>{{__('Status')}}</th>
                                     <th>{{__('Name')}}</th>
                                     <th>{{ __('Email') }}</th>
                                     <th>{{ __('Subject') }}</th>
-                                    {{-- <th>{{ __('Priority') }}</th> --}}
-                                    <th>{{__('Status')}}</th>
+                                    <th>{{ __('Concerned Instructor') }}</th>
                                     <th>{{__('Action')}}</th>
+
                                 </tr>
                                 </thead>
                                 <tbody>
                                 @foreach($tickets as $ticket)
                                     <tr class="removable-item">
-                                        <td>{{$ticket->name}}</td>
-                                        <td>{{$ticket->email}}</td>
-                                        <td>{{$ticket->subject}}</td>
-                                        {{-- <td>
-                                            {{ @$ticket->priority->name }}
-                                        </td> --}}
                                         <td>
                                             <span id="hidden_id" style="display: none">{{$ticket->id}}</span>
-                                            <select name="status" class="status label-inline font-weight-bolder mb-1 badge badge-info text-dark">
+                                            <select name="status" class="status label-inline font-weight-bolder mb-1 badge badge-info">
                                                 <option value="1" @if($ticket->status == 1) selected @endif>{{ __('Open') }}</option>
                                                 <option value="2" @if($ticket->status == 2) selected @endif>{{ __('Closed') }}</option>
                                             </select>
                                         </td>
+
+                                        <td>{{$ticket->name}} - {{$ticket->id}}</td>
+                                        <td>{{$ticket->email}}</td>
+                                        <td>{{substr($ticket->subject,0,20)}}...</td>
+                                        <td>{{$ticket->instructor ? $ticket->instructor->name : ''}}</td>
                                         <td>
                                             <div class="action__buttons">
                                                 <a href="{{ route('organization.support-ticket.show', $ticket->uuid) }}" class=" btn-action mr-1" title="View Ticket Details">
@@ -67,6 +67,10 @@
                                                 </a>
                                             </div>
                                         </td>
+                                        {{-- <td>
+                                            {{ @$ticket->priority->name }}
+                                        </td> --}}
+
                                     </tr>
                                 @endforeach
                                 </tbody>
@@ -85,7 +89,17 @@
 @endsection
 
 @push('style')
+    <link rel="stylesheet" href="{{ asset('admin/styles/main.css') }}">
+
     <link rel="stylesheet" href="{{asset('admin/css/jquery.dataTables.min.css')}}">
+    <style>
+        th{
+            max-width: 150px !important;
+            width: 10% !important;
+            min-width: 50px !important;
+        }
+
+    </style>
 @endpush
 
 @push('script')
@@ -109,7 +123,7 @@
                 if (result.value) {
                     $.ajax({
                         type: "POST",
-                        url: "{{ route('support-ticket.admin.changeTicketStatus') }}",
+                        url: "{{ route('organization.support-ticket.changeTicketStatus') }}",
                         data: {"status": status_value, "id": id, "_token": "{{ csrf_token() }}",},
                         datatype: "json",
                         success: function (data) {
@@ -124,5 +138,16 @@
                 }
             });
         });
+    </script>
+    <script>
+         $('#support-tickets-table').DataTable({
+    "paging": false,
+    "info": false,
+    // searching: false,
+    // "select":t/rue,
+    language: {
+        searchPlaceholder: "Type..."
+    }
+});
     </script>
 @endpush

@@ -67,9 +67,9 @@
                 @endforelse
 
             </section>
-            {{-- @livewire('messages-component', ['selected_conversation' => $selected_conversation ,'user_timezone'=>$user_timezone]) --}}
+            @livewire('messages-component', ['selected_conversation' => $selected_conversation ,'user_timezone'=>$user_timezone])
 
-            <section id="messages" class="chat col-12 col-sm-8  vh-100 align-items-end">
+            {{-- <section id="messages" class="chat col-12 col-sm-8  vh-100 align-items-end">
                 <div class="header-chat col-12 justify-content-between pr-6">
                     <div class="d-flex ">
 
@@ -173,7 +173,7 @@
                 </div>
                 @if (isset($current_conversation))
                     @if ($current_conversation->status == 'active')
-                        {{-- <form enctype="multipart/form-data" action="{{ route('organization.send_message') }}" method="POST"
+                        <form enctype="multipart/form-data" action="{{ route('organization.send_message') }}" method="POST"
                             class="">
                             @csrf
                             <div class="footer-chat col-12 mt-10 p-20">
@@ -188,7 +188,7 @@
                                     <i class="icon send fa fa-paper-plane-o clickable   mb-2" aria-hidden="true"></i>
                                 </button>
                             </div>
-                        </form> --}}
+                        </form>
                     @elseif($current_conversation->status == 'completed')
                     <div class="alert alert-success text-center" role="alert">
                         this conversation has ended !
@@ -199,7 +199,7 @@
                         </div>
                     @endif
                 @endif
-            </section>
+            </section> --}}
 
 
         </div>

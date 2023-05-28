@@ -496,7 +496,7 @@
                                                     <button
 
                                                         class="theme-btn   w-100 btn btn-danger">
-                                                        <a href="{{ route('student.support-ticket.organization.create', ['organization' => $user->organization->id]) }}">{{ __('Help Support') }}
+                                                        <a class="text-white" href="{{ route('student.support-ticket.organization.create', ['organization' => $user->organization->id]) }}">{{ __('Help Support') }}
                                                         </a>
                                                     </button>
                                                 </div>

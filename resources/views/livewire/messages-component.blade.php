@@ -14,12 +14,11 @@
                 <li>
                     @if (isset($current_conversation))
                         @if ($current_conversation->status == 'active')
-
-                                <button wire:click='stop_conversation' class="dropdown-item" href="#">end conversation</button>
+                            <button wire:click='stop_conversation' class="dropdown-item" href="#">end
+                                conversation</button>
                         @else
-
-                                <button wire:click='resume_conversation' class="dropdown-item" href="#">resume conversation</button>
-
+                            <button wire:click='resume_conversation' class="dropdown-item" href="#">resume
+                                conversation</button>
                         @endif
                     @endif
 
@@ -119,7 +118,7 @@
                     <input wire:model='file' id="file-upload" type="file" name="shared_file" />
                     <input wire:model.defer='content' name="content" type="text" class="write-message col-10"
                         placeholder="Type your message here" required />
-                    <button type="submit" class="ms-auto">
+                    <button type="submit" class="ms-auto" id="submit_button">
                         <i class="icon send fa fa-paper-plane-o clickable   mb-2" aria-hidden="true"></i>
                     </button>
                 </div>
@@ -138,7 +137,14 @@
         @push('toastr_messages')
             <script>
                 toastr.success("Comment successfully.")
+
             </script>
         @endpush
     @endif
+    @push('script')
+            <script>
+                var messages_container = document.getElementById('messages_container');
+                messages_container.scrollTop = messages_container.scrollHeight;
+            </script>
+    @endpush
 </section>

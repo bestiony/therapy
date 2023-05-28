@@ -7,34 +7,53 @@
         <style>
             .discussions {
                 box-shadow: none;
+                max-height: 90% !important;
             }
 
-            p {
-                line-height: 20px !important;
-            }
-
-            .message-active {
-                border-right: 8px solid #5e3fd7 !important;
-            }
-            #messages_container{
-                height: 70% !important;
-
-            }
             @media only screen and (max-width: 600px) {
                 .send {
                     margin-left: 0px !important;
                 }
 
             }
+
+            /* #submit_button {
+                background-color: blueviolet;
+                display: flex;
+                justify-content: center;
+
+            } */
+
+            #messages_container {
+                height: 79% !important;
+            }
+
+            .desc-contact {
+                height: 50px;
+            }
+
+            .chat .footer-chat .send {
+                color: #fff;
+                background-color: #5e3fd7;
+                /* position: absolute; */
+                /* right: 50px; */
+                padding: 12px 12px 12px 12px;
+                border-radius: 50px;
+                font-size: 14pt;
+            }
         </style>
+        @livewireStyles
+    @endpush
+    @push('script')
+        @livewireScripts
     @endpush
     <div class="inner-container min-vh-100">
         <div class="row flex-wrap vh-100">
             @php
-            $user_timezone = session('timezone');
-        @endphp
+                $user_timezone = session('timezone');
+            @endphp
 
-            <section id="discussions" class="discussions col-12 col-sm-4  overflow-auto position-relative">
+            {{-- <section id="discussions" class="discussions col-12 col-sm-4  overflow-auto position-relative">
                 <div class="discussion search ">
                     <div class="searchbar">
                         <i class="fa fa-search" aria-hidden="true"></i>
@@ -46,55 +65,58 @@
                         $latestMessage = $convo->messages->last();
                         $time = $latestMessage ? $latestMessage->created_at : false;
                         $now = Carbon\Carbon::now('Asia/Qatar');
-                        $timeSinceLatestMessage = $time ? $now->diffForHumans($time, true) : "";
+                        $timeSinceLatestMessage = $time ? $now->diffForHumans($time, true) : '';
                         // dd($time);
                     @endphp
                     <div
                         class="discussion {{ $selected_conversation == $convo->id ? 'message-active' : '' }} position-relative">
                         <div class="photo" style="background-image: url({{ asset($convo->patient->image) }});">
-                            {{-- <div class="online"></div> --}}
                             <a class="stretched-link" href="{{ route('admin.messages', ['convo' => $convo->id]) }}"></a>
                         </div>
                         <div class="desc-contact">
                             <p class="name">{{ $convo->patient->name }}
-                                @if($convo->order)
-                                [O-{{ $convo->order->id }}]
+                                @if ($convo->order)
+                                    [O-{{ $convo->order->id }}]
                                 @endif
                             </p>
                             <p class="message">{{ $latestMessage ? $latestMessage->content : '' }}</p>
                         </div>
-                        @if($time)
-                        <div class="timer text-center">{{ $timeSinceLatestMessage }}</div>
+                        @if ($time)
+                            <div class="timer text-center">{{ $timeSinceLatestMessage }}</div>
                         @endif
                     </div>
                 @empty
                     <p class="text-center text-danger my-4">No conversations available </p>
                 @endforelse
+                    <div class="d-flex justify-content-center">
+                        {{$conversations->onEachSide(1)->links()}}
+                    </div>
+            </section> --}}
+            @livewire('conversations-component', ['selected_conversation' => $selected_conversation, 'user_timezone' => $user_timezone])
+            @livewire('messages-component', ['selected_conversation' => $selected_conversation, 'user_timezone' => $user_timezone])
 
-            </section>
-            <section id="messages" class="chat col-12 col-sm-8  vh-100 align-items-end">
+            {{-- <section id="messages" class="chat col-12 col-sm-8  vh-100 align-items-end">
                 <div class="header-chat col-12 justify-content-between pr-6">
                     <div class="d-flex ">
 
                         <i class="icon fa fa-user-o" aria-hidden="true"></i>
-                        <p class="name">{{ $current_conversation ? $current_conversation->therapist->name : '' }}</p>
+                        <p class="name">{{ $current_conversation ? $current_conversation->patient->name : '' }}</p>
                     </div>
-                    @if ($current_conversation)
-                        <i class="icon clickable fa fa-ellipsis-h mx-4 " aria-hidden="true" data-bs-toggle="dropdown"
-                            aria-expanded="false"></i>
-                    @endif
+                    <i class="icon clickable fa fa-ellipsis-h mx-4 " aria-hidden="true" data-bs-toggle="dropdown"
+                        aria-expanded="false"></i>
+
                     <ul class="dropdown-menu">
 
                         <li>
                             @if (isset($current_conversation))
                                 @if ($current_conversation->status == 'active')
-                                    <form action="{{ route('admin.stop-conversation') }}" method="POST">
+                                    <form action="{{ route('organization.stop-conversation') }}" method="POST">
                                         @csrf
                                         <input type="hidden" name="conversation_id" value="{{ $selected_conversation }}">
-                                        <button class="dropdown-item" href="#">end conversation</button>
+                                        <button class="dropdown-item" href="#">stop conversation</button>
                                     </form>
                                 @else
-                                    <form action="{{ route('admin.resume-conversation') }}" method="POST">
+                                    <form action="{{ route('organization.resume-conversation') }}" method="POST">
                                         @csrf
                                         <input type="hidden" name="conversation_id" value="{{ $selected_conversation }}">
                                         <button class="dropdown-item" href="#">resume conversation</button>
@@ -111,7 +133,6 @@
                     @php
                         $sender = 0;
                         $prevoius_message_time = 0;
-
                     @endphp
                     @forelse($messages as $message)
                         @if ($sender != $message->sender_id && $sender != 0)
@@ -149,7 +170,6 @@
                                 <div class="message">
                                     <div class="photo"
                                         style="background-image: url({{ asset($message->sender->image) }});">
-                                        {{-- <div class="online"></div> --}}
                                     </div>
                                     <p class="text"> {{ $message->content }} </p>
                                 </div>
@@ -165,7 +185,7 @@
                         @endif
                         @if ($message->id == $messages->last()->id)
                             <p class="time {{ $message->sender_id == $user->id ? 'text-end me-5' : 'text-start' }}">
-                                {{ $message->created_at }}</p>
+                                {{ $message->created_at->timezone($user_timezone) }}</p>
                         @endif
                         @php
                             $sender = $message->sender_id;
@@ -175,17 +195,37 @@
                     @empty
                         <p class="text-center text-danger">No messages available </p>
                     @endforelse
+
                 </div>
                 @if (isset($current_conversation))
-
-                @if($current_conversation->status == 'completed')
-                <div class="alert alert-success text-center" role="alert">
-                    this conversation has ended !
-                </div>
+                    @if ($current_conversation->status == 'active')
+                        <form enctype="multipart/form-data" action="{{ route('organization.send_message') }}" method="POST"
+                            class="">
+                            @csrf
+                            <div class="footer-chat col-12 mt-10 p-20">
+                                <input type="hidden" name="conversation_id" value="{{ $selected_conversation }}">
+                                <label for="file-upload" class="custom-file-upload">
+                                    <i class="fa fa-cloud-upload">Upload</i>
+                                </label>
+                                <input id="file-upload" type="file" name="shared_file" />
+                                <input name="content" type="text" class="write-message col-10"
+                                    placeholder="Type your message here" />
+                                <button type="submit" class="ms-auto">
+                                    <i class="icon send fa fa-paper-plane-o clickable   mb-2" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </form>
+                    @elseif($current_conversation->status == 'completed')
+                    <div class="alert alert-success text-center" role="alert">
+                        this conversation has ended !
+                    </div>
+                    @else
+                        <div class="alert alert-danger text-center" role="alert">
+                            this conversation was paused by the instructor
+                        </div>
+                    @endif
                 @endif
-                @endif
-
-            </section>
+            </section> --}}
 
 
         </div>

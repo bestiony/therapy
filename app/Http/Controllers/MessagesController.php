@@ -251,10 +251,10 @@ class MessagesController extends Controller
         if(  $user->role != USER_ROLE_ADMIN ){
             return back();
         }
-        $data['conversations'] = Conversation::with(['messages','therapist','patient','order'])->orderBy('id','desc')->get();
+        $data['conversations'] = Conversation::with(['messages','therapist','patient','order'])->orderBy('id','desc')->paginate(10);
         $data['selected_conversation'] = $selected_conversation;
         $data['current_conversation'] = Conversation::find($selected_conversation);
-        $data['messages'] = Messages::whereConversationId($selected_conversation)->get();
+        // $data['messages'] = Messages::whereConversationId($selected_conversation)->paginate(10);
         $data['user'] = $user;
         return view('admin.messages.index',$data);
     }
@@ -295,9 +295,9 @@ class MessagesController extends Controller
         }
         $org_therapists = $user->organization->certified_parents->pluck('user_id')->toArray();
         $data['conversations'] = Conversation::with(['messages', 'therapist', 'patient', 'order'])->whereIn('therapist_id', $org_therapists)->orderBy('id', 'desc')->get();
-        $data['navInstructorActiveClass'] = 'has-open';
+        $data['navCertifiedParentActiveClass'] = 'has-open';
 
-        $data['subNavInstructorMessagesActiveClass'] = 'active';
+        $data['subNavParentsMessagesActiveClass'] = 'active';
         $data['selected_conversation'] = $selected_conversation;
         $data['current_conversation'] = Conversation::find($selected_conversation);
         $data['messages'] = Messages::whereConversationId($selected_conversation)->get();

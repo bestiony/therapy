@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\Conversation;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -40,12 +41,18 @@ class ConversationsComponent extends Component
     }
     public function render()
     {
-        $search_term = '%'. $this->search . '%';
-        $data['conversations'] = Conversation::with(['messages', 'therapist', 'patient', 'order'])->whereHas('therapist',function ($query) use ($search_term){
-            $query->where('name', 'like', $search_term)
-            ->orWhere('email', 'LIKE', $search_term)
-            ;
-        } )->paginate(7);
+        $search_term = '%' . $this->search . '%';
+        $data['conversations'] = Conversation::with(['messages', 'therapist', 'patient', 'order'])
+            ->select('conversations.*')
+            ->leftJoin(DB::raw('(SELECT MAX(created_at) AS last_message_created_at, conversation_id FROM messages GROUP BY conversation_id) AS last_messages'), function ($join) {
+                $join->on('conversations.id', '=', 'last_messages.conversation_id');
+            })
+            ->whereHas('therapist', function ($query) use ($search_term) {
+                $query->where('name', 'like', $search_term)
+                    ->orWhere('email', 'LIKE', $search_term);
+            })
+            ->orderByDesc('last_messages.last_message_created_at')
+            ->paginate(7);
         return view('livewire.conversations-component', $data);
     }
 }

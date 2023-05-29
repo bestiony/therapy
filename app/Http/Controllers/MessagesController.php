@@ -11,6 +11,7 @@ use App\Traits\General;
 use App\Traits\SendNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class MessagesController extends Controller
@@ -19,11 +20,12 @@ class MessagesController extends Controller
     use SendNotification;
     public  $views = [USER_ROLE_INSTRUCTOR => 'instructor', USER_ROLE_ORGANIZATION => 'organization', USER_ROLE_PARENT => 'certified_parent'];
 
-    public function patient_index(Request $request){
+    public function patient_index(Request $request)
+    {
         $selected_conversation = $request->convo;
 
         $user = auth()->user();
-        if(!in_array($user->role , [USER_ROLE_STUDENT , USER_ROLE_INSTRUCTOR])){
+        if (!in_array($user->role, [USER_ROLE_STUDENT, USER_ROLE_INSTRUCTOR])) {
             return back();
         }
         $conversation = Conversation::find($selected_conversation);
@@ -33,7 +35,14 @@ class MessagesController extends Controller
                 return back();
             }
         }
-        $data['conversations'] = Conversation::with(['messages','therapist','patient','order'])->wherePatientId($user->id)->orderBy('id','desc')->get();
+        $data['conversations'] = Conversation::with(['messages', 'therapist', 'patient', 'order'])
+            ->select('conversations.*')
+            ->leftJoin(DB::raw('(SELECT MAX(created_at) AS last_message_created_at, conversation_id FROM messages GROUP BY conversation_id) AS last_messages'), function ($join) {
+                $join->on('conversations.id', '=', 'last_messages.conversation_id');
+            })
+            ->wherePatientId($user->id)
+            ->orderByDesc('last_messages.last_message_created_at')
+            ->get();
         $data['selected_conversation'] = $selected_conversation;
 
         // $data['current_conversation'] = Conversation::find($selected_conversation);
@@ -45,62 +54,64 @@ class MessagesController extends Controller
         //     }
         // });
         $data['user'] = $user;
-        return view('frontend.student.messages.index',$data);
+        return view('frontend.student.messages.index', $data);
     }
-    public function patient_sends_message(Request $request){
+    public function patient_sends_message(Request $request)
+    {
         $user = auth()->user();
         $file = $request->file('shared_file');
 
         $request->validate([
-            'content'=>'required',
-            'conversation_id'=>'required',
-        ],[
-            'content'=>'the message content is required',
-            'conversation_id'=>'please choose a conversation first',
+            'content' => 'required',
+            'conversation_id' => 'required',
+        ], [
+            'content' => 'the message content is required',
+            'conversation_id' => 'please choose a conversation first',
         ]);
 
-        $conversation = Conversation::where('id',$request->conversation_id)->wherePatientId($user->id)->whereStatus('active')->first();
-        if(!$conversation){
-        $this->showToastrMessage('warning','conversation was paused by the instructor');
+        $conversation = Conversation::where('id', $request->conversation_id)->wherePatientId($user->id)->whereStatus('active')->first();
+        if (!$conversation) {
+            $this->showToastrMessage('warning', 'conversation was paused by the instructor');
 
             return back();
         }
         $fileName = null;
-        if($file){
-            $fileName =time().'-'.rand(1,10000).'.'.$file->extension();
-            $file->storeAs('uploads/conversations', $fileName , 'public' );
-            $fileName = 'storage/'. CONVERSATIONS_FILES_STORAGE . $fileName;
+        if ($file) {
+            $fileName = time() . '-' . rand(1, 10000) . '.' . $file->extension();
+            $file->storeAs('uploads/conversations', $fileName, 'public');
+            $fileName = 'storage/' . CONVERSATIONS_FILES_STORAGE . $fileName;
         }
         $last_message = $conversation->messages->last();
-            if(!$last_message || $last_message->is_seen){
+        if (!$last_message || $last_message->is_seen) {
             notify_user_about_chat_message($conversation, $user, true);
-                // $text = 'you have a new message from ' . $user->name ;
-                // $url = route('instructor.messages',['convo'=>$conversation->id]);
-                // $reciever = $conversation->therapist_id;
-                // $this->send($text, USER_ROLE_INSTRUCTOR,$url, $reciever);
-                // $email_data =[
-                //     'email_title'=>'New Message from '. $user->name .' on '. get_option('app_name'),
-                //     'sender_name' => $user->name,
-                //     'user_name'=>User::find($reciever)->name,
-                //     'conversation_id'=>$conversation->id,
-                // ];
-                // Mail::to(User::find($reciever))->send(new NewMessageFromStudentMail($email_data));
+            // $text = 'you have a new message from ' . $user->name ;
+            // $url = route('instructor.messages',['convo'=>$conversation->id]);
+            // $reciever = $conversation->therapist_id;
+            // $this->send($text, USER_ROLE_INSTRUCTOR,$url, $reciever);
+            // $email_data =[
+            //     'email_title'=>'New Message from '. $user->name .' on '. get_option('app_name'),
+            //     'sender_name' => $user->name,
+            //     'user_name'=>User::find($reciever)->name,
+            //     'conversation_id'=>$conversation->id,
+            // ];
+            // Mail::to(User::find($reciever))->send(new NewMessageFromStudentMail($email_data));
         }
         $message = Messages::create([
-            'sender_id'=> $user->id,
-            'conversation_id'=> $conversation->id,
-            'content'=> $request->content,
-            'file'=>$fileName,
+            'sender_id' => $user->id,
+            'conversation_id' => $conversation->id,
+            'content' => $request->content,
+            'file' => $fileName,
         ]);
-        return redirect()->route('student.messages',['convo'=>$conversation->id]);
+        return redirect()->route('student.messages', ['convo' => $conversation->id]);
     }
 
-    public function therapist_index(Request $request){
+    public function therapist_index(Request $request)
+    {
         $data['navConsultationActiveClass'] = 'has-open';
         $data['subNavMyMessagesActiveClass'] = 'active';
         $selected_conversation = $request->convo;
         $user = auth()->user();
-        if( !in_array( $user->role ,[USER_ROLE_INSTRUCTOR, USER_ROLE_ORGANIZATION] )){
+        if (!in_array($user->role, [USER_ROLE_INSTRUCTOR, USER_ROLE_ORGANIZATION])) {
             return back();
         }
         $conversation = Conversation::where('id', $request->conversation_id)->wherePatientId($user->id)->whereStatus('active')->first();
@@ -110,36 +121,45 @@ class MessagesController extends Controller
                 return back();
             }
         }
-        $data['conversations'] = Conversation::with(['messages','therapist','patient','order'])->whereTherapistId($user->id)->orderBy('id','desc')->get();
+        $data['conversations'] = Conversation::with(['messages', 'therapist', 'patient', 'order'])
+            ->select('conversations.*')
+            ->leftJoin(DB::raw('(SELECT MAX(created_at) AS last_message_created_at, conversation_id FROM messages GROUP BY conversation_id) AS last_messages'), function ($join) {
+                $join->on('conversations.id', '=', 'last_messages.conversation_id');
+            })
+            ->whereTherapistId($user->id)
+            ->orderByDesc('last_messages.last_message_created_at')
+            ->get();
         $data['selected_conversation'] = $selected_conversation;
         $data['current_conversation'] = Conversation::find($selected_conversation);
 
         $data['messages'] = Messages::whereConversationId($selected_conversation)->get();
-        $data['messages']->each(function($item, $key) use($user){
-            if($item->sender_id != $user->id){
+        $data['messages']->each(function ($item, $key) use ($user) {
+            if ($item->sender_id != $user->id) {
                 $item->is_seen = true;
                 $item->update();
             }
         });
         $data['user'] = $user;
-        return view( $this->views[$user->role].'.messages.index',$data);
+        return view($this->views[$user->role] . '.messages.index', $data);
     }
-    public function start_chat_with_parent(User $user){
+    public function start_chat_with_parent(User $user)
+    {
         $patient = auth()->user();
-        if($patient->id == $user->id){
-            return back()->with('error',__("you can't chat with yourself !"));
+        if ($patient->id == $user->id) {
+            return back()->with('error', __("you can't chat with yourself !"));
         }
         $conversation = Conversation::firstOrCreate([
-                    'therapist_id' => $user->id,
-                    'patient_id' => $patient->id,
-                    'order_id' => null,
+            'therapist_id' => $user->id,
+            'patient_id' => $patient->id,
+            'order_id' => null,
         ]);
-        return redirect()->route('student.messages',['convo'=>$conversation->id]);
+        return redirect()->route('student.messages', ['convo' => $conversation->id]);
     }
-    public function parent_index(Request $request){
+    public function parent_index(Request $request)
+    {
         $selected_conversation = $request->convo;
         $user = auth()->user();
-        if( !in_array( $user->role ,[USER_ROLE_PARENT, USER_ROLE_ORGANIZATION] )){
+        if (!in_array($user->role, [USER_ROLE_PARENT, USER_ROLE_ORGANIZATION])) {
             return back();
         }
         $conversation = Conversation::where('id', $request->conversation_id)->wherePatientId($user->id)->whereStatus('active')->first();
@@ -149,117 +169,121 @@ class MessagesController extends Controller
                 return back();
             }
         }
-        $data['conversations'] = Conversation::with(['messages','therapist','patient','order'])->whereTherapistId($user->id)->orderBy('id','desc')->get();
+        $data['conversations'] = Conversation::with(['messages', 'therapist', 'patient', 'order'])->whereTherapistId($user->id)->orderBy('id', 'desc')->get();
         $data['selected_conversation'] = $selected_conversation;
         $data['current_conversation'] = Conversation::find($selected_conversation);
 
         $data['messages'] = Messages::whereConversationId($selected_conversation)->get();
-        $data['messages']->each(function($item, $key) use($user){
-            if($item->sender_id != $user->id){
+        $data['messages']->each(function ($item, $key) use ($user) {
+            if ($item->sender_id != $user->id) {
                 $item->is_seen = true;
                 $item->update();
             }
         });
         $data['user'] = $user;
-        return view('certified_parent.messages.index',$data);
+        return view('certified_parent.messages.index', $data);
     }
 
-    public function therapsit_sends_message(Request $request){
+    public function therapsit_sends_message(Request $request)
+    {
         $user = auth()->user();
         $file = $request->file('shared_file');
 
         $request->validate([
-            'content'=>'required',
-            'conversation_id'=>'required',
-        ],[
-            'content'=>'the message content is required',
-            'conversation_id'=>'please choose a conversation first',
+            'content' => 'required',
+            'conversation_id' => 'required',
+        ], [
+            'content' => 'the message content is required',
+            'conversation_id' => 'please choose a conversation first',
         ]);
 
-        $conversation = Conversation::where('id',$request->conversation_id)->whereTherapistId($user->id)->whereStatus('active')->first();
-        if(!$conversation){
+        $conversation = Conversation::where('id', $request->conversation_id)->whereTherapistId($user->id)->whereStatus('active')->first();
+        if (!$conversation) {
             return back();
         }
         $fileName = null;
-        if($file){
-            $fileName =time().'-'.rand(1,10000).'.'.$file->extension();
-            $file->storeAs('uploads/conversations', $fileName , 'public' );
-            $fileName = 'storage/'. CONVERSATIONS_FILES_STORAGE . $fileName;
+        if ($file) {
+            $fileName = time() . '-' . rand(1, 10000) . '.' . $file->extension();
+            $file->storeAs('uploads/conversations', $fileName, 'public');
+            $fileName = 'storage/' . CONVERSATIONS_FILES_STORAGE . $fileName;
         }
         $last_message = $conversation->messages->last();
-            if(!$last_message || $last_message->is_seen){
-                $text = 'you have a new message from ' . $user->name ;
-                $url = route('student.messages',['convo'=>$conversation->id]);
-                $reciever = $conversation->patient_id;
-                $this->send($text, USER_ROLE_STUDENT,$url, $reciever);
-                $email_data =[
-                    'email_title'=>'New Message from '. $user->name .' on '. get_option('app_name'),
-                    'sender_name' => $user->name,
-                    'user_name'=>User::find($reciever)->name,
-                    'conversation_id'=>$conversation->id,
-                ];
-                Mail::to(User::find($reciever))->send(new NewMessageFromInstructorMail($email_data));
-
+        if (!$last_message || $last_message->is_seen) {
+            $text = 'you have a new message from ' . $user->name;
+            $url = route('student.messages', ['convo' => $conversation->id]);
+            $reciever = $conversation->patient_id;
+            $this->send($text, USER_ROLE_STUDENT, $url, $reciever);
+            $email_data = [
+                'email_title' => 'New Message from ' . $user->name . ' on ' . get_option('app_name'),
+                'sender_name' => $user->name,
+                'user_name' => User::find($reciever)->name,
+                'conversation_id' => $conversation->id,
+            ];
+            Mail::to(User::find($reciever))->send(new NewMessageFromInstructorMail($email_data));
         }
         $message = Messages::create([
-            'sender_id'=> $user->id,
-            'conversation_id'=> $conversation->id,
-            'content'=> $request->content,
-            'file'=>$fileName,
+            'sender_id' => $user->id,
+            'conversation_id' => $conversation->id,
+            'content' => $request->content,
+            'file' => $fileName,
         ]);
 
-        return redirect()->route($this->views[$user->role].'.messages',['convo'=>$conversation->id]);
+        return redirect()->route($this->views[$user->role] . '.messages', ['convo' => $conversation->id]);
     }
 
-    public function therapsit_resume_conversation(Request $request ){
-        if(!auth()->user()->role == USER_ROLE_ADMIN){
+    public function therapsit_resume_conversation(Request $request)
+    {
+        if (!auth()->user()->role == USER_ROLE_ADMIN) {
 
             $conversation = Conversation::whereTherapistId(auth()->user()->id)->whereId($request->conversation_id)->first();
-        }else{
+        } else {
             $conversation = Conversation::find($request->conversation_id);
         }
 
-        if(!$conversation){
+        if (!$conversation) {
             return back();
         }
         $conversation->status = "active";
         $conversation->save();
-        $this->showToastrMessage('success','conversation was resumed successfully');
+        $this->showToastrMessage('success', 'conversation was resumed successfully');
         return back();
     }
 
-    public function therapsit_stop_conversation(Request $request ){
-        if(!auth()->user()->role == USER_ROLE_ADMIN){
+    public function therapsit_stop_conversation(Request $request)
+    {
+        if (!auth()->user()->role == USER_ROLE_ADMIN) {
 
             $conversation = Conversation::whereTherapistId(auth()->user()->id)->whereId($request->conversation_id)->first();
-        }else{
+        } else {
             $conversation = Conversation::find($request->conversation_id);
         }
 
-        if(!$conversation){
+        if (!$conversation) {
             return back();
         }
         $conversation->status = "inactive";
         $conversation->save();
-        $this->showToastrMessage('success','conversation was stopped successfully');
+        $this->showToastrMessage('success', 'conversation was stopped successfully');
         return back();
     }
 
-    public function admin_index(Request $request){
+    public function admin_index(Request $request)
+    {
         $selected_conversation = $request->convo;
         $user = auth()->user();
-        if(  $user->role != USER_ROLE_ADMIN ){
+        if ($user->role != USER_ROLE_ADMIN) {
             return back();
         }
-        $data['conversations'] = Conversation::with(['messages','therapist','patient','order'])->orderBy('id','desc')->paginate(10);
+        // $data['conversations'] = Conversation::with(['messages', 'therapist', 'patient', 'order'])->orderBy('id', 'desc')->paginate(10);
         $data['selected_conversation'] = $selected_conversation;
         $data['current_conversation'] = Conversation::find($selected_conversation);
         // $data['messages'] = Messages::whereConversationId($selected_conversation)->paginate(10);
         $data['user'] = $user;
-        return view('admin.messages.index',$data);
+        return view('admin.messages.index', $data);
     }
 
-    public function organization_index(Request $request){
+    public function organization_index(Request $request)
+    {
         $user = auth()->user();
         if ($user->role !=  USER_ROLE_ORGANIZATION) {
             return back();
@@ -270,7 +294,15 @@ class MessagesController extends Controller
             return back();
         }
         $org_therapists = $user->organization->instructors->pluck('user_id')->toArray();
-        $data['conversations'] = Conversation::with(['messages', 'therapist', 'patient', 'order'])->whereIn('therapist_id', $org_therapists)->orderBy('id', 'desc')->get();
+        $data['conversations'] =
+            Conversation::with(['messages', 'therapist', 'patient', 'order'])->select('conversations.*')
+            ->leftJoin(DB::raw('(SELECT MAX(created_at) AS last_message_created_at, conversation_id FROM messages GROUP BY conversation_id) AS last_messages'), function ($join) {
+                $join->on('conversations.id', '=', 'last_messages.conversation_id');
+            })
+            ->whereIn('therapist_id', $org_therapists)
+            ->orderByDesc('last_messages.last_message_created_at')
+            ->get();
+
         $data['navInstructorActiveClass'] = 'has-open';
 
         $data['subNavInstructorMessagesActiveClass'] = 'active';
@@ -280,7 +312,8 @@ class MessagesController extends Controller
         $data['user'] = $user;
         return view('organization.messages.instructors_index', $data);
     }
-    public function organization_parents_index(Request $request){
+    public function organization_parents_index(Request $request)
+    {
         $data['title'] = 'All Certified Parents';
         $data['navCertifiedParentActiveClass'] = 'has-open';
         $data['subNavParentsMessagesActiveClass'] = 'active';
@@ -294,7 +327,14 @@ class MessagesController extends Controller
             return back();
         }
         $org_therapists = $user->organization->certified_parents->pluck('user_id')->toArray();
-        $data['conversations'] = Conversation::with(['messages', 'therapist', 'patient', 'order'])->whereIn('therapist_id', $org_therapists)->orderBy('id', 'desc')->get();
+        $data['conversations'] = Conversation::with(['messages', 'therapist', 'patient', 'order'])
+            ->select('conversations.*')
+            ->leftJoin(DB::raw('(SELECT MAX(created_at) AS last_message_created_at, conversation_id FROM messages GROUP BY conversation_id) AS last_messages'), function ($join) {
+                $join->on('conversations.id', '=', 'last_messages.conversation_id');
+            })
+            ->whereIn('therapist_id', $org_therapists)
+            ->orderByDesc('last_messages.last_message_created_at')
+            ->get();
         $data['navCertifiedParentActiveClass'] = 'has-open';
 
         $data['subNavParentsMessagesActiveClass'] = 'active';
@@ -305,4 +345,3 @@ class MessagesController extends Controller
         return view('organization.messages.parents_index', $data);
     }
 }
-

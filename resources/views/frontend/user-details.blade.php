@@ -491,17 +491,16 @@
                                                     {{ __('Book Schedule') }}
                                                 </button>
                                             </div>
-                                            @if ($user->role == USER_ROLE_ORGANIZATION && $user->organization && $user->id != auth()->id())
-                                                <div class="instructor-bottom-item mt-20 ">
-                                                    <button
-
-                                                        class="theme-btn   w-100 btn btn-danger">
-                                                        <a class="text-white" href="{{ route('student.support-ticket.organization.create', ['organization' => $user->organization->id]) }}">{{ __('Report a violation') }}
-                                                        </a>
-                                                    </button>
-                                                </div>
-                                            @endif
                                         @endif
+                                    @endif
+                                    @if ($user->role == USER_ROLE_ORGANIZATION && $user->organization && $user->id != auth()->id())
+                                        <div class="instructor-bottom-item mt-20 ">
+                                            <button class="theme-btn   w-100 btn btn-danger">
+                                                <a class="text-white"
+                                                    href="{{ route('student.support-ticket.organization.create', ['organization' => $user->organization->id]) }}">{{ __('Report a violation') }}
+                                                </a>
+                                            </button>
+                                        </div>
                                     @endif
                                 @endif
                             </div>

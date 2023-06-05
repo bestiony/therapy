@@ -155,6 +155,8 @@ Route::group(['middleware' => 'private.mode'], function () {
         Route::get('forum-category-posts/{uuid}', [ForumController::class, 'forumCategoryPosts'])->name('forumCategoryPosts');
         Route::get('forum-leaderboard', [ForumController::class, 'forumLeaderboard'])->name('forumLeaderboard');
         Route::get('search-forum-list', [ForumController::class, 'searchForumList'])->name('search-forum.list');
+        Route::post('comment/delete/{comment}', [ForumController::class, 'deleteComment'])->name('delete-comment')->middleware('or:owns_comment,admin','auth');
+        Route::post('reply/delete/{reply}', [ForumController::class, 'deleteReply'])->name('delete-reply')->middleware(['or:owns_reply,admin','auth']);
     });
 
 });

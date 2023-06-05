@@ -65,9 +65,9 @@
                                 </div>
                                 <div class="flex-grow-1 ms-3 feature-content">
                                     <h6><a
-                                            href="{{ route('forum.forumCategoryPosts', $forumCategory->uuid) }}">{{ $forumCategory->title }}</a>
+                                            href="{{ route('forum.forumCategoryPosts', $forumCategory->uuid) }}">{{ __($forumCategory->title) }}</a>
                                     </h6>
-                                    <p>{{ Str::limit($forumCategory->subtitle, 70) }}</p>
+                                    <p>{{ Str::limit(__($forumCategory->subtitle), 70) }}</p>
                                 </div>
                             </div>
                         </div>

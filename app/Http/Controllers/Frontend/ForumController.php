@@ -29,7 +29,7 @@ class ForumController extends Controller
 
         $data['recent_discussions'] = ForumPost::active()->get();
 
-        $data['blogs'] = Blog::active()->latest()->take(2)->get();
+        $data['blogs'] = Blog::whereHas('user')->active()->latest()->take(2)->get();
 
         $userIDComments = ForumPostComment::pluck('user_id')->toArray();
         $data['topContributors'] = User::whereIn('id', $userIDComments)->withCount([
@@ -77,7 +77,7 @@ class ForumController extends Controller
     public function forumPostDetails($uuid)
     {
         $data['pageTitle'] = 'Forum Details';
-
+        $data['is_admin'] = Auth::check() ? auth()->user()->role == USER_ROLE_ADMIN : null;
         $data['forumPost'] = ForumPost::where('uuid', $uuid)->firstOrFail();
         $data['forumPost']->total_seen = ++$data['forumPost']->total_seen;
         $data['forumPost']->save();
@@ -171,5 +171,16 @@ class ForumController extends Controller
     {
         $data['forums'] = ForumPost::active()->where('title', 'like', "%{$request->title}%")->get();
         return view('frontend.forum.partial.render-forum-search-list', $data);
+    }
+    public function deleteComment(ForumPostComment $comment){
+        $comment->delete();
+        $this->showToastrMessage('success', __('Comment deleted successfully.'));
+        return redirect()->back();
+
+    }
+    public function deleteReply(ForumPostComment $reply){
+        $reply->delete();
+        $this->showToastrMessage('success', __('Reply deleted successfully.'));
+        return redirect()->back();
     }
 }

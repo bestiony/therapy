@@ -19,7 +19,7 @@ class BlogController extends Controller
     {
         $data['pageTitle'] = "Blog";
         $data['metaData'] = staticMeta(5);
-        $data['blogs'] = Blog::latest()->active()->paginate(10);
+        $data['blogs'] = Blog::whereHas('user')->latest()->active()->paginate(10);
         $data['recentBlogs'] = Blog::latest()->take(3)->active()->get();
         $data['blogCategories'] = BlogCategory::withCount('activeBlogs')->active()->get();
         $data['tags'] = Tag::all();
@@ -32,9 +32,9 @@ class BlogController extends Controller
         $data['pageTitle'] = "Blog Details";
         $data['metaData'] = staticMeta(6);
         $data['blog'] = Blog::with('tags')->whereSlug($slug)->firstOrFail();
-        
+
         #dd($data['blog']['details']);
-        
+
         $tag_ids = BlogTag::whereBlogId($data['blog']->id)->pluck('tag_id')->toArray();
         $data['tags'] = Tag::whereIn('id', $tag_ids)->get();
         $data['recentBlogs'] = Blog::latest()->take(3)->active()->get();

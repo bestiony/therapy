@@ -96,5 +96,8 @@ class Kernel extends HttpKernel
         'saas_check' => SaasCheck::class,
         'verifiedphone' =>\App\Http\Middleware\PhoneIsVerified::class,
         'notverifiedphone' =>\App\Http\Middleware\PhoneNotVerified::class,
+        'owns_comment' => \App\Http\Middleware\OwnsComment::class,
+        'owns_reply' => \App\Http\Middleware\OwnsReply::class,
+        'or' => \App\Http\Middleware\OrMiddleware::class,
     ];
 }

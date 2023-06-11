@@ -463,11 +463,11 @@
     <!-- Customers Says/ testimonial Area End -->
 
     <!-- Course Instructor and Support Area Start -->
-    <section style="display:none;"
-        class="course-instructor-support-area bg-light section-t-space {{ @$home->instructor_support_area == 1 ? '' : 'd-none' }}">
+    <section 
+        class="course-instructor-support-area bg-light {{ @$home->instructor_support_area == 1 ? '' : 'd-none' }}">
         <div class="container">
 
-            <div class="section-title">
+            <div class="section-title" style="display:none;">
                 <h3 class="section-heading">Our Company</h3>
                 <p class="section-sub-heading">{{ __(get_option('faq_subtitle')) }}</p>
             </div>

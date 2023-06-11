@@ -114,6 +114,27 @@
                 </div>
     </div>
 </div>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 
+<a target="_blank" href="https://my-therapists.com/public/platform-ALL.pdf"  class=" theme-btn2 call" style="padding-left:0;"><i class="fa fa-user "></i><span>{{ __('Important Information') }} </span></a>
+<a href="https://api.whatsapp.com/send?phone=+97431062048&text= 
+" target="_blank" class=" theme-btn2 whatsapp"><img style="width:50px;" src="https://seeklogo.com/images/W/whatsapp-icon-logo-8CA4FB831E-seeklogo.com.png" /><span>{{ __('Whatsapp') }}</span></a>
 <style>
+ .client-logo-item img {
+    max-height: 100%;
+}.client-logo-item {
+    margin: 0;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+}
+    .theme-btn2{background-color:#fff;border-radius:40px;bottom:10px;color:#fff;display:table;height:50px;right:30px;min-width:50px;position:fixed;text-align:center;z-index:9999}.theme-btn2 i{font-size:22px;line-height:50px}.theme-btn2.bt-support-now{background:#1ebbf0;background:-moz-linear-gradient(45deg,#1ebbf0 8%,#39dfaa 100%);background:-webkit-linear-gradient(45deg,#1ebbf0 8%,#39dfaa 100%);background:linear-gradient(45deg,#1ebbf0 8%,#39dfaa 100%);bottom:70px}.theme-btn2.bt-buy-now{background:#1fdf61;background:-moz-linear-gradient(top,#a3d179 0,#88ba46 100%);background:-webkit-linear-gradient(top,#a3d179 0,#88ba46 100%);background:linear-gradient(to bottom,#a3d179 0,#88ba46 100%)}.theme-btn2:hover{color:#fff;padding:0 20px}.theme-btn2 span{display:table-cell;vertical-align:middle;font-size:16px;letter-spacing:-15px;opacity:0;line-height:50px;transition:all .5s;-webkit-transition:all .5s;-moz-transition:all .5s;text-transform:uppercase}.theme-btn2:hover span{opacity:1;letter-spacing:1px;padding-left:10px}.at-expanding-share-button[data-position=bottom-left]{bottom:130px!important}
+.whatsapp{background:green;}
+.call{background:red;}
+.cons{background:#e63108;}
+.service-content p{color:#000;}
+
+.theme-btn2.call{bottom:70px;}
+.theme-btn2.cons{bottom:130px;}
+
 </style>

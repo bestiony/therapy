@@ -17,7 +17,7 @@
 
 @section('content')
     <div class="instructor-profile-right-part">
-        <form method="POST" action="{{ route('save.profile', [$certified_parent->uuid]) }}" enctype="multipart/form-data">
+        <form method="POST" action="{{ route('parent_save.profile', [$certified_parent->uuid]) }}" enctype="multipart/form-data">
             @csrf
             <div class="instructor-profile-info-box">
                 <h6 class="instructor-info-box-title">{{ __('Personal Info') }}</h6>

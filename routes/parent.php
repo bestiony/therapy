@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('parent.dashboard');
 
 Route::get('profile', [ProfileController::class, 'profile'])->name('parent.profile');
-Route::post('save-profile/{uuid}', [ProfileController::class, 'saveProfile'])->name('save.profile')->middleware('isDemo');
+Route::post('save-profile/{uuid}', [ProfileController::class, 'saveProfile'])->name('parent_save.profile')->middleware('isDemo');
 Route::get('address', [ProfileController::class, 'address'])->name('parent.address');
 Route::post('address-update/{uuid}', [ProfileController::class, 'address_update'])->name('parent.address.update');
 Route::get('get-state-by-country/{country_id}', [ProfileController::class, 'getStateByCountry']);

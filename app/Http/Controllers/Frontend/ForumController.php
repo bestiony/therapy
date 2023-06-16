@@ -68,6 +68,7 @@ class ForumController extends Controller
         $post->title = $request->title;
         $post->forum_category_id = $request->forum_category_id;
         $post->description = $request->description;
+        // $post->status =
         $post->save();
 
         $this->showToastrMessage('success', __('Question created successfully.'));

@@ -4,8 +4,10 @@ namespace App\Http\Livewire;
 
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\Order_item;
 use App\Models\Student;
 use Livewire\Component;
+use Stripe\OrderItem;
 
 class StudentCoursesComponent extends Component
 {
@@ -21,6 +23,7 @@ class StudentCoursesComponent extends Component
     }
     public function delete($user_id){
         Enrollment::where('user_id',$user_id)->where('course_id',$this->selected_course)->delete();
+        Order_item::where('user_id', $user_id)->where('course_id', $this->selected_course)->delete();
         $this->dispatchBrowserEvent('alert_message', [
             'type' => 'success',
             'title' => __('student was removed from course successfully !'),

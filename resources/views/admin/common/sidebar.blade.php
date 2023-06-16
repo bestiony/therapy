@@ -77,7 +77,12 @@
                             <span>{{ __('Enroll In Course') }}</span>
                         </a>
                     </li>
-
+                    <li class="{{ active_if_match('admin/student/courses') }}">
+                        <a href="{{route('student.courses')}}">
+                            <i class="fa fa-circle"></i>
+                            <span>{{ __('Students Courses') }}</span>
+                        </a>
+                    </li>
                 </ul>
             </li>
         @endcanany
@@ -343,12 +348,7 @@
                             <span>{{ __('All Student') }}</span>
                         </a>
                     </li>
-                    <li class="{{ active_if_match('admin/student/courses') }}">
-                        <a href="{{route('student.courses')}}">
-                            <i class="fa fa-circle"></i>
-                            <span>{{ __('Students Courses') }}</span>
-                        </a>
-                    </li>
+
                     <li class="{{ active_if_match('admin/student/create') }}">
                         <a href="{{route('student.create')}}">
                             <i class="fa fa-circle"></i>

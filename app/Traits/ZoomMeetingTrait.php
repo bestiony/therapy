@@ -74,16 +74,16 @@ trait ZoomMeetingTrait
             $body =
                 [
                     "topic" => $data['topic'],
-                    "type" => self::MEETING_TYPE_SCHEDULE,
+                    "type" => 2,
                     "start_time" => $this->toZoomTimeFormat($data['start_date']),
                     "duration" => $data['duration'],
                     "timezone" => @$zoom->timezone ?? 'Asia/Qatar',
-                    // "password" => "123",
-                    "agenda" => (!empty($data['agenda'])) ? $data['agenda'] : null,
+                    "password" => "123",
+                    "agenda" =>  "therapy session",
                     "settings" => [
-                        "host_video" => @$zoom->host_video ?? 0,
-                        "participant_video" => @$zoom->participant_video ?? 0,
-                        "join_before_host" => !(@$zoom->waiting_room ?? 0),
+                        "host_video" => $zoom->host_video ? "true" : "false",
+                        "participant_video" => $zoom->participant_video ? "true" : "false",
+                        "join_before_host" => $zoom->waiting_room ? "true" : "false",
                         "mute_upon_entry" => "true",
                         "breakout room" => [
                             "enable" => true
@@ -101,7 +101,6 @@ trait ZoomMeetingTrait
         } catch (Exception $ex) {
             return $ex->getMessage() . $ex->getLine();
         }
-
         return [
             'success' => $response->getStatusCode() === 201,
             'data' => json_decode($response->getBody(), true),
@@ -115,8 +114,7 @@ trait ZoomMeetingTrait
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
             ])
-            ->post("https://zoom.us/oauth/token"
-                . "?grant_type=account_credentials&account_id=$zoom->account_id");
+            ->post("https://zoom.us/oauth/token?grant_type=account_credentials&account_id=$zoom->account_id");
         if ($response->successful()) {
             $data = json_decode($response->getBody(), true);
             $zoom->update([

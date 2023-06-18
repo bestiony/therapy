@@ -184,7 +184,6 @@ class LiveClassController extends Controller
         // depricated: uses JWT
         // $response = $this->create($request->all());
         $response = $this->createOAuth($request->all());
-        // return $response;
         return response()->json([
             'start_url' => $response['data']['start_url'],
             'join_url' => $response['data']['join_url']

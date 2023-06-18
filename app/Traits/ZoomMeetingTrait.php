@@ -4,8 +4,10 @@ namespace App\Traits;
 
 use App\Models\ZoomSetting;
 use Carbon\Carbon;
+use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Log;
 
 /**
@@ -62,7 +64,68 @@ trait ZoomMeetingTrait
             return '';
         }
     }
+    public function createOAuth($data)
+    {
+        try {
 
+            $access_token =  $this->refreshOAuthToken()['access_token'];
+            $zoom = ZoomSetting::where('user_id', Auth::id())->firstOrFail();
+
+            $body =
+                [
+                    "topic" => $data['topic'],
+                    "type" => self::MEETING_TYPE_SCHEDULE,
+                    "start_time" => $this->toZoomTimeFormat($data['start_date']),
+                    "duration" => $data['duration'],
+                    "timezone" => @$zoom->timezone ?? 'Asia/Qatar',
+                    // "password" => "123",
+                    "agenda" => (!empty($data['agenda'])) ? $data['agenda'] : null,
+                    "settings" => [
+                        "host_video" => @$zoom->host_video ?? 0,
+                        "participant_video" => @$zoom->participant_video ?? 0,
+                        "join_before_host" => !(@$zoom->waiting_room ?? 0),
+                        "mute_upon_entry" => "true",
+                        "breakout room" => [
+                            "enable" => true
+                        ]
+                    ]
+                ];
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+            ])
+                ->withToken($access_token)
+                ->withBody(json_encode($body), 'application/json')
+                ->post("https://api.zoom.us/v2/users/me/meetings")
+                ;
+        } catch (Exception $ex) {
+            return $ex->getMessage() . $ex->getLine();
+        }
+
+        return [
+            'success' => $response->getStatusCode() === 201,
+            'data' => json_decode($response->getBody(), true),
+        ];
+    }
+    public function refreshOAuthToken()
+    {
+        $zoom = ZoomSetting::where('user_id', Auth::id())->firstOrFail();
+        $response = Http::withBasicAuth($zoom->username, $zoom->password)
+            ->withHeaders([
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+            ])
+            ->post("https://zoom.us/oauth/token"
+                . "?grant_type=account_credentials&account_id=$zoom->account_id");
+        if ($response->successful()) {
+            $data = json_decode($response->getBody(), true);
+            $zoom->update([
+                'access_token' => $data['access_token'],
+                'token_expires_at' => now()->addSeconds($data['expires_in']),
+            ]);
+        }
+        return $data;
+    }
     public function create($data)
     {
         $zoom = ZoomSetting::find(Auth::id());
@@ -94,7 +157,7 @@ trait ZoomMeetingTrait
             ]),
         ];
 
-        $response = $c->post($url.$path, $body);
+        $response = $c->post($url . $path, $body);
         // return ['data'=>['start_url'=>'234234','join_url'=>'asdsad']];
 
 

@@ -17,5 +17,10 @@ class ZoomSetting extends Model
         'participant_video',
         'waiting_room',
         'status',
+        'username',
+        'password',
+        'account_id',
+        'access_token',
+        'token_expires_at',
     ];
 }

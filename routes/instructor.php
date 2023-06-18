@@ -147,6 +147,7 @@ Route::prefix('live-class')->group(function () {
         Route::get('view-live-class/{course_uuid}/{uuid}', [LiveClassController::class, 'view'])->name('view');
         Route::get('delete-live-class/{uuid}', [LiveClassController::class, 'delete'])->name('delete')->middleware('isDemo');
         Route::post('get-zoom-link', [LiveClassController::class, 'getZoomMeetingLink'])->name('get-zoom-link');
+        Route::get('oauth', [LiveClassController::class, 'getZoomOAuthMeetingLink']);
     });
 });
 

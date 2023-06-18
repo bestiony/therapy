@@ -24,17 +24,26 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-30">
-                        <label class="font-medium font-15 color-heading">{{__('Zoom API key')}}</label>
-                        <input type="text" name="api_key" value="{{@$zoom->api_key}}" class="form-control" placeholder="{{__('Zoom API key')}}">
-                        @if ($errors->has('api_key'))
-                            <span class="text-danger"><i class="fas fa-exclamation-triangle"></i> {{ $errors->first('api_key') }}</span>
+                        <label class="font-medium font-15 color-heading">{{__('Zoom Account Id')}}</label>
+                        <input type="text" name="account_id" value="{{@$zoom->account_id}}" class="form-control" placeholder="{{__('Zoom Account Id')}}">
+                        @if ($errors->has('account_id'))
+                            <span class="text-danger"><i class="fas fa-exclamation-triangle"></i> {{ $errors->first('account_id') }}</span>
                         @endif
                     </div>
                     <div class="col-md-6 mb-30">
-                        <label class="font-medium font-15 color-heading">{{__('Zoom API Secret')}}</label>
-                        <input type="text" name="api_secret" value="{{@$zoom->api_secret}}" class="form-control" placeholder="{{__('Zoom API Secret')}}">
-                        @if ($errors->has('api_secret'))
-                            <span class="text-danger"><i class="fas fa-exclamation-triangle"></i> {{ $errors->first('api_secret') }}</span>
+                        <label class="font-medium font-15 color-heading">{{__('Zoom Client ID')}}</label>
+                        <input type="text" name="username" value="{{@$zoom->username}}" class="form-control" placeholder="{{__('Zoom Client ID')}}">
+                        @if ($errors->has('username'))
+                            <span class="text-danger"><i class="fas fa-exclamation-triangle"></i> {{ $errors->first('username') }}</span>
+                        @endif
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-30">
+                        <label class="font-medium font-15 color-heading">{{__('Zoom Client secret')}}</label>
+                        <input type="text" name="password" value="{{@$zoom->password}}" class="form-control" placeholder="{{__('Zoom Client secret')}}">
+                        @if ($errors->has('password'))
+                            <span class="text-danger"><i class="fas fa-exclamation-triangle"></i> {{ $errors->first('password') }}</span>
                         @endif
                     </div>
                 </div>

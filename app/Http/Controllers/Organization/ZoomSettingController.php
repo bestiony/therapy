@@ -21,19 +21,22 @@ class ZoomSettingController extends Controller
 
     public function zoomSettingUpdate(Request $request)
     {
-        $request->validate([
-            'api_key' => 'required',
-            'api_secret' => 'required',
-        ]);
-
+        if ($request->status == 1) {
+            $request->validate([
+                'account_id' => 'required',
+                'username' => 'required',
+                'password' => 'required',
+            ]);
+        }
         $zoom = ZoomSetting::whereUserId(Auth::id())->first();
         if (!$zoom) {
             $zoom = new ZoomSetting();
         }
 
         $zoom->user_id = Auth::id();
-        $zoom->api_key = $request->api_key;
-        $zoom->api_secret = $request->api_secret;
+        $zoom->account_id = $request->account_id;
+        $zoom->username = $request->username;
+        $zoom->password = $request->password;
         $zoom->timezone = $request->timezone;
         $zoom->host_video = $request->host_video ?? 0;
         $zoom->participant_video = $request->participant_video ?? 0;

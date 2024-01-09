@@ -205,3 +205,10 @@ const ADMIN_SUPPORT_ROUTES = [
     USER_ROLE_ADMIN  => 'student.support-ticket.show',
     USER_ROLE_ORGANIZATION => '',
 ];
+
+
+
+const ALLOWED_TIME_TILL_BOOKING = 60; // in minutes
+
+
+

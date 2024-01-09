@@ -102,10 +102,9 @@ class CartManagementController extends Controller
         // Start:: Check course, bundle, consultation exists or not. If not exists, Delete it.
         $carts = CartManagement::whereUserId(@Auth::id())->with('course.promotionCourse.promotion', 'bundle', 'consultationSlot.user.instructor')->get();
 
-        if(get_option('subscription_mode')){
+        if (get_option('subscription_mode')) {
             $subscriptionPurchaseEnable = true;
-        }
-        else{
+        } else {
             $subscriptionPurchaseEnable = false;
         }
 
@@ -116,10 +115,9 @@ class CartManagementController extends Controller
                 $cart->delete();
             } elseif ($cart->consultation_slot_id && !$cart->consultationSlot) {
                 $cart->delete();
-            }
-            else{
+            } else {
                 $cartConsultationDetails = $cart->consultation_details ? $cart->consultation_details[0] : null;
-                if(!$cart->is_subscription_enable){
+                if (!$cart->is_subscription_enable) {
                     $subscriptionPurchaseEnable = false;
                 }
 
@@ -138,7 +136,6 @@ class CartManagementController extends Controller
                         $cart->main_price = $course->price;
                         $cart->price = $course->price;
                     }
-
                 }
                 // End:: Course & Promotion Course Check or not
 
@@ -146,9 +143,9 @@ class CartManagementController extends Controller
                 elseif ($cart->consultationSlot) {
                     $consultationSlot = $cart->consultationSlot;
                     // User role check
-                    if($consultationSlot->user->role == USER_ROLE_INSTRUCTOR){
+                    if ($consultationSlot->user->role == USER_ROLE_INSTRUCTOR) {
                         $relation = 'instructor';
-                    }elseif($consultationSlot->user->role == USER_ROLE_ORGANIZATION){
+                    } elseif ($consultationSlot->user->role == USER_ROLE_ORGANIZATION) {
                         $relation = 'organization';
                     }
                     if ($consultationSlot) {
@@ -178,7 +175,7 @@ class CartManagementController extends Controller
                         }
                         $clientOrderType = $newConsultationDataArray['clientOrderType'];
                         $totalCost = ($hour_duration * $hourly_rate) + $minuteCost;
-                        if($clientOrderType == "hourly"){
+                        if ($clientOrderType == "hourly") {
                             $totalCost = ($hour_duration * $hourly_rate) + $minuteCost;
                         } else {
                             $totalCost = $consultationSlot->user->$relation->monthly_rate;
@@ -203,7 +200,7 @@ class CartManagementController extends Controller
             }
         }
 
-        if($subscriptionPurchaseEnable){
+        if ($subscriptionPurchaseEnable) {
             $subscriptionPurchaseEnable = hasLimit(PACKAGE_RULE_COURSE, count($carts));
         }
         $data['subscriptionPurchaseEnable'] = $subscriptionPurchaseEnable;
@@ -348,7 +345,7 @@ class CartManagementController extends Controller
         DB::beginTransaction();
         try {
             if ($request->course_id) {
-                $enrollment = Enrollment::where(['course_id' => $request->course_id , 'user_id' => Auth::user()->id, 'status' => ACCESS_PERIOD_ACTIVE])->whereDate('end_date', '>=', now())->first();
+                $enrollment = Enrollment::where(['course_id' => $request->course_id, 'user_id' => Auth::user()->id, 'status' => ACCESS_PERIOD_ACTIVE])->whereDate('end_date', '>=', now())->first();
 
                 if ($enrollment) {
                     $order = Order::find($enrollment->order_id);
@@ -506,10 +503,10 @@ class CartManagementController extends Controller
             $cart->course_id = $request->course_id;
             $cart->product_id = $request->product_id;
             $cart->bundle_id = $request->bundle_id;
-            if($request->course_id){
+            if ($request->course_id) {
                 $course = Course::findOrFail($request->course_id);
                 $cart->is_subscription_enable = $course->is_subscription_enable;
-            }else if($request->bundle_id){
+            } else if ($request->bundle_id) {
                 $bundle = Bundle::findOrFail($request->bundle_id);
                 $cart->is_subscription_enable = $bundle->is_subscription_enable;
             }
@@ -573,196 +570,238 @@ class CartManagementController extends Controller
             return response()->json($response);
         }
 
-        if ($request->consultation_slot_id) {
-            DB::beginTransaction();
-            try {
-                $consultationExit = ConsultationSlot::whereId($request->consultation_slot_id)->whereUserId($request->booking_instructor_user_id)->first();
+        if (!$request->consultation_slot_id) {
+            $response['msg'] = __("Time slot not found!");
+            $response['status'] = 404;
+            return response()->json($response);
+        }
+        DB::beginTransaction();
+        try {
+            $consultationExit = ConsultationSlot::whereId($request->consultation_slot_id)->whereUserId($request->booking_instructor_user_id)->first();
 
-                if (!$consultationExit) {
-                    $response['msg'] = __("Time slot not found!");
-                    $response['status'] = 404;
-                    DB::rollBack();
-                    return response()->json($response);
-                }
+            if (!$consultationExit) {
+                $response['msg'] = __("Time slot not found!");
+                $response['status'] = 404;
+                DB::rollBack();
+                return response()->json($response);
+            }
 
-                $ownConsultationSlotCheck = ConsultationSlot::whereId($request->consultation_slot_id)->whereUserId(Auth::id())->first();
-                if ($ownConsultationSlotCheck) {
-                    $response['msg'] = __("This is your consultation slot. No need to add.");
+            $ownConsultationSlotCheck = ConsultationSlot::whereId($request->consultation_slot_id)->whereUserId(Auth::id())->first();
+            if ($ownConsultationSlotCheck) {
+                $response['msg'] = __("This is your consultation slot. No need to add.");
+                $response['status'] = 402;
+                DB::rollBack();
+                return response()->json($response);
+            }
+
+            $consultationOrderBooked = Order_item::whereConsultationSlotId($request->consultation_slot_id)->where('consultation_date', $request->bookingDate)->first();
+            if ($consultationOrderBooked) {
+                $order = Order::find($consultationOrderBooked->order_id);
+                if ($order) {
+                    if ($order->payment_status == 'paid' || $order->payment_status == 'free') {
+                        $response['msg'] = __("This slot already purchased. Please try another slot.");
+                        $response['status'] = 402;
+                        DB::rollBack();
+                        return response()->json($response);
+                    }
+                } else {
+                    $response['msg'] = __("Something is wrong! Try again.");
                     $response['status'] = 402;
                     DB::rollBack();
                     return response()->json($response);
                 }
+            }
 
-                $consultationOrderBooked = Order_item::whereConsultationSlotId($request->consultation_slot_id)->where('consultation_date', $request->bookingDate)->first();
-                if ($consultationOrderBooked) {
-                    $order = Order::find($consultationOrderBooked->order_id);
-                    if ($order) {
-                        if ($order->payment_status == 'paid' || $order->payment_status == 'free') {
-                            $response['msg'] = __("This slot already purchased. Please try another slot.");
-                            $response['status'] = 402;
-                            DB::rollBack();
-                            return response()->json($response);
-                        }
-                    } else {
-                        $response['msg'] = __("Something is wrong! Try again.");
+            $consultationOrderExit = Order_item::whereUserId(Auth::user()->id)->whereConsultationSlotId($request->consultation_slot_id)->where('consultation_date', $request->bookingDate)->first();
+            if ($consultationOrderExit) {
+                $order = Order::find($consultationOrderExit->order_id);
+                if ($order) {
+                    if ($order->payment_status == 'due') {
+                        Order_item::whereOrderId($consultationOrderExit->order_id)->get()->map(function ($q) {
+                            $q->delete();
+                        });
+                        $order->delete();
+                    } elseif ($order->payment_status == 'pending') {
+                        $response['msg'] = __("You've already request this slot & status is pending!");
+                        $response['status'] = 402;
+                        DB::rollBack();
+                        return response()->json($response);
+                    } elseif ($order->payment_status == 'paid' || $order->payment_status == 'free') {
+                        $response['msg'] = __("You've already purchased this slot!");
                         $response['status'] = 402;
                         DB::rollBack();
                         return response()->json($response);
                     }
-                }
-
-                $consultationOrderExit = Order_item::whereUserId(Auth::user()->id)->whereConsultationSlotId($request->consultation_slot_id)->where('consultation_date', $request->bookingDate)->first();
-                if ($consultationOrderExit) {
-                    $order = Order::find($consultationOrderExit->order_id);
-                    if ($order) {
-                        if ($order->payment_status == 'due') {
-                            Order_item::whereOrderId($consultationOrderExit->order_id)->get()->map(function ($q) {
-                                $q->delete();
-                            });
-                            $order->delete();
-                        } elseif ($order->payment_status == 'pending') {
-                            $response['msg'] = __("You've already request this slot & status is pending!");
-                            $response['status'] = 402;
-                            DB::rollBack();
-                            return response()->json($response);
-                        } elseif ($order->payment_status == 'paid' || $order->payment_status == 'free') {
-                            $response['msg'] = __("You've already purchased this slot!");
-                            $response['status'] = 402;
-                            DB::rollBack();
-                            return response()->json($response);
-                        }
-                    } else {
-                        $response['msg'] = __("Something is wrong! Try again.");
-                        $response['status'] = 402;
-                        DB::rollBack();
-                        return response()->json($response);
-                    }
-                }
-
-                $consultationOrderExit = Order_item::whereConsultationSlotId($request->consultation_slot_id)->where('consultation_date', $request->bookingDate)->first();
-                if ($consultationOrderExit) {
-                    $order = Order::find($consultationOrderExit->order_id);
-                    if ($order) {
-                        if ($order->payment_status == 'pending') {
-                            $response['msg'] = __("Another User already request this slot!");
-                            $response['status'] = 402;
-                            DB::rollBack();
-                            return response()->json($response);
-                        } elseif ($order->payment_status == 'paid' || $order->payment_status == 'free') {
-                            $response['msg'] = __("Another User already purchased this slot!");
-                            $response['status'] = 402;
-                            DB::rollBack();
-                            return response()->json($response);
-                        }
-                    } else {
-                        $response['msg'] = __("Something is wrong! Try again.");
-                        $response['status'] = 402;
-                        DB::rollBack();
-                        return response()->json($response);
-                    }
-                }
-
-                $days_till_session = now()->diffInDays($request->bookingDate);
-                $instructor_future_availability = $consultationExit->user->instructor ? $consultationExit->user->instructor->availibity_range : $consultationExit->user->organization->availibity_range;
-                if ($days_till_session > $instructor_future_availability){
-                    $response['msg'] = __("Date is out of instructor availibity range!");
-                    $response['status'] = 404;
-                    DB::rollBack();
-                    return response()->json($response);
-                }
-                // return response()->json(['data' => 'here', 'status' => 422]);
-
-
-                $cartExists = CartManagement::whereUserId(Auth::user()->id)->whereConsultationSlotId($request->consultation_slot_id)->where('consultation_date', $request->bookingDate)->first();
-                if ($cartExists) {
-                    $response['msg'] = __("Already added to cart!");
-                    $response['status'] = 409;
-                    DB::rollBack();
-                    return response()->json($response);
-                }
-
-                $cart = new CartManagement();
-                $cart->user_id = Auth::user()->id;
-                $cart->consultation_slot_id = $request->consultation_slot_id;
-
-                $consultationArray = array();
-                $newConsultationDataArray = [
-                    'instructor_user_id' => $consultationExit->user_id,
-                    'student_user_id' => Auth::id(),
-                    'consultation_slot_id' => $consultationExit->id,
-                    'date' => $request->bookingDate,
-                    'day' => $consultationExit->day,
-                    'time' => $consultationExit->time,
-                    'duration' => $consultationExit->duration,
-                    'clientOrderType' => $request->clientOrderType,
-                    'status' => 0,
-                ];
-
-                $consultationArray[] = $newConsultationDataArray;
-
-                $cart->consultation_details = $consultationArray;
-                $cart->consultation_date = $request->bookingDate;
-                $cart->consultation_available_type = $request->available_type;
-
-                $consultationUser = User::whereId($request->booking_instructor_user_id)->first();
-                $relation = getUserRoleRelation($consultationUser);
-                $cart->is_subscription_enable = $consultationUser->$relation->is_subscription_enable;
-
-                /*
-                * Price Calculation
-                */
-                $hour_duration = $consultationExit->hour_duration;
-                $minute_duration = $consultationExit->minute_duration;
-                // User role check
-                if($consultationExit->user->role == USER_ROLE_INSTRUCTOR){
-                    $relation = 'instructor';
-                }elseif($consultationExit->user->role == USER_ROLE_ORGANIZATION){
-                    $relation = 'organization';
-                }
-                $hourly_rate = @$consultationExit->user->$relation->hourly_rate;
-                $minuteCost = 0;
-                if ($minute_duration > 0) {
-                    $minuteCost = ($hourly_rate / (60 / $minute_duration));
-                }
-
-                if($request->clientOrderType == "hourly"){
-                    $totalCost = ($hour_duration * $hourly_rate) + $minuteCost;
                 } else {
-                    $totalCost = $consultationExit->user->$relation->monthly_rate;
+                    $response['msg'] = __("Something is wrong! Try again.");
+                    $response['status'] = 402;
+                    DB::rollBack();
+                    return response()->json($response);
                 }
-                $cart->main_price = $totalCost;
-                $cart->price = $totalCost;
-                $cart->save();
-                DB::commit();
-                $response['status'] = 200;
-                $response['msg'] = __("Consultation added to cart");
-                $response['redirect_route'] = route('student.cartList');
-                return response()->json($response);
-            } catch (\Exception $e) {
+            }
+
+            $consultationOrderExit = Order_item::whereConsultationSlotId($request->consultation_slot_id)->where('consultation_date', $request->bookingDate)->first();
+            if ($consultationOrderExit) {
+                $order = Order::find($consultationOrderExit->order_id);
+                if ($order) {
+                    if ($order->payment_status == 'pending') {
+                        $response['msg'] = __("Another User already request this slot!");
+                        $response['status'] = 402;
+                        DB::rollBack();
+                        return response()->json($response);
+                    } elseif ($order->payment_status == 'paid' || $order->payment_status == 'free') {
+                        $response['msg'] = __("Another User already purchased this slot!");
+                        $response['status'] = 402;
+                        DB::rollBack();
+                        return response()->json($response);
+                    }
+                } else {
+                    $response['msg'] = __("Something is wrong! Try again.");
+                    $response['status'] = 402;
+                    DB::rollBack();
+                    return response()->json($response);
+                }
+            }
+
+            $days_till_session = now()->diffInDays($request->bookingDate);
+            $instructor_future_availability = $consultationExit->user->instructor ? $consultationExit->user->instructor->availibity_range : $consultationExit->user->organization->availibity_range;
+            if ($days_till_session > $instructor_future_availability) {
+                $response['msg'] = __("Date is out of instructor availibity range!");
+                $response['status'] = 404;
                 DB::rollBack();
-                $response['msg'] = __("Something is wrong! Try again.");
-                $response['status'] = 402;
                 return response()->json($response);
             }
-        } else {
-            $response['msg'] = __("Time slot not found!");
-            $response['status'] = 404;
+            // return response()->json(['data' => 'here', 'status' => 422]);
+
+
+            $cartExists = CartManagement::whereUserId(Auth::user()->id)->whereConsultationSlotId($request->consultation_slot_id)->where('consultation_date', $request->bookingDate)->first();
+            if ($cartExists) {
+                $response['msg'] = __("Already added to cart!");
+                $response['status'] = 409;
+                DB::rollBack();
+                return response()->json($response);
+            }
+            // check that consultation starting time is an away from now
+            $consultationSlot = ConsultationSlot::whereId($request->consultation_slot_id)->firstOrFail();
+            // ! this is for debuging purposes only !
+            // return response(['outcome'=>$consultationSlot->canBeBooked($request->bookingDate)], 200);
+            // $consultationSlotStartingTime = explode("-", $consultationSlot->time)[0];
+            // $startingTime = Carbon::parse(
+            //     $request->bookingDate." ".
+            //     $consultationSlotStartingTime);
+            // $diffInMinutes = $startingTime->diffInMinutes(Carbon::now());
+            // $dateParts = explode("-",$request->bookingDate );
+            // $timeParts = explode(":",explode(" ",$consultationSlotStartingTime)[0]);
+            // $time = Carbon::create('2023', $dateParts[1], $dateParts[0], $timeParts[0] ,$timeParts[1], 0 );
+            // return response()->json([
+            //     'data' => $diffInMinutes,
+            //     'status' => 422,
+            //     'consultationSlot' => $consultationSlot,
+            //     'consultationSlotStartingTime' => $consultationSlotStartingTime,
+            //     'startingTime' => $startingTime,
+            //     'canbebooked' => Carbon::now()->lte(  $startingTime),
+            //     'canBeBooked' => $consultationSlot->canBeBooked($request->bookingDate),
+            //     'request' => $request->all(),
+            //     'timezone' => config('app.timezone'),
+            //     'now' => Carbon::now(),
+            //     'dateParts' => $dateParts,
+            //     'timeParts' => $timeParts,
+            //     'new_time' => $time,
+            // ]);
+            if (!$consultationSlot->canBeBooked($request->bookingDate)) {
+                $response['msg'] = __("You can't book this slot because it's starting time has passed!");
+                $response['status'] = 402;
+                DB::rollBack();
+                return response()->json($response);
+            }
+
+            // return response()->json(['data' => 'here', 'status' => 422]);
+            $cart = new CartManagement();
+            $cart->user_id = Auth::user()->id;
+            $cart->consultation_slot_id = $request->consultation_slot_id;
+
+            $consultationArray = array();
+            $newConsultationDataArray = [
+                'instructor_user_id' => $consultationExit->user_id,
+                'student_user_id' => Auth::id(),
+                'consultation_slot_id' => $consultationExit->id,
+                'date' => $request->bookingDate,
+                'day' => $consultationExit->day,
+                'time' => $consultationExit->time,
+                'duration' => $consultationExit->duration,
+                'clientOrderType' => $request->clientOrderType,
+                'status' => 0,
+            ];
+
+            $consultationArray[] = $newConsultationDataArray;
+
+            $cart->consultation_details = $consultationArray;
+            $cart->consultation_date = $request->bookingDate;
+            $cart->consultation_available_type = $request->available_type;
+
+            $consultationUser = User::whereId($request->booking_instructor_user_id)->first();
+            $relation = getUserRoleRelation($consultationUser);
+            $cart->is_subscription_enable = $consultationUser->$relation->is_subscription_enable;
+
+            /*
+                * Price Calculation
+                */
+            $hour_duration = $consultationExit->hour_duration;
+            $minute_duration = $consultationExit->minute_duration;
+            // User role check
+            if ($consultationExit->user->role == USER_ROLE_INSTRUCTOR) {
+                $relation = 'instructor';
+            } elseif ($consultationExit->user->role == USER_ROLE_ORGANIZATION) {
+                $relation = 'organization';
+            }
+            $hourly_rate = @$consultationExit->user->$relation->hourly_rate;
+            $minuteCost = 0;
+            if ($minute_duration > 0) {
+                $minuteCost = ($hourly_rate / (60 / $minute_duration));
+            }
+
+            if ($request->clientOrderType == "hourly") {
+                $totalCost = ($hour_duration * $hourly_rate) + $minuteCost;
+            } else {
+                $totalCost = $consultationExit->user->$relation->monthly_rate;
+            }
+            $cart->main_price = $totalCost;
+            $cart->price = $totalCost;
+            $cart->save();
+            DB::commit();
+            $response['status'] = 200;
+            $response['msg'] = __("Consultation added to cart");
+            $response['redirect_route'] = route('student.cartList');
+            return response()->json($response);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            $response['msg'] = $e->getMessage();
+            $response['exception'] = $e->getTraceAsString();
+
+            $response['status'] = 402;
             return response()->json($response);
         }
     }
 
     public function goToCheckout(Request $request)
     {
+
+        if ($request->has('cancel_order')) {
+            CartManagement::whereUserId(@Auth::id())->delete();
+            $this->showToastrMessage('warning', __('Order has been cancel'));
+            return redirect(url('/'));
+        }
         $carts = CartManagement::whereUserId(@Auth::id())->get();
-        if ($carts->sum('price') == 0){
+        if ($carts->sum('price') == 0) {
             $order_data = $this->placeOrder('free');
             $order = $order_data['status'] ? $order_data['data'] : null;
             $order->payment_status = 'paid';
             $order->save();
             send_payment_succeeded_email($order, auth::user());
             CartManagement::whereUserId(@Auth::id())->delete();
-            foreach($order->items as $item){
-                if ($item->consultation_slot_id){
+            foreach ($order->items as $item) {
+                if ($item->consultation_slot_id) {
                     create_conversation($item->bookingHistory);
                 }
             }
@@ -779,137 +818,131 @@ class CartManagementController extends Controller
 
             return redirect()->route('student.thank-you');
 
-        }
-        if ($request->has('proceed_to_checkout')) {
-            return redirect(route('student.checkout'));
-        } elseif ($request->has('pay_from_lmszai_wallet')) {
-            $carts = CartManagement::whereUserId(@Auth::id())->get();
-            if (!count($carts)){
-                $this->showToastrMessage('error', __('Your cart is empty!'));
-                return redirect()->back();
-            }
-            if ($carts->sum('price') > int_to_decimal(Auth::user()->balance)) {
-                $this->showToastrMessage('warning', __('Insufficient balance'));
-                return redirect()->back();
-            } else {
-                DB::beginTransaction();
-                try {
-                    $order = $this->placeOrder('buy')['data'];
-                    $order->payment_status = 'paid';
-                    $order->save();
+            if ($request->has('proceed_to_checkout')) {
+                return redirect(route('student.checkout'));
+            } elseif ($request->has('pay_from_lmszai_wallet')) {
+                $carts = CartManagement::whereUserId(@Auth::id())->get();
+                if (!count($carts)) {
+                    $this->showToastrMessage('error', __('Your cart is empty!'));
+                    return redirect()->back();
+                }
+                if ($carts->sum('price') > int_to_decimal(Auth::user()->balance)) {
+                    $this->showToastrMessage('warning', __('Insufficient balance'));
+                    return redirect()->back();
+                } else {
+                    DB::beginTransaction();
+                    try {
+                        $order = $this->placeOrder('buy')['data'];
+                        $order->payment_status = 'paid';
+                        $order->save();
 
-                    CartManagement::whereUserId(@Auth::id())->delete();
+                        CartManagement::whereUserId(@Auth::id())->delete();
 
-                    distributeCommission($order);
+                        distributeCommission($order);
 
-                    /** ====== Send notification =========*/
-                    $text = __("New student enrolled");
-                    $target_url = route('instructor.all-student');
+                        /** ====== Send notification =========*/
+                        $text = __("New student enrolled");
+                        $target_url = route('instructor.all-student');
 
-                    foreach ($order->items as $item) {
-                        if ($item->course) {
-                            $this->send($text, 2, $target_url, $item->course->user_id);
+                        foreach ($order->items as $item) {
+                            if ($item->course) {
+                                $this->send($text, 2, $target_url, $item->course->user_id);
+                            }
                         }
+
+                        $text = __("Course has been sold");
+                        $this->send($text, 1, null, null);
+
+                        /** ====== Send notification =========*/
+
+                        $withdrow = new Withdraw();
+                        $withdrow->transection_id = Str::uuid()->getHex();
+                        $withdrow->amount = $carts->sum('price');
+                        $withdrow->payment_method = 'buy';
+                        $withdrow->status = WITHDRAWAL_STATUS_COMPLETE;
+                        $withdrow->save();
+                        Auth::user()->decrement('balance', decimal_to_int($carts->sum('price')));
+                        createTransaction(Auth::id(), $carts->sum('price'), TRANSACTION_BUY, 'Transaction for Course Purchase');
+                        DB::commit();
+                    } catch (\Exception $e) {
+                        DB::rollBack();
+                        $this->showToastrMessage('warning', __('Something Went Wrong'));
+                        return redirect()->back();
                     }
 
-                    $text = __("Course has been sold");
-                    $this->send($text, 1, null, null);
 
-                    /** ====== Send notification =========*/
 
-                    $withdrow = new Withdraw();
-                    $withdrow->transection_id = Str::uuid()->getHex();
-                    $withdrow->amount = $carts->sum('price');
-                    $withdrow->payment_method = 'buy';
-                    $withdrow->status = WITHDRAWAL_STATUS_COMPLETE;
-                    $withdrow->save();
-                    Auth::user()->decrement('balance', decimal_to_int($carts->sum('price')));
-                    createTransaction(Auth::id(), $carts->sum('price'), TRANSACTION_BUY, 'Transaction for Course Purchase');
-                    DB::commit();
-                } catch (\Exception $e) {
-                    DB::rollBack();
-                    $this->showToastrMessage('warning', __('Something Went Wrong'));
+                    $this->showToastrMessage('success', __('Payment has been completed'));
+                    return redirect()->route('student.thank-you');
+                }
+            } elseif ($request->has('pay_from_subscription')) {
+                $carts = CartManagement::whereUserId(@Auth::id())->get();
+                if (!count($carts)) {
+                    $this->showToastrMessage('error', 'Your cart is empty!');
                     return redirect()->back();
                 }
 
-
-
-                $this->showToastrMessage('success', __('Payment has been completed'));
-                return redirect()->route('student.thank-you');
-            }
-        } elseif ($request->has('cancel_order')) {
-            CartManagement::whereUserId(@Auth::id())->delete();
-            $this->showToastrMessage('warning', __('Order has been cancel'));
-            return redirect(url('/'));
-        } elseif ($request->has('pay_from_subscription')) {
-            $carts = CartManagement::whereUserId(@Auth::id())->get();
-            if (!count($carts)) {
-                $this->showToastrMessage('error', 'Your cart is empty!');
-                return redirect()->back();
-            }
-
-            if(get_option('subscription_mode')){
-                $subscriptionPurchaseEnable = true;
-            }
-            else{
-                $subscriptionPurchaseEnable = false;
-            }
-
-            foreach ($carts as $cart) {
-                if(!$cart->is_subscription_enable){
+                if (get_option('subscription_mode')) {
+                    $subscriptionPurchaseEnable = true;
+                } else {
                     $subscriptionPurchaseEnable = false;
                 }
-            }
 
-            if (!$subscriptionPurchaseEnable || !hasLimit(PACKAGE_RULE_COURSE, count($carts))) {
-                $this->showToastrMessage('warning', 'Subscription Package Limit over');
-                return redirect()->back();
-            } else {
-                DB::beginTransaction();
-                try {
-                    $order = $this->placeOrder('subscription')['data'];
-                    $order->payment_status = 'paid';
-                    $order->save();
-
-                    CartManagement::whereUserId(@Auth::id())->delete();
-
-                    $userPackage = UserPackage::join('packages', 'packages.id', '=', 'user_packages.package_id')->where('packages.package_type', PACKAGE_TYPE_SUBSCRIPTION)->where('user_packages.user_id', auth()->id())->where('user_packages.status', PACKAGE_STATUS_ACTIVE)->whereDate('enroll_date', '<=', now())->whereDate('expired_date', '>=', now())->select('user_packages.*')->with('enrollments')->first();
-
-                    foreach ($order->items as $item) {
-                        $enrollment = setEnrollment($item);
-                        $enrollment->user_package_id = $userPackage->id;
-                        $enrollment->save();
+                foreach ($carts as $cart) {
+                    if (!$cart->is_subscription_enable) {
+                        $subscriptionPurchaseEnable = false;
                     }
-
-                    /** ====== Send notification =========*/
-                    $text = __("New student enrolled");
-                    $target_url = route('instructor.all-student');
-                    foreach ($order->items as $item) {
-                        if ($item->course) {
-                            $this->send($text, 2, $target_url, $item->course->user_id);
-                        }
-                    }
-
-                    $text = __("Course has been sold");
-                    $this->send($text, 1, null, null);
-
-                    /** ====== Send notification =========*/
-
-                    DB::commit();
-                } catch (\Exception $e) {
-                    DB::rollBack();
-                    $this->showToastrMessage('warning', 'Something Went Wrong');
-                    return redirect()->back();
                 }
 
-                $this->showToastrMessage('success', 'Payment has been completed');
-                return redirect()->route('student.thank-you');
+                if (!$subscriptionPurchaseEnable || !hasLimit(PACKAGE_RULE_COURSE, count($carts))) {
+                    $this->showToastrMessage('warning', 'Subscription Package Limit over');
+                    return redirect()->back();
+                } else {
+                    DB::beginTransaction();
+                    try {
+                        $order = $this->placeOrder('subscription')['data'];
+                        $order->payment_status = 'paid';
+                        $order->save();
+
+                        CartManagement::whereUserId(@Auth::id())->delete();
+
+                        $userPackage = UserPackage::join('packages', 'packages.id', '=', 'user_packages.package_id')->where('packages.package_type', PACKAGE_TYPE_SUBSCRIPTION)->where('user_packages.user_id', auth()->id())->where('user_packages.status', PACKAGE_STATUS_ACTIVE)->whereDate('enroll_date', '<=', now())->whereDate('expired_date', '>=', now())->select('user_packages.*')->with('enrollments')->first();
+
+                        foreach ($order->items as $item) {
+                            $enrollment = setEnrollment($item);
+                            $enrollment->user_package_id = $userPackage->id;
+                            $enrollment->save();
+                        }
+
+                        /** ====== Send notification =========*/
+                        $text = __("New student enrolled");
+                        $target_url = route('instructor.all-student');
+                        foreach ($order->items as $item) {
+                            if ($item->course) {
+                                $this->send($text, 2, $target_url, $item->course->user_id);
+                            }
+                        }
+
+                        $text = __("Course has been sold");
+                        $this->send($text, 1, null, null);
+
+                        /** ====== Send notification =========*/
+
+                        DB::commit();
+                    } catch (\Exception $e) {
+                        DB::rollBack();
+                        $this->showToastrMessage('warning', 'Something Went Wrong');
+                        return redirect()->back();
+                    }
+
+                    $this->showToastrMessage('success', 'Payment has been completed');
+                    return redirect()->route('student.thank-you');
+                }
+            } else {
+                abort(404);
             }
-        } else {
-            abort(404);
         }
     }
-
     public function cartDelete($id)
     {
         $cart = CartManagement::findOrFail($id);
@@ -981,9 +1014,9 @@ class CartManagementController extends Controller
             }
 
             $order_data = $this->placeOrder($request->payment_method);
-            if($order_data['status']){
+            if ($order_data['status']) {
                 $order = $order_data['data'];
-            }else{
+            } else {
                 $this->showToastrMessage('error', __('Something went wrong!'));
                 return redirect()->back();
             }
@@ -1070,9 +1103,9 @@ class CartManagementController extends Controller
             }
         }
         $order_data = $this->placeOrder($request->payment_method);
-        if($order_data['status']){
+        if ($order_data['status']) {
             $order = $order_data['data'];
-        }else{
+        } else {
             $this->showToastrMessage('error', __('Something went wrong!'));
             return redirect()->back();
         }
@@ -1086,7 +1119,7 @@ class CartManagementController extends Controller
 
         if ($request->payment_method == PAYPAL) {
             $total = $order->grand_total * (get_option('paypal_conversion_rate') ? get_option('paypal_conversion_rate') : 0);
-            $total = number_format($total, 2,'.','');
+            $total = number_format($total, 2, '.', '');
             $object = [
                 'id' => $order->uuid,
                 'payment_method' => PAYPAL,
@@ -1094,16 +1127,15 @@ class CartManagementController extends Controller
             ];
             $getWay = new BasePaymentService($object);
             $responseData = $getWay->makePayment($total);
-            if($responseData['success']){
+            if ($responseData['success']) {
                 $order->payment_id = $responseData['payment_id'];
                 $order->save();
-                send_payment_succeeded_email($order ,auth::user());
+                send_payment_succeeded_email($order, auth::user());
                 return Redirect::away($responseData['redirect_url']);
-            }else{
+            } else {
                 $this->showToastrMessage('error', __('Something went wrong!'));
                 return redirect()->back();
             }
-
         } else if ($request->payment_method == MOLLIE) {
             $object = [
                 'id' => $order->uuid,
@@ -1111,16 +1143,16 @@ class CartManagementController extends Controller
                 'currency' => get_option('mollie_currency')
             ];
             $total = $order->grand_total * (get_option('mollie_conversion_rate') ? get_option('mollie_conversion_rate') : 0);
-            $total = number_format($total, 2,'.','');
+            $total = number_format($total, 2, '.', '');
             $getWay = new BasePaymentService($object);
             $responseData = $getWay->makePayment($total);
 
-            if($responseData['success']){
+            if ($responseData['success']) {
                 $order->payment_id = $responseData['payment_id'];
                 $order->save();
-                send_payment_succeeded_email($order ,auth::user());
+                send_payment_succeeded_email($order, auth::user());
                 return Redirect::away($responseData['redirect_url']);
-            }else{
+            } else {
                 $this->showToastrMessage('error', $responseData['message']);
                 return redirect()->back();
             }
@@ -1131,43 +1163,43 @@ class CartManagementController extends Controller
                 'currency' => get_option('mercado_currency')
             ];
             $total = $order->grand_total * (get_option('mercado_conversion_rate') ? get_option('mercado_conversion_rate') : 0);
-            $total = number_format($total, 2,'.','');
+            $total = number_format($total, 2, '.', '');
             $getWay = new BasePaymentService($object);
             $responseData = $getWay->makePayment($total);
 
-            if($responseData['success']){
+            if ($responseData['success']) {
                 $order->payment_id = $responseData['payment_id'];
                 $order->save();
-                send_payment_succeeded_email($order ,auth::user());
+                send_payment_succeeded_email($order, auth::user());
 
                 return Redirect::away($responseData['redirect_url']);
-            }else{
+            } else {
                 $this->showToastrMessage('error', $responseData['message']);
                 return redirect()->back();
             }
-        }  else if ($request->payment_method == FLUTTERWAVE) {
+        } else if ($request->payment_method == FLUTTERWAVE) {
             $object = [
                 'id' => $order->uuid,
                 'payment_method' => FLUTTERWAVE,
                 'currency' => get_option('flutterwave_currency')
             ];
             $total = $order->grand_total * (get_option('flutterwave_conversion_rate') ? get_option('flutterwave_conversion_rate') : 0);
-            $total = number_format($total, 2,'.','');
+            $total = number_format($total, 2, '.', '');
             $getWay = new BasePaymentService($object);
             $responseData = $getWay->makePayment($total);
 
-            if($responseData['success']){
+            if ($responseData['success']) {
                 $order->payment_id = $responseData['payment_id'];
                 $order->save();
-                send_payment_succeeded_email($order ,auth::user());
+                send_payment_succeeded_email($order, auth::user());
                 return Redirect::away($responseData['redirect_url']);
-            }else{
+            } else {
                 $this->showToastrMessage('error', $responseData['message']);
                 return redirect()->back();
             }
         } else if ($request->payment_method == INSTAMOJO) {
             $total = $order->grand_total * (get_option('im_conversion_rate') ? get_option('im_conversion_rate') : 0);
-            $total = number_format($total, 2,'.','');
+            $total = number_format($total, 2, '.', '');
             $object = [
                 'id' => $order->uuid,
                 'payment_method' => INSTAMOJO,
@@ -1176,19 +1208,18 @@ class CartManagementController extends Controller
             $getWay = new BasePaymentService($object);
             $responseData = $getWay->makePayment($total);
 
-            if($responseData['success']){
+            if ($responseData['success']) {
                 $order->payment_id = $responseData['payment_id'];
                 $order->save();
-                send_payment_succeeded_email($order ,auth::user());
+                send_payment_succeeded_email($order, auth::user());
                 return Redirect::away($responseData['redirect_url']);
-            }else{
+            } else {
                 $this->showToastrMessage('error', __('Something went wrong!'));
                 return redirect()->back();
             }
-
         } else if ($request->payment_method == PAYSTAC) {
             $total = $order->grand_total * (get_option('paystack_conversion_rate') ? get_option('paystack_conversion_rate') : 0);
-            $total = number_format($total, 2,'.','');
+            $total = number_format($total, 2, '.', '');
             $object = [
                 'id' => $order->uuid,
                 'payment_method' => PAYSTAC,
@@ -1198,17 +1229,16 @@ class CartManagementController extends Controller
             $getWay = new BasePaymentService($object);
             $responseData = $getWay->makePayment($total);
 
-            if($responseData['success']){
+            if ($responseData['success']) {
                 $order->payment_id = $responseData['payment_id'];
                 $order->save();
-                send_payment_succeeded_email($order ,auth::user());
+                send_payment_succeeded_email($order, auth::user());
 
                 return Redirect::away($responseData['redirect_url']);
-            }else{
+            } else {
                 $this->showToastrMessage('error', __('Something went wrong!'));
                 return redirect()->back();
             }
-
         } else if ($request->payment_method == BANK) {
             $deposit_by = $request->deposit_by;
             $deposit_slip = $this->uploadFileWithDetails('bank', $request->deposit_slip);
@@ -1233,10 +1263,10 @@ class CartManagementController extends Controller
             /** ====== Send notification =========*/
             $this->showToastrMessage('success', __('Request has been Placed! Please Wait for Approve'));
             return redirect()->route('student.thank-you');
-        } else if ($request->payment_method == SSLCOMMERZ)  {
+        } else if ($request->payment_method == SSLCOMMERZ) {
 
             $total = $order->grand_total * (get_option('sslcommerz_conversion_rate') ? get_option('sslcommerz_conversion_rate') : 0);
-            $total = number_format($total, 2,'.','');
+            $total = number_format($total, 2, '.', '');
             # CUSTOMER INFORMATION
             $post_data = array();
             $post_data['tran_id'] = $order->uuid; // tran_id must be unique
@@ -1245,25 +1275,25 @@ class CartManagementController extends Controller
             $student = $order->user->student;
 
             $post_data['cus_name'] = Auth::user()->name;
-            $post_data['cus_phone'] = $request->input('phone_number',$student->address);
-            $post_data['cus_email'] = $request->input('email',$order->user->email);
-            $post_data['cus_add1'] = $request->input('address',$student->address);
+            $post_data['cus_phone'] = $request->input('phone_number', $student->address);
+            $post_data['cus_email'] = $request->input('email', $order->user->email);
+            $post_data['cus_add1'] = $request->input('address', $student->address);
             $post_data['cus_add2'] = "";
             $post_data['cus_city'] = "";
             $post_data['cus_state'] = "";
-            $post_data['cus_postcode'] = $request->input('postal_code','017');
+            $post_data['cus_postcode'] = $request->input('postal_code', '017');
             $post_data['cus_country'] = @$student->country->country_name ?? 'BD';
             $post_data['cus_phone'] = $phone;
             $post_data['cus_fax'] = "";
 
             # SHIPMENT INFORMATION
             $post_data['ship_name'] = get_option('app_name') ?? 'LMS Store';
-            $post_data['ship_add1'] = $request->input('phone_number',$student->address);
+            $post_data['ship_add1'] = $request->input('phone_number', $student->address);
             $post_data['ship_add2'] =  '';
             $post_data['ship_city'] =  '';
             $post_data['ship_state'] =  '';
             $post_data['ship_postcode'] = '';
-            $post_data['ship_phone'] = $request->input('phone_number',$student->address);
+            $post_data['ship_phone'] = $request->input('phone_number', $student->address);
             $post_data['ship_country'] = @$student->country->country_name ?? 'BD';
 
             $post_data['shipping_method'] = "NO";
@@ -1284,20 +1314,20 @@ class CartManagementController extends Controller
             ];
 
             $getWay = new BasePaymentService($object);
-            $responseData = $getWay->makePayment($total,$post_data);
-            if($responseData['success']){
+            $responseData = $getWay->makePayment($total, $post_data);
+            if ($responseData['success']) {
                 $order->payment_id = $responseData['payment_id'];
                 $order->save();
-                send_payment_succeeded_email($order ,auth::user());
+                send_payment_succeeded_email($order, auth::user());
                 return Redirect::away($responseData['redirect_url']);
-            }else{
+            } else {
                 $this->showToastrMessage('error', __('Something went wrong!'));
                 return redirect()->back();
             }
-        } else if ($request->payment_method == STRIPE)  {
+        } else if ($request->payment_method == STRIPE) {
 
             $total = $order->grand_total * (get_option('stripe_conversion_rate') ? get_option('stripe_conversion_rate') : 0);
-            $total = number_format($total, 2,'.','');
+            $total = number_format($total, 2, '.', '');
 
             $object = [
                 'id' => $order->uuid,
@@ -1308,12 +1338,12 @@ class CartManagementController extends Controller
             $getWay = new BasePaymentService($object);
             $responseData = $getWay->makePayment($total);
 
-            if($responseData['success']){
-                if($responseData['data']['payment_status'] == 'success') {
+            if ($responseData['success']) {
+                if ($responseData['data']['payment_status'] == 'success') {
                     $order->payment_id = $responseData['payment_id'];
                     $order->payment_status = 'paid';
                     $order->save();
-                    send_payment_succeeded_email($order ,auth::user());
+                    send_payment_succeeded_email($order, auth::user());
                     CartManagement::whereUserId(@Auth::id())->delete();
 
                     distributeCommission($order);
@@ -1340,7 +1370,7 @@ class CartManagementController extends Controller
     private function placeOrder($payment_method)
     {
         DB::beginTransaction();
-        try{
+        try {
             $carts = CartManagement::whereUserId(@Auth::id())->get();
             $order = new Order();
             $order->user_id = Auth::user()->id;
@@ -1382,7 +1412,7 @@ class CartManagementController extends Controller
             } elseif ($payment_method == 'flutterwave') {
                 $payment_currency = get_option('flutterwave_currency');
                 $conversion_rate = get_option('flutterwave_conversion_rate') ? get_option('flutterwave_conversion_rate') : 0;
-            } elseif($payment_method == 'free'){
+            } elseif ($payment_method == 'free') {
                 $conversion_rate = 1;
             }
 
@@ -1413,19 +1443,17 @@ class CartManagementController extends Controller
                     }
 
                     $order_item->save();
-                    $this->addAffiliateHistory($cart,$order,$order_item);
-
+                    $this->addAffiliateHistory($cart, $order, $order_item);
                 } elseif ($cart->bundle_id) {
                     // $bundleIds = Enrollment::where('user_id', auth()->id())->whereNotIn('course_id', $cart->bundle_course_ids)->whereDate('end_date', '<', now())->select('course_id')->get()->toArray();
                     $courses = Course::whereIn('id', $cart->bundle_course_ids)->get();
                     $bundleUserId = $cart->bundle->user_id;
                     $userPackage =  UserPackage::join('packages', 'packages.id', '=', 'user_packages.package_id')->whereIn('packages.package_type', [PACKAGE_TYPE_SAAS_INSTRUCTOR, PACKAGE_TYPE_SAAS_ORGANIZATION])->where('user_packages.user_id', $bundleUserId)->where('user_packages.status', PACKAGE_STATUS_ACTIVE)->whereDate('enroll_date', '<=', now())->whereDate('expired_date', '>=', now())->first();
                     $adminCommission = ($userPackage && $userPackage->admin_commission) ? $userPackage->admin_commission : get_option('sell_commission');
-                    if($adminCommission){
+                    if ($adminCommission) {
                         $adminCommissionAmount = admin_commission_by_percentage($cart->price, $adminCommission);
                         $totalDistributeAmount = $cart->price - admin_commission_by_percentage($cart->price, $adminCommission);
-                    }
-                    else{
+                    } else {
                         $adminCommissionAmount = admin_commission_by_percentage($cart->price, $adminCommission);
                         $totalDistributeAmount = $cart->price - admin_commission_by_percentage($cart->price, $adminCommission);
                     }
@@ -1456,9 +1484,8 @@ class CartManagementController extends Controller
                         $order_item->course_id = $course->id;
                         $order_item->type = 3; //bundle course
                         $order_item->save();
-                        $this->addAffiliateHistory($cart,$order,$order_item);
+                        $this->addAffiliateHistory($cart, $order, $order_item);
                     }
-
                 } elseif ($cart->consultation_slot_id) {
                     $order_item = new Order_item();
                     $order_item->order_id = $order->id;
@@ -1501,22 +1528,22 @@ class CartManagementController extends Controller
                 }
             }
             DB::commit();
-            return ['status' => true,'data' => $order];
-        }catch (\Exception $e){
+            return ['status' => true, 'data' => $order];
+        } catch (\Exception $e) {
             DB::rollBack();
             $this->logger->log('Cannot Create Order', $e->getMessage());
-            return ['status' => false,'data' => null];
+            return ['status' => false, 'data' => null];
         }
-
     }
 
-    private function addAffiliateHistory($cart, $order, $order_item){
-        if(get_option('referral_status')){
-            $refRequest = AffiliateRequest::where(['affiliate_code' => $cart->reference,'status' => STATUS_APPROVED])->first();
-            if(!is_null($refRequest)) {
+    private function addAffiliateHistory($cart, $order, $order_item)
+    {
+        if (get_option('referral_status')) {
+            $refRequest = AffiliateRequest::where(['affiliate_code' => $cart->reference, 'status' => STATUS_APPROVED])->first();
+            if (!is_null($refRequest)) {
                 $refUser = User::where(['id' => $refRequest->user_id])->first();
-                $alreadyAffiliated = AffiliateHistory::where(['user_id'=>$refUser->id,'course_id' =>$cart->course_id])->first();
-                if($refUser->is_affiliator == AFFILIATOR && is_null($alreadyAffiliated)) {
+                $alreadyAffiliated = AffiliateHistory::where(['user_id' => $refUser->id, 'course_id' => $cart->course_id])->first();
+                if ($refUser->is_affiliator == AFFILIATOR && is_null($alreadyAffiliated)) {
                     $commission = referral_sell_commission($cart->price - $cart->discount);
                     $affiliate = new AffiliateHistory();
                     $affiliate->hash = Str::uuid()->getHex();
@@ -1537,6 +1564,5 @@ class CartManagementController extends Controller
                 }
             }
         }
-
     }
 }

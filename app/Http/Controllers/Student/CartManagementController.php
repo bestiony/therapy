@@ -796,15 +796,21 @@ class CartManagementController extends Controller
         if ($carts->sum('price') == 0) {
             $order_data = $this->placeOrder('free');
             $order = $order_data['status'] ? $order_data['data'] : null;
-            $order->payment_status = 'paid';
-            $order->save();
-            send_payment_succeeded_email($order, auth::user());
+
             CartManagement::whereUserId(@Auth::id())->delete();
             foreach ($order->items as $item) {
                 if ($item->consultation_slot_id) {
+                    $consultationSlot = ConsultationSlot::whereId($item->consultation_slot_id)->firstOrFail();
+                    if (!$consultationSlot->canBeBooked($item->bookingHistory->date)) {
+                        $this->showToastrMessage('warning', "You can't book this slot with " . $consultationSlot->user->name . " on " . $item->bookingHistory->date . " at " . $item->bookingHistory->time . " because it's starting time has passed! please remove it from your cart and try again.");
+                        return redirect()->back();
+                    }
                     create_conversation($item->bookingHistory);
                 }
             }
+            $order->payment_status = 'paid';
+            $order->save();
+            send_payment_succeeded_email($order, auth::user());
 
             $new_text = __("New student enrolled");
             $target_url = route('instructor.all-student');
@@ -816,7 +822,7 @@ class CartManagementController extends Controller
                 }
             }
 
-            return redirect()->route('student.thank-you');
+            // return redirect()->route('student.thank-you');
 
             if ($request->has('proceed_to_checkout')) {
                 return redirect(route('student.checkout'));

@@ -2,6 +2,7 @@
 
 use App\Mail\NewMessageFromStudentMail;
 use App\Mail\InstructorApprovedConsultationMail;
+use App\Mail\NewConsultaionBookedMail;
 use App\Models\AffiliateHistory;
 use App\Models\BookingHistory;
 use App\Models\Bundle;
@@ -1185,6 +1186,14 @@ function create_conversation($booking)
         'conversation_id' => $conversation->id,
     ];
     Mail::to($booking->user)->send(new InstructorApprovedConsultationMail($email_data));
+    $instructor_mail_data = [
+        'email_title' => 'New Consultation Booked By ' . $booking->user->name . ' on ' . get_option('app_name'),
+        'sender_name' => $booking->user->name,
+        'user_name' => $booking->instructorUser->name,
+        'conversation_id' => $conversation->id,
+        'booking' => $booking,
+    ];
+    Mail::to($booking->instructorUser)->send(new NewConsultaionBookedMail($instructor_mail_data));
 }
 
 

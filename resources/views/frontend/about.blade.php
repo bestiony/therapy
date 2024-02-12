@@ -174,7 +174,7 @@
         <div class="row course-instructor-support-wrap">
             @foreach($instructorSupports as $instructorSupport)
             <!-- Instructor Support Item start-->
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <div class="instructor-support-item bg-white radius-3 text-center">
                     <div class="instructor-support-img-wrap">
                         <img src="{{ getImageFile($instructorSupport->image_path) }}" alt="support">
@@ -190,7 +190,7 @@
         </div>
 
         <!-- Client Logo Area start-->
-        <div class="row client-logo-area">
+        <div class="row client-logo-area" style="display:none;">
             @foreach($clients as $client)
             <div class="col">
                 <div class="client-logo-item text-center">

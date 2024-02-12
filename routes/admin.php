@@ -314,6 +314,25 @@ Route::group(['prefix' => 'blog', 'as' => 'blog.'], function () {
 });
 
 
+
+Route::group(['prefix' => 'video', 'as' => 'video.'], function () {
+    Route::get('/', [\App\Http\Controllers\Admin\VideoController::class, 'index'])->name('index');
+    Route::get('create', [\App\Http\Controllers\Admin\VideoController::class, 'create'])->name('create');
+    Route::post('store', [\App\Http\Controllers\Admin\VideoController::class, 'store'])->name('store')->middleware('isDemo');
+    Route::get('edit/{uuid}', [\App\Http\Controllers\Admin\VideoController::class, 'edit'])->name('edit');
+    Route::post('update/{uuid}', [\App\Http\Controllers\Admin\VideoController::class, 'update'])->name('update')->middleware('isDemo');
+    Route::get('delete/{uuid}', [\App\Http\Controllers\Admin\VideoController::class, 'delete'])->name('delete')->middleware('isDemo');
+    Route::get('video-comment-list', [\App\Http\Controllers\Admin\VideoController::class, 'videoCommentList'])->name('video-comment-list');
+    Route::post('change-video-comment-status', [\App\Http\Controllers\Admin\VideoController::class, 'changeVideoCommentStatus'])->name('changeVideoCommentStatus')->middleware('isDemo');
+    Route::get('video-comment-delete/{id}', [\App\Http\Controllers\Admin\VideoController::class, 'videoCommentDelete'])->name('videoComment.delete')->middleware('isDemo');
+    Route::get('video-category-index', [\App\Http\Controllers\Admin\VideoCategoryController::class, 'index'])->name('video-category.index');
+    Route::post('video-category-store', [\App\Http\Controllers\Admin\VideoCategoryController::class, 'store'])->name('video-category.store')->middleware('isDemo');
+    Route::patch('video-category-update/{uuid}', [\App\Http\Controllers\Admin\VideoCategoryController::class, 'update'])->name('video-category.update')->middleware('isDemo');
+    Route::get('video-category-delete/{uuid}', [\App\Http\Controllers\Admin\VideoCategoryController::class, 'delete'])->name('video-category.delete')->middleware('isDemo');
+});
+
+
+
 Route::group(['prefix' => 'certificate', 'as' => 'certificate.'], function () {
     Route::get('/', [CertificateController::class, 'index'])->name('index');
     Route::get('create', [CertificateController::class, 'create'])->name('create');

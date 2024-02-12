@@ -959,6 +959,50 @@
                 </ul>
             </li>
         @endcan
+        
+        
+        
+        
+        
+        @can('manage_video')
+            <li class="{{ @$navVideoParentActiveClass }}">
+                <a class="has-arrow" href="#">
+                    <span class="iconify" data-icon="jam:blogger-square"></span>
+                    <span>{{__('Manage Video')}} </span>
+                </a>
+                <ul>
+                    <li class="{{ active_if_full_match('admin/video/create') }}">
+                        <a href="{{route('video.create')}}">
+                            <i class="fa fa-circle"></i>
+                            <span>{{__('Add Video')}}</span>
+                        </a>
+                    </li>
+                    <li class="{{ active_if_full_match('admin/video') }} {{ active_if_full_match('admin/video/edit/*') }}">
+                        <a href="{{route('video.index')}}">
+                            <i class="fa fa-circle"></i>
+                            <span>{{__('All Video')}}</span>
+                        </a>
+                    </li>
+                    <li class="{{ @$subNavVideoCommentListActiveClass }}">
+                        <a href="{{route('video.video-comment-list')}}">
+                            <i class="fa fa-circle"></i>
+                            <span>{{ __('Video Comment List') }}</span>
+                        </a>
+                    </li>
+                    <li class="{{ @$subNavVideoCategoryIndexActiveClass }}">
+                        <a href="{{route('video.video-category.index')}}">
+                            <i class="fa fa-circle"></i>
+                            <span>{{__('Video Category')}}</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        @endcan
+        
+        
+        
+        
+        
 
         <li class="{{ @$navForumParentActiveClass }}">
                 <a class="has-arrow" href="#">

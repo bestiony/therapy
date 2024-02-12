@@ -116,6 +116,19 @@ Route::group(['middleware' => 'private.mode'], function () {
     // End:: Blog & Comment
 
 
+
+
+    // Start:: Video & Comment
+    Route::get('videos', [\App\Http\Controllers\Frontend\VideoController::class, 'VideoAll'])->name('videos');
+    Route::get('video-details/{slug}', [\App\Http\Controllers\Frontend\VideoController::class, 'videoDetails'])->name('video-details');
+    Route::get('category-videos/{slug}', [\App\Http\Controllers\Frontend\VideoController::class, 'categoryVideos'])->name('categoryVideos');
+    Route::post('video-comment', [\App\Http\Controllers\Frontend\VideoController::class, 'videoCommentStore'])->name('video-comment.store')->middleware('isDemo');
+    Route::post('video-comment-reply', [\App\Http\Controllers\Frontend\VideoController::class, 'videoCommentReplyStore'])->name('video-comment-reply.store')->middleware('isDemo');
+    Route::get('search-video-list', [\App\Http\Controllers\Frontend\VideoController::class, 'searchVideoList'])->name('search-video.list');
+    // End:: Video & Comment
+
+
+
     Route::get('terms-conditions', [MainIndexController::class, 'termConditions'])->name('terms-conditions')->withoutMiddleware('private.mode');
     Route::get('privacy-policy', [MainIndexController::class, 'privacyPolicy'])->name('privacy-policy')->withoutMiddleware('private.mode');
     Route::get('cookie-policy', [MainIndexController::class, 'cookiePolicy'])->name('cookie-policy')->withoutMiddleware('private.mode');

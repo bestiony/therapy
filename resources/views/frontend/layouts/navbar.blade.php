@@ -781,6 +781,14 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('blogs') }}">{{ __('Blog') }}</a>
                             </li>
+                            
+                            
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('videos') }}">{{ __('Podcast ') }}</a>
+                            </li>
+                            
+                            
                             <li class="nav-item">
                                 <a class="nav-link" aria-current="page"
                                     href="{{ route('contact') }}">{{ __('Contact') }}</a>

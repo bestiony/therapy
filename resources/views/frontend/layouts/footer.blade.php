@@ -136,5 +136,23 @@
 
 .theme-btn2.call{bottom:70px;}
 .theme-btn2.cons{bottom:130px;}
+.theme-btn2.call {
+    bottom: 70px;
+    width: 50px!important;
+    min-width: 50px;
+}
 
+.call {
+    background: red;
+}
+.theme-btn2 {
+      width: 50px;
+    display: inline;
+    height: 50px;
+    right: 30px;
+    min-width: 50px;
+    position: fixed;
+    text-align: center;
+    z-index: 9999;
+}
 </style>

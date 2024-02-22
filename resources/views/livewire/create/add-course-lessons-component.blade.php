@@ -619,8 +619,9 @@
                                             <div class="stepper-action-btns">
                                                 <a href="{{ route('organization.course.set-category', ['uuid' => $course->uuid]) }}"
                                                     class="theme-btn theme-button3">{{ __('Back') }}</a>
-                                                <a href="{{ route('organization.course.add-instructors', ['uuid' => $course->uuid]) }}"
-                                                    class="theme-btn default-hover-btn theme-button1">{{ __('Save and continue') }}</a>
+                                                <button
+                                                type="submit"
+                                                    class="theme-btn default-hover-btn theme-button1">{{ __('Save and continue') }}</button>
                                             </div>
 
                                         </div>

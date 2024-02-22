@@ -93,8 +93,12 @@ class CourseController extends Controller
     {
         $course = Course::where('courses.uuid', $uuid)->firstOrFail();
         $this->authorize('update', $course);
-        $organization_id = auth()->user()->organization->id;
-        $data['instructors'] = Organization::find(4)->users;
+        $organization = auth()->user()->organization;
+        if (!$organization) {
+            $this->showToastrMessage('error', __('You don\'t have organization \' permissions to edit this'));
+            return redirect()->back();
+        }
+        $data['instructors'] = $organization->users;
         $data['course'] = $course;
         return view('organization.course.instructors', $data);
     }

@@ -94,7 +94,6 @@ class AddLectureComponent extends Component
     }
     public function storeLecture()
     {
-        dd($this->text_description);
         $this->resetErrorBag();
         $this->validate();
         DB::beginTransaction();

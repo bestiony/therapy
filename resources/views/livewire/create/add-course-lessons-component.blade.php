@@ -196,8 +196,10 @@
                                                                                         </div>
                                                                                     </a>
                                                                                 @elseif($lecture->type == 'pdf')
-                                                                                    <a class="edit-lecture-preview-show d-flex align-items-center justify-content-between color-heading font-medium font-16 mb-3"
+                                                                                    <button class="edit-lecture-preview-show d-flex align-items-center justify-content-between color-heading font-medium font-16 mb-3"
                                                                                         data-bs-toggle="modal"
+                                                                                        data-bs-target="#pdfModal"
+                                                                                        wire:click='setCurrentFilePath("{{ asset($lecture->pdf) }}")'
                                                                                         href="#pdfModal">
                                                                                         <div
                                                                                             class="d-flex flex-grow-1">
@@ -216,7 +218,7 @@
                                                                                             <span
                                                                                                 class="see-preview-video font-medium font-16">{{ __('Preview PDF') }}</span>
                                                                                         </div>
-                                                                                    </a>
+                                                                                    </button>
                                                                                 @elseif($lecture->type == 'slide_document')
                                                                                     <a data-lecture_slide="{{ $lecture->slide_document }}"
                                                                                         class="lectureSlide edit-lecture-preview-show d-flex align-items-center justify-content-between color-heading font-medium font-16 mb-3"
@@ -638,6 +640,7 @@
     @livewire('create.edit-section-name-component', ['section_id' => $currentSection?->id, 'section_name' => $currentSection?->name])
     @livewire('create.add-lecture-component', ['course' => $course, 'lesson' => $currentSection])
     @livewire('create.edit-lecture-component', ['course' => $course, 'lecture' => $currentLecture])
+    @livewire('create.preview-pdf-modal',['file_path' => $currentFilePath])
     @push('script')
         <script>
             window.addEventListener('closeModal', event => {

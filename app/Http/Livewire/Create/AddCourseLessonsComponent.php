@@ -17,6 +17,7 @@ class AddCourseLessonsComponent extends Component
     public $showAddNewLesson = false;
     public $currentSection;
     public $currentLecture;
+    public $currentFilePath;
     public $currentAccordion = 0;
     protected $listeners = [
         'sectionUpdated' => 'remountSections',
@@ -33,6 +34,11 @@ class AddCourseLessonsComponent extends Component
     {
         $this->currentLecture = $lecture;
         $this->emit('lectureChanged', $lecture['id']);
+    }
+    public function setCurrentFilePath($filePath)
+    {
+        $this->currentFilePath = $filePath;
+        $this->emit('filePathChanged', $filePath);
     }
     public function setCurrentAccordion($accordion)
     {

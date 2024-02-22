@@ -119,19 +119,7 @@
     <!-- Slide Show Upload Modal End-->
 
     <!-- PDF Show Upload Modal Start-->
-    <div class="modal fade venoBoxTypeModal" id="pdfModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-header border-bottom-0">
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><span class="iconify"
-                    data-icon="akar-icons:cross"></span></button>
-        </div>
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <embed src="{{ getImageFile(@$lecture->pdf) }}" class="pdf-reader-frame">
-                </div>
-            </div>
-        </div>
-    </div>
+    
     <!-- PDF Show Upload Modal End-->
 
     <!-- Audio Player Modal Start-->

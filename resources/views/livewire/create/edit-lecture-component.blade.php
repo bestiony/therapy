@@ -146,7 +146,7 @@
                                                                     </select>
                                                                 </div>
                                                             </div>
-                                                            <div class="vimeo_Video_file_upload_div d-none">
+                                                            <div class="vimeo_Video_file_upload_div {{$vimeo_upload_type == 1 ? '': 'd-none'}}">
                                                                 <label
                                                                     class="label-text-title color-heading font-medium font-16 mb-3">{{ __('Upload Video') }}<span
                                                                         class="text-danger">*</span></label>
@@ -170,7 +170,7 @@
                                                                         {{ $message }}</span>
                                                                 @enderror
                                                             </div>
-                                                            <div class="vimeo_uploaded_Video_id_div d-none">
+                                                            <div class="vimeo_uploaded_Video_id_div {{$vimeo_upload_type == 2 ? '':'d-none'}}">
                                                                 <div class="row mb-30">
                                                                     <div class="col-md-12">
                                                                         <label

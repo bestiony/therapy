@@ -2,14 +2,16 @@
 
 @section('breadcrumb')
     <div class="page-banner-content text-center">
-        <h3 class="page-banner-heading text-white pb-15"> {{__('Upload Course')}} </h3>
+        <h3 class="page-banner-heading text-white pb-15"> {{ __('Upload Course') }} </h3>
 
         <!-- Breadcrumb Start-->
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb justify-content-center">
-                <li class="breadcrumb-item font-14"><a href="{{route('organization.dashboard')}}">{{__('Dashboard')}}</a></li>
-                <li class="breadcrumb-item font-14"><a href="{{ route('organization.course.index') }}">{{__('My Courses')}}</a></li>
-                <li class="breadcrumb-item font-14 active" aria-current="page">{{__('Upload Course')}}</li>
+                <li class="breadcrumb-item font-14"><a href="{{ route('organization.dashboard') }}">{{ __('Dashboard') }}</a>
+                </li>
+                <li class="breadcrumb-item font-14"><a
+                        href="{{ route('organization.course.index') }}">{{ __('My Courses') }}</a></li>
+                <li class="breadcrumb-item font-14 active" aria-current="page">{{ __('Upload Course') }}</li>
             </ol>
         </nav>
     </div>
@@ -23,11 +25,12 @@
                     <div class="card">
                         <div id="msform">
                             <!-- progressbar -->
-                            <ul id="progressbar" class="upload-course-item-block d-flex align-items-center justify-content-center">
+                            <ul id="progressbar"
+                                class="upload-course-item-block d-flex align-items-center justify-content-center">
                                 <li class="active" id="account"><strong>{{ __('Course Overview') }}</strong></li>
-                                <li class="active"  id="personal"><strong>{{ __('Upload Video') }}</strong></li>
+                                <li class="active" id="personal"><strong>{{ __('Upload Video') }}</strong></li>
                                 <li class="active"><strong>{{ __('Instructor') }}</strong></li>
-                                <li  class="active" id="confirm"><strong>{{ __('Submit Process') }}</strong></li>
+                                <li class="active" id="confirm"><strong>{{ __('Submit Process') }}</strong></li>
                             </ul>
 
                             <!-- Upload Course Step-1 Item Start -->
@@ -39,12 +42,10 @@
                                             <div class="last-step-content-wrap">
                                                 <h4 class="mb-3">Finish!</h4>
                                                 <div class="stepper-action-btns">
-                                                    <a href="{{route('organization.course.index',["course_version_id"=>$course_version_id])}}" class="theme-btn theme-button3">{{__('Cancel')}}</a>
-                                                    @if($course->status == 1)
-                                                    <a href="{{route('organization.course.upload-finished', [$course->uuid, "course_version_id"=>$course_version_id])}}" type="button" class="theme-btn theme-button1">{{ __('Done') }}</a>
-                                                    @else
-                                                    <a href="{{route('organization.course.upload-finished', [$course->uuid, "course_version_id"=>$course_version_id])}}" type="button" class="theme-btn theme-button1">{{ __('Submit for review') }}</a>
-                                                    @endif
+
+                                                    <a href="{{ route('organization.course.upload-finished', [$course->uuid]) }}"
+                                                        type="button"
+                                                        class="theme-btn theme-button1">{{ __('Submit for review') }}</a>
                                                 </div>
                                             </div>
                                         </div>

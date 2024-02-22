@@ -95,16 +95,41 @@ class CourseController extends Controller
         $this->authorize('update', $course);
         $organization_id = auth()->user()->organization->id;
         $data['instructors'] = Organization::find(4)->users;
-        //  User::where('role', USER_ROLE_INSTRUCTOR)
-        //     ->where('instructors.organization_id', $organization_id)
-        //     ->where('instructors.status', STATUS_APPROVED)
-        //     ->join('instructors', 'instructors.user_id', 'users.id')
-        //     ->where('users.id', '!=', $course->user_id)
-        //     ->where('users.id', '!=', auth()->id())
-        //     ->select('users.id', 'users.name')->get();
-        // dd(Organization::find(4)->users);
         $data['course'] = $course;
         return view('organization.course.instructors', $data);
+    }
+    public function submitDraft($uuid)
+    {
+        $course = Course::where('courses.uuid', $uuid)->firstOrFail();
+        $this->authorize('update', $course);
+        $data['course'] = $course;
+        return view('organization.course.submit-lesson', $data);
+    }
+    public function finishDraft($uuid)
+    {
+        $course = Course::where('courses.uuid', $uuid)->firstOrFail();
+        $this->authorize('update', $course);
+
+        if ($course->user_id != auth()->id()) {
+            //TODO: notify from here to multi instructor;
+            $text = __("You have been selected as co-instructor");
+            $target_url = route('organization.multi_instructor');
+            $courseInstructors = $course->course_instructors->where('status', STATUS_PENDING)->where('instructor_id', '!=', $course->user_id);
+
+            foreach ($courseInstructors as $courseInstructor) {
+                $this->send($text, 2, $target_url, $courseInstructor->instructor->user_id);
+            }
+        }
+
+        $course->status = 2;
+        $course->save();
+        if ($course->status != 0) {
+            $text = __("Course") . " " . $course->title . " " . __(" have a pending update by the instructor");
+            $target_url = route('admin.course.review_pending');
+            $this->send($text, 1, $target_url, null);
+        }
+
+        return redirect(route('organization.course.index'));
     }
 
     // ! Deprecated
@@ -176,7 +201,7 @@ class CourseController extends Controller
         }
 
         $pending_course_version = CourseVersion::where('course_id', $data['course']->id)->where('status', PENDING_COURSE_VERSION)->first();
-        if ($pending_course_version) {
+        if ($pending_course_version || $course->status == WAITING_FOR_REVIEW_COURSE) {
             $this->showToastrMessage('error', __('You have a pending edit. wait for the admin response !'));
             return redirect()->back();
         }
@@ -622,7 +647,7 @@ class CourseController extends Controller
         array_push($courseInstructorIds, $courseInstructor->id);
         CourseInstructor::whereNotIn('id', $courseInstructorIds)->where('course_id', $course->id)->delete();
         $this->showToastrMessage('success', __('Instructors has been added successfully.'));
-        return redirect(route('organization.course.index'));
+        return redirect(route('organization.course.submit-draft', $course->uuid));
     }
     public function storeInstructor(Request $request, $uuid)
     {

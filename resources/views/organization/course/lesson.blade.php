@@ -119,7 +119,7 @@
     <!-- Slide Show Upload Modal End-->
 
     <!-- PDF Show Upload Modal Start-->
-    
+
     <!-- PDF Show Upload Modal End-->
 
     <!-- Audio Player Modal Start-->
@@ -216,6 +216,19 @@
             });
             $('.dropdown-toggle').dropdown();
         });
+        document.addEventListener('livewire:load', function() {
+            initializeSummernote();
+
+            Livewire.on('contentUpdated', function() {
+                initializeSummernote();
+            });
+        });
+
+        function initializeSummernote() {
+            $("#summernote").summernote({
+                dialogsInBody: true
+            });
+        }
     </script>
     <!-- //Summernote JS - CDN Link -->
 

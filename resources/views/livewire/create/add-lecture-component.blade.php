@@ -144,7 +144,8 @@
                                                                     </select>
                                                                 </div>
                                                             </div>
-                                                            <div class="vimeo_Video_file_upload_div d-none">
+                                                            <div class="vimeo_Video_file_upload_div d-none"
+                                                                wire:ignore.self>
                                                                 <label
                                                                     class="label-text-title color-heading font-medium font-16 mb-3">{{ __('Upload Video') }}<span
                                                                         class="text-danger">*</span></label>
@@ -168,7 +169,8 @@
                                                                         {{ $message }}</span>
                                                                 @enderror
                                                             </div>
-                                                            <div class="vimeo_uploaded_Video_id_div d-none">
+                                                            <div class="vimeo_uploaded_Video_id_div d-none"
+                                                                wire:ignore.self>
                                                                 <div class="row mb-30">
                                                                     <div class="col-md-12">
                                                                         <label
@@ -517,4 +519,35 @@
 
         </div>
     </div>
+    @push('script')
+        <script>
+            document.addEventListener('livewire:load', function() {
+                $('#summernote').summernote({
+                    height: 200,
+                    codemirror: {
+                        theme: 'monokai'
+                    },
+                    callbacks: {
+                        onChange: function(contents, $editable) {
+                            @this.set('message', contents);
+                        }
+                    }
+                });
+                // initializeSummernote();
+                // console.log('livewire loaded')
+                // Livewire.on('reinitializeSummernote', function() {
+                //     console.log('reinitilized loaded')
+
+                //     initializeSummernote();
+
+                // });
+            });
+
+            // function initializeSummernote() {
+            //     $("#summernote").summernote({
+            //         dialogsInBody: true
+            //     });
+            // }
+        </script>
+    @endpush
 </div>

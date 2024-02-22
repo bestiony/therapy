@@ -258,5 +258,8 @@
             var audio = $(this).data("lecture_audio")
             $('.getLectureAudio').attr('src', audio)
         })
+        window.addEventListener('pageReload', () => {
+            location.reload();
+        });
     </script>
 @endpush

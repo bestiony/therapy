@@ -180,6 +180,7 @@ class AddLectureComponent extends Component
         $this->emit('lectureAdded');
         $this->dispatchBrowserEvent('closeModal');
         $this->dispatchBrowserEvent('showSuccess', 'Lecture creation was successful!');
+        $this->dispatchBrowserEvent('pageReload');
     }
 
     public function render()

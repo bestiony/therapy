@@ -1,22 +1,25 @@
 @extends('layouts.organization')
 
 @section('breadcrumb')
-<div class="page-banner-content text-center">
-    <h3 class="page-banner-heading text-white pb-15"> {{__('Upload Course')}} </h3>
+    <div class="page-banner-content text-center">
+        <h3 class="page-banner-heading text-white pb-15"> {{ __('Upload Course') }} </h3>
 
-    <!-- Breadcrumb Start-->
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb justify-content-center">
-            <li class="breadcrumb-item font-14"><a href="{{route('organization.dashboard')}}">{{__('Dashboard')}}</a></li>
-            <li class="breadcrumb-item font-14"><a href="{{ route('organization.course.index') }}">{{__('My Courses')}}</a></li>
-            <li class="breadcrumb-item font-14 active" aria-current="page">{{__('Upload Course')}}</li>
-        </ol>
-    </nav>
-</div>
+        <!-- Breadcrumb Start-->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-center">
+                <li class="breadcrumb-item font-14"><a href="{{ route('organization.dashboard') }}">{{ __('Dashboard') }}</a>
+                </li>
+                <li class="breadcrumb-item font-14"><a
+                        href="{{ route('organization.course.index') }}">{{ __('My Courses') }}</a></li>
+                <li class="breadcrumb-item font-14 active" aria-current="page">{{ __('Upload Course') }}</li>
+            </ol>
+        </nav>
+    </div>
 @endsection
 
 @section('content')
-<div class="instructor-profile-right-part instructor-upload-course-box-part">
+    @livewire('create.set-course-category-component', ['course' => $course])
+    {{-- <div class="instructor-profile-right-part instructor-upload-course-box-part">
     <div class="instructor-upload-course-box">
         <div class="row">
             <div class="col-12">
@@ -30,7 +33,7 @@
                             <li id="organization"><strong>{{ __('Instructor') }}</strong></li>
                             <li id="confirm"><strong>{{ __('Submit process') }}</strong></li>
                         </ul>
-                        
+
                         <div class="upload-course-step-item upload-course-overview-step-item">
                             <!-- Upload Course Overview-2 start -->
                             <form method="POST" action="{{route('organization.course.update.category', [$course->uuid])}}"
@@ -60,8 +63,8 @@
                                                 <select name="category_id" id="category_id" class="form-select"
                                                     required>
                                                     <option value="">{{ __('Select Category') }}</option>
-                                                    @foreach($categories as $category)
-                                                    <option value="{{$category->id}}" @if(old('category_id'))
+                                                    @foreach ($categories as $category)
+                                                    <option value="{{$category->id}}" @if (old('category_id'))
                                                         {{old('category_id')==$category->id ? 'selected' : '' }} @else
                                                         {{ $course->category_id == $category->id ? 'selected' : '' }}
                                                         @endif >{{$category->name}}</option>
@@ -90,7 +93,7 @@
                                                 <select name="subcategory_id" id="subcategory_id" class="form-select"
                                                     required>
                                                     <option value="">{{ __('Select Subcategory') }}</option>
-                                                    @foreach($subcategories as $subcategory)
+                                                    @foreach ($subcategories as $subcategory)
                                                     <option value="{{$subcategory->id}}" {{$subcategory->id ==
                                                         $course->subcategory_id ? 'selected' : '' }}
                                                         >{{$subcategory->name}}</option>
@@ -117,8 +120,8 @@
                                                     </span>
                                                 </label>
                                                 <select name="tag[]" class="select2" multiple>
-                                                    @foreach($tags as $tag)
-                                                    <option value="{{$tag->id}}" @if(in_array($tag->id, $selected_tags))
+                                                    @foreach ($tags as $tag)
+                                                    <option value="{{$tag->id}}" @if (in_array($tag->id, $selected_tags))
                                                         selected @endif>{{$tag->name}}</option>
                                                     @endforeach
                                                 </select>
@@ -135,7 +138,7 @@
                                         <div class="upload-course-item-block-title mb-3">
                                             <h6 class="font-20">{{ __('Learners Accessibility & others') }}</h6>
                                         </div>
-                                        @if($course->course_type == COURSE_TYPE_GENERAL)
+                                        @if ($course->course_type == COURSE_TYPE_GENERAL)
                                         <div class="row">
                                             <div class="col-md-12 mb-30">
                                                 <label
@@ -221,11 +224,11 @@
                                                 <select name="learner_accessibility"
                                                     class="form-select learner_accessibility" required>
                                                     <option value="">{{ __('Select Option') }}</option>
-                                                    <option value="paid" @if(old('learner_accessibility'))
+                                                    <option value="paid" @if (old('learner_accessibility'))
                                                         {{old('learner_accessibility')=='paid' ? 'selected' : '' }}
                                                         @else {{ $course->learner_accessibility == 'paid' ? 'selected' :
                                                         '' }} @endif >{{__('Paid')}}</option>
-                                                    <option value="free" @if(old('learner_accessibility'))
+                                                    <option value="free" @if (old('learner_accessibility'))
                                                         {{old('learner_accessibility')=='free' ? 'selected' : '' }}
                                                         @else {{ $course->learner_accessibility == 'free' ? 'selected' :
                                                         '' }} @endif >{{__('Free')}}</option>
@@ -294,9 +297,9 @@
                                                 <select name="course_language_id" id="course_language_id"
                                                     class="form-select" required>
                                                     <option value="">Select Language</option>
-                                                    @foreach($course_languages as $course_language)
+                                                    @foreach ($course_languages as $course_language)
                                                     <option value="{{$course_language->id}}"
-                                                        @if(old('course_language_id'))
+                                                        @if (old('course_language_id'))
                                                         {{old('course_language_id')==$course_language->id ? 'selected' :
                                                         '' }} @else {{ $course->course_language_id ==
                                                         $course_language->id ? 'selected' : '' }} @endif
@@ -324,9 +327,9 @@
                                                 <select name="difficulty_level_id" id="difficulty_level_id"
                                                     class="form-select" required>
                                                     <option value="">{{ __('Select Difficulty Level') }}</option>
-                                                    @foreach($difficulty_levels as $difficulty_level)
+                                                    @foreach ($difficulty_levels as $difficulty_level)
                                                     <option value="{{$difficulty_level->id}}"
-                                                        @if(old('difficulty_level_id'))
+                                                        @if (old('difficulty_level_id'))
                                                         {{old('difficulty_level_id')==$difficulty_level->id ? 'selected'
                                                         : '' }} @else {{ $course->difficulty_level_id ==
                                                         $difficulty_level->id ? 'selected' : '' }} @endif
@@ -356,13 +359,13 @@
                                             </div>
                                             <div class="col-md-6 mb-30">
                                                 <div class="upload-img-box mt-3 height-200">
-                                                    @if($course->image)
+                                                    @if ($course->image)
                                                     <img src="{{getImageFile($course->image)}}">
                                                     @else
                                                     <img src="">
                                                     @endif
                                                     <input type="file" name="image" id="image" accept="image/*"
-                                                        onchange="previewFile(this)" @if(!$course->image) required
+                                                        onchange="previewFile(this)" @if (!$course->image) required
                                                     @endif>
                                                     <div class="upload-img-box-icon">
                                                         <i class="fa fa-camera"></i>
@@ -395,7 +398,7 @@
                                                 <input type="file" name="video" id="video" accept="video/mp4" class="form-control d-none">
                                                 <input type="text" name="youtube_video_id" id="youtube_video_id" placeholder="{{ __('Type your youtube video ID') }}" value="{{ $course->youtube_video_id }}" class="form-control d-none">
                                             </div>
-                                            @if($course->video)
+                                            @if ($course->video)
                                             <div class="col-md-12 mb-30 d-none videoSource">
                                                 <div class="video-player-area ">
                                                     <video id="player" playsinline controls
@@ -407,7 +410,7 @@
                                                 </div>
                                             </div>
                                             @endif
-                                            @if($course->youtube_video_id)
+                                            @if ($course->youtube_video_id)
                                             <div class="col-md-12 mb-30 d-none videoSourceYoutube">
                                                 <div class="video-player-area ">
                                                     <div class="plyr__video-embed" id="playerVideoYoutube">
@@ -442,30 +445,31 @@
             </div>
         </div>
     </div>
-</div>
+</div> --}}
 @endsection
 
 @push('style')
-<link rel="stylesheet" href="{{asset('common/css/select2.css')}}">
-<link rel="stylesheet" href="{{asset('frontend/assets/css/custom/img-view.css')}}">
-<!-- Video Player css -->
-<link rel="stylesheet" href="{{ asset('frontend/assets/vendor/video-player/plyr.css') }}">
+    @livewireStyles
+    <link rel="stylesheet" href="{{ asset('common/css/select2.css') }}">
+    <link rel="stylesheet" href="{{ asset('frontend/assets/css/custom/img-view.css') }}">
+    <!-- Video Player css -->
+    <link rel="stylesheet" href="{{ asset('frontend/assets/vendor/video-player/plyr.css') }}">
 @endpush
 
 @push('script')
+    @livewireScripts
+    <script src="{{ asset('common/js/select2.min.js') }}"></script>
+    <script src="{{ asset('frontend/assets/js/custom/img-view.js') }}"></script>
+    <script src="{{ asset('frontend/assets/js/custom/upload-course.js') }}"></script>
 
-<script src="{{asset('common/js/select2.min.js')}}"></script>
-<script src="{{asset('frontend/assets/js/custom/img-view.js')}}"></script>
-<script src="{{asset('frontend/assets/js/custom/upload-course.js')}}"></script>
+    <!-- Video Player js -->
+    <script src="{{ asset('frontend/assets/vendor/video-player/plyr.js') }}"></script>
+    <script>
+        const zai_player1 = new Plyr('#playerVideoYoutube');
+    </script>
+    <!-- Video Player js -->
 
-<!-- Video Player js -->
-<script src="{{ asset('frontend/assets/vendor/video-player/plyr.js') }}"></script>
-<script>
-    const zai_player1 = new Plyr('#playerVideoYoutube');
-</script>
-<!-- Video Player js -->
-
-<script>
+    <script>
     "use strict"
         $(function (){
             var intro_video_check = "{{ $course->intro_video_check }}";
@@ -503,11 +507,11 @@
         $(':input[name=drip_content]').trigger('change');
 </script>
 
-<!-- Video Player js -->
-<script src="{{ asset('frontend/assets/vendor/video-player/plyr.js') }}"></script>
-<script>
-    const aysha_player = new Plyr('#player');
+    <!-- Video Player js -->
+    <script src="{{ asset('frontend/assets/vendor/video-player/plyr.js') }}"></script>
+    <script>
+        const aysha_player = new Plyr('#player');
         const aysha_player2 = new Plyr('#youtubePlayer');
-</script>
-<!-- Video Player js -->
+    </script>
+    <!-- Video Player js -->
 @endpush

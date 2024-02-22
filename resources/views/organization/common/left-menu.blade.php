@@ -41,7 +41,7 @@
                 <a href="#" class="{{@$navCourseActiveClass}}"><span class="iconify mr-15" data-icon="fluent:learning-app-20-regular"></span>{{ __('Manage Course') }}</a>
                 <ul class="account-sub-menu">
                     <li><a href="{{ route('organization.course.index') }}" class="{{@$subNavCourseIndexActiveClass}}">{{ __('All Course') }}</a></li>
-                    <li><a href="{{ route('organization.course.create') }}" class="{{@$subNavCourseAddActiveClass}}">{{ __('Add Course') }}</a></li>
+                    <li><a href="{{ route('organization.course.create-empty') }}" class="{{@$subNavCourseAddActiveClass}}">{{ __('Add Course') }}</a></li>
                 </ul>
             </li>
             <li style="display:none;"><a href="{{ route('organization.bundle-course.index') }}" class="{{ @$navBundleCourseActiveClass }}" ><span class="iconify mr-15" data-icon="eos-icons:machine-learning-outlined"></span>{{__('Bundles Courses')}}</a></li>

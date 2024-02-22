@@ -370,6 +370,10 @@ function getVideoFile($file)
 
     return asset($file);
 }
+function getStorageVideoFile(string $file) :string
+{
+    return asset('storage/'.$file);
+}
 
 function send_payment_succeeded_email(Order $order, $user)
 {

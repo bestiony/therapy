@@ -2,14 +2,16 @@
 
 @section('breadcrumb')
     <div class="page-banner-content text-center">
-        <h3 class="page-banner-heading text-white pb-15">Hey, {{auth::user()->organization ? auth::user()->organization->name : ''  }} <img
-                src="{{asset('frontend/assets/img/student-profile-img/waving-hand.png')}}" alt="student" class="me-2"></h3>
+        <h3 class="page-banner-heading text-white pb-15">Hey,
+            {{ auth::user()->organization ? auth::user()->organization->name : '' }} <img
+                src="{{ asset('frontend/assets/img/student-profile-img/waving-hand.png') }}" alt="student" class="me-2">
+        </h3>
 
         <!-- Breadcrumb Start-->
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb justify-content-center">
-                <li class="breadcrumb-item font-14"><a href="{{route('main.index')}}">{{__('Home')}}</a></li>
-                <li class="breadcrumb-item font-14 active" aria-current="page">{{__('Dashboard')}}</li>
+                <li class="breadcrumb-item font-14"><a href="{{ route('main.index') }}">{{ __('Home') }}</a></li>
+                <li class="breadcrumb-item font-14 active" aria-current="page">{{ __('Dashboard') }}</li>
             </ol>
         </nav>
     </div>
@@ -29,12 +31,12 @@
                         <div class="flex-grow-1 ms-3">
 
                             <div class="d-flex justify-content-between align-items-center">
-                                <h6 class="para-color font-14 font-semi-bold">{{__('Earning')}}<span
-                                        class="color-gray font-13 font-normal">({{__('This Month')}})</span></h6>
+                                <h6 class="para-color font-14 font-semi-bold">{{ __('Earning') }}<span
+                                        class="color-gray font-13 font-normal">({{ __('This Month') }})</span></h6>
                             </div>
 
                             <h5>
-                                @if(get_currency_placement() == 'after')
+                                @if (get_currency_placement() == 'after')
                                     {{ number_format(@$total_earning_this_month, 2) }} {{ get_currency_symbol() }}
                                 @else
                                     {{ get_currency_symbol() }} {{ number_format(@$total_earning_this_month, 2) }}
@@ -50,8 +52,8 @@
                             <span class="iconify" data-icon="carbon:user-multiple"></span>
                         </div>
                         <div class="flex-grow-1 ms-3">
-                            <h6 class="para-color font-14 font-semi-bold">{{__('Total Enroll')}} <span
-                                    class="color-gray font-13 font-normal">({{__('This Month')}})</span></h6>
+                            <h6 class="para-color font-14 font-semi-bold">{{ __('Total Enroll') }} <span
+                                    class="color-gray font-13 font-normal">({{ __('This Month') }})</span></h6>
                             <h5>{{ @$total_enroll_this_month ?? 0 }}</h5>
                         </div>
                     </div>
@@ -63,7 +65,7 @@
                             <span class="iconify" data-icon="material-symbols:menu-book-outline"></span>
                         </div>
                         <div class="flex-grow-1 ms-3">
-                            <h6 class="para-color font-14 font-semi-bold">{{__('Total Course')}}
+                            <h6 class="para-color font-14 font-semi-bold">{{ __('Total Course') }}
                             </h6>
                             <h5>{{ $totalCourse ?? 0 }}</h5>
                         </div>
@@ -76,7 +78,7 @@
                             <span class="iconify" data-icon="mingcute:user-follow-line"></span>
                         </div>
                         <div class="flex-grow-1 ms-3">
-                            <h6 class="para-color font-14 font-semi-bold">{{__('Total Instructor')}}
+                            <h6 class="para-color font-14 font-semi-bold">{{ __('Total Instructor') }}
                             </h6>
                             <h5>{{ $totalInstructor ?? 0 }}</h5>
                         </div>
@@ -89,7 +91,7 @@
                             <span class="iconify" data-icon="fa-solid:user-graduate"></span>
                         </div>
                         <div class="flex-grow-1 ms-3">
-                            <h6 class="para-color font-14 font-semi-bold">{{__('Total Student')}}
+                            <h6 class="para-color font-14 font-semi-bold">{{ __('Total Student') }}
                             </h6>
                             <h5>{{ $totalStudent ?? 0 }}</h5>
                         </div>
@@ -102,11 +104,11 @@
                             <span class="iconify" data-icon="ion:diamond-outline"></span>
                         </div>
                         <div class="flex-grow-1 ms-3">
-                            <h6 class="para-color font-14 font-semi-bold">{{__('Best Selling Course')}}
+                            <h6 class="para-color font-14 font-semi-bold">{{ __('Best Selling Course') }}
                             </h6>
                             <h5>
                                 @if (@$best_selling_course->course->title)
-                                {{ Str::limit(@$best_selling_course->course->title, 25) }}
+                                    {{ Str::limit(@$best_selling_course->course->title, 25) }}
                                 @else
                                     {{ __('No course found yet.') }}
                                 @endif
@@ -122,27 +124,32 @@
                 <div class="col-lg-12 col-xl-6 mb-30">
                     <div class="recently-added-courses-box radius-8">
                         <div class="recently-added-courses-title d-flex justify-content-between align-items-center mb-4">
-                            <h6 class="font-18">{{__('Recently Added Courses')}}</h6>
-                            <a href="{{route('organization.course.index')}}" class="bg-transparent color-heading font-11 font-medium">{{ __('View All') }}</a>
+                            <h6 class="font-18">{{ __('Recently Added Courses') }}</h6>
+                            <a href="{{ route('organization.course.index') }}"
+                                class="bg-transparent color-heading font-11 font-medium">{{ __('View All') }}</a>
                         </div>
                         <div class="recently-added-course-item-wrap">
-                            @foreach($recentCourses as $recentCourse)
+                            @foreach ($recentCourses as $recentCourse)
                                 <div class="recently-added-course-item d-flex align-items-center">
                                     <div class="recently-added-course-item-left flex-shrink-0">
                                         <div class="d-flex align-items-center">
                                             <div class="flex-shrink-0">
                                                 <div class="user-img-wrap">
-                                                    <img src="{{getImageFile($recentCourse->image_path)}}" alt="img">
+                                                    <img src="{{ getImageFile($recentCourse->image_path) }}"
+                                                        alt="img">
                                                 </div>
                                             </div>
                                             <div class="flex-grow-1 ms-3">
                                                 <h6 class="font-15">{{ Str::limit($recentCourse->title, 25) }}</h6>
-                                                <p class="font-14">{{ courseStudents($recentCourse->id) }} {{__('Enroll')}} </p>
+                                                <p class="font-14">{{ courseStudents($recentCourse->id) }}
+                                                    {{ __('Enroll') }} </p>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="recently-added-course-item-right flex-grow-1 justify-content-end text-end ms-3">
-                                        <button class="font-12 font-medium color-gray">{{@$recentCourse->created_at->diffForHumans()}}</button>
+                                    <div
+                                        class="recently-added-course-item-right flex-grow-1 justify-content-end text-end ms-3">
+                                        <button
+                                            class="font-12 font-medium color-gray">{{ @$recentCourse->created_at->diffForHumans() }}</button>
                                     </div>
                                 </div>
                             @endforeach
@@ -166,15 +173,16 @@
             <div class="row upload-your-course-today mb-lg-0">
                 <div class="col-lg-12 col-xl-6 mb-30">
                     <div class="upload-your-course-part radius-8">
-                        <h6 class="font-18 text-white">{{__('Upload Your Course Today')}}</h6>
-                        <a href="{{route('organization.course.create')}}" class="upload-your-course-today-btn bg-hover text-white font-12 font-medium">{{__('Upload Course')}}</a>
+                        <h6 class="font-18 text-white">{{ __('Upload Your Course Today') }}</h6>
+                        <a href="{{ route('organization.course.create-empty') }}"
+                            class="upload-your-course-today-btn bg-hover text-white font-12 font-medium">{{ __('Upload Course') }}</a>
                     </div>
                 </div>
 
                 <div class="col-lg-6 mb-30">
                     <div class="instructor-dashboard-chart-box radius-8">
                         <div class="chart-title d-flex justify-content-between align-items-center">
-                            <h6 class="font-18">{{__('Sale Statistics')}}</h6>
+                            <h6 class="font-18">{{ __('Sale Statistics') }}</h6>
                         </div>
                         <!-- Chart -->
                         <div class="chart-wrap1">
@@ -192,7 +200,6 @@
 @endsection
 
 @push('style')
-
 @endpush
 
 @push('script')
@@ -202,8 +209,8 @@
         var currencySymbol = "{{ get_currency_symbol() }}";
     </script>
     <!--Apexcharts js-->
-    <script src="{{asset('common/js/apexcharts.min.js')}}"></script>
-    <script src="{{asset('frontend/assets/js/custom/organization-top-seller-chart.js')}}"></script>
+    <script src="{{ asset('common/js/apexcharts.min.js') }}"></script>
+    <script src="{{ asset('frontend/assets/js/custom/organization-top-seller-chart.js') }}"></script>
 
     <!--Chart1 Script-->
     <script>
@@ -216,12 +223,10 @@
             dataLabels: {
                 enabled: false,
             },
-            series: [
-                {
-                    name: "Sale",
-                    data: @json(@$totalPrice)
-                }
-            ],
+            series: [{
+                name: "Sale",
+                data: @json(@$totalPrice)
+            }],
             fill: {
                 type: "gradient",
                 colors: ['#5e3fd7'],
@@ -263,13 +268,12 @@
             },
             tooltip: {
                 y: {
-                    formatter: function (val) {
-                        var result = val ;
-                        if ("{{ get_currency_placement() }}" == 'after')
-                        {
-                             result = val + ' ' + "{{ get_currency_symbol() }}"
+                    formatter: function(val) {
+                        var result = val;
+                        if ("{{ get_currency_placement() }}" == 'after') {
+                            result = val + ' ' + "{{ get_currency_symbol() }}"
                         } else {
-                             result = "{{ get_currency_symbol() }}" + ' ' + val
+                            result = "{{ get_currency_symbol() }}" + ' ' + val
                         }
                         return result;
                     }

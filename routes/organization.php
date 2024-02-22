@@ -37,14 +37,14 @@ Route::group(['prefix' => 'support-ticket', 'as' => 'support-ticket.'], function
     Route::post('message-store', [SupportTicketController::class, 'messageStore'])->name('messageStore')->middleware('isDemo');
 });
 /** SUPPORT ENDS */
- //Start:: messages
- Route::get('my-messages',[MessagesController::class,'therapist_index'])->name('messages');
- Route::post('my-messages/send',[MessagesController::class,'therapsit_sends_message'])->name('send_message');
- Route::post('my-messages/stop',[MessagesController::class,'therapsit_stop_conversation'])->name('stop-conversation');
- Route::post('my-messages/resume',[MessagesController::class,'therapsit_resume_conversation'])->name('resume-conversation');
- Route::get('my-messages/instructors',[MessagesController::class, 'organization_index'])->name('organization_messages_index');
- Route::get('my-messages/parents',[MessagesController::class, 'organization_parents_index'])->name('organization_parents_messages_index');
- //End:: messages
+//Start:: messages
+Route::get('my-messages', [MessagesController::class, 'therapist_index'])->name('messages');
+Route::post('my-messages/send', [MessagesController::class, 'therapsit_sends_message'])->name('send_message');
+Route::post('my-messages/stop', [MessagesController::class, 'therapsit_stop_conversation'])->name('stop-conversation');
+Route::post('my-messages/resume', [MessagesController::class, 'therapsit_resume_conversation'])->name('resume-conversation');
+Route::get('my-messages/instructors', [MessagesController::class, 'organization_index'])->name('organization_messages_index');
+Route::get('my-messages/parents', [MessagesController::class, 'organization_parents_index'])->name('organization_parents_messages_index');
+//End:: messages
 Route::prefix('instructor')->group(function () {
     Route::get('/', [InstructorController::class, 'index'])->name('instructor.index');
     Route::get('create', [InstructorController::class, 'create'])->name('instructor.create');
@@ -78,7 +78,12 @@ Route::prefix('student')->group(function () {
 
 Route::prefix('course')->group(function () {
 
-    Route::get('create', [CourseController::class, 'create'])->name('course.create');
+    Route::get('create', [CourseController::class, 'createEmpty'])->name('course.create-empty');
+    Route::get('set-overview/{uuid}', [CourseController::class, 'setOverview'])->name('course.set-overview');
+    Route::get('set-category/{uuid}', [CourseController::class, 'setCategory'])->name('course.set-category');
+    Route::get('add-lessons/{uuid}', [CourseController::class, 'addLessons'])->name('course.add-lessons');
+
+
     Route::get('/', [CourseController::class, 'index'])->name('course.index');
     Route::post('store', [CourseController::class, 'store'])->name('course.store')->middleware('isDemo');
     Route::get('edit/{uuid}', [CourseController::class, 'edit'])->name('course.edit');
@@ -91,6 +96,8 @@ Route::prefix('course')->group(function () {
         Route::post('store/{course_uuid}', [LessonController::class, 'store'])->name('lesson.store')->middleware('isDemo');
         Route::post('update-lesson/{course_uuid}/{lesson_id}', [LessonController::class, 'updateLesson'])->name('lesson.update')->middleware('isDemo');
         Route::delete('delete-lesson/{lesson_id}', [LessonController::class, 'deleteLesson'])->name('lesson.delete')->middleware('isDemo');
+        Route::delete('restore-lesson/{lesson_uuid}', [LessonController::class, 'restoreLesson'])->name('lesson.restore')->middleware('isDemo');
+
 
         Route::get('upload-lecture/{course_uuid}/{lesson_uuid}', [LessonController::class, 'uploadLecture'])->name('upload.lecture');
         Route::post('store-lecture/{course_uuid}/{lesson_uuid}', [LessonController::class, 'storeLecture'])->name('store.lecture')->middleware('isDemo');
@@ -227,8 +234,8 @@ Route::group(['prefix' => 'certificates'], function () {
     Route::get('view/{uuid}', [CertificateController::class, 'view'])->name('certificate.view');
 });
 
-Route::get('followers', [FollowController::class,'followers'])->name('followers');
-Route::get('followings', [FollowController::class,'followings'])->name('followings');
+Route::get('followers', [FollowController::class, 'followers'])->name('followers');
+Route::get('followings', [FollowController::class, 'followings'])->name('followings');
 
 Route::get('discussion-index', [DiscussionController::class, 'index'])->name('discussion.index');
 Route::get('course-discussion-list', [DiscussionController::class, 'courseDiscussionList'])->name('course-discussion.list');
@@ -245,9 +252,6 @@ Route::group(['prefix' => 'consultation', 'as' => 'consultation.'], function () 
     Route::get('slot-view/{day}', [ConsultationController::class, 'slotView'])->name('slotView');
     Route::delete('slot-delete/{id}', [ConsultationController::class, 'slotDelete'])->name('slotDelete')->middleware('isDemo');
     Route::get('day-available-status-change/{day}', [ConsultationController::class, 'dayAvailableStatusChange'])->name('dayAvailableStatusChange');
-
-
-
 });
 Route::get('booking-request', [ConsultationController::class, 'bookingRequest'])->name('bookingRequest');
 Route::post('cancel-reason/{uuid}', [ConsultationController::class, 'cancelReason'])->name('cancelReason')->middleware('isDemo');

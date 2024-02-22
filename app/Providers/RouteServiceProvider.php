@@ -46,44 +46,44 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/web.php'));
 
 
-            Route::middleware(['web',  'local','version.update'])
-                ->namespace($this->namespace. '\Frontend')
+            Route::middleware(['web',  'local', 'version.update'])
+                ->namespace($this->namespace . '\Frontend')
                 ->group(base_path('routes/frontend.php'));
 
-            Route::middleware(['web', 'auth', 'admin', 'local','version.update'])
+            Route::middleware(['web', 'auth', 'admin', 'local', 'version.update'])
                 ->prefix('admin')
-                ->namespace($this->namespace. '\Admin')
+                ->namespace($this->namespace . '\Admin')
                 ->group(base_path('routes/admin.php'));
 
-            Route::middleware(['web', 'auth', 'instructor', 'local','version.update','verifiedphone'])
+            Route::middleware(['web', 'auth', 'instructor', 'local', 'version.update', 'verifiedphone'])
                 ->prefix('instructor')
-                ->namespace($this->namespace. '\Instructor')
+                ->namespace($this->namespace . '\Instructor')
                 ->group(base_path('routes/instructor.php'));
 
-            Route::middleware(['web', 'auth', 'parent', 'local','version.update','verifiedphone'])
+            Route::middleware(['web', 'auth', 'parent', 'local', 'version.update', 'verifiedphone'])
                 ->prefix('parent')
-                ->namespace($this->namespace. '\parent')
+                ->namespace($this->namespace . '\parent')
                 ->group(base_path('routes/parent.php'));
 
-            Route::middleware(['web', 'auth', 'organization', 'local','version.update','verifiedphone'])
+            Route::middleware(['web', 'auth', 'organization', 'local', 'version.update', 'verifiedphone'])
                 ->prefix('organization')
                 ->as('organization.')
-                ->namespace($this->namespace. '\Organization')
+                ->namespace($this->namespace . '\Organization')
                 ->group(base_path('routes/organization.php'));
 
-            Route::middleware(['web', 'auth', 'student', 'local','version.update', 'device.control','verifiedphone'])
+            Route::middleware(['web', 'auth', 'student', 'local', 'version.update', 'device.control', 'verifiedphone'])
                 ->prefix('student')
-                ->namespace($this->namespace. '\Student')
+                ->namespace($this->namespace . '\Student')
                 ->group(base_path('routes/student.php'));
 
 
-            Route::middleware(['web', 'auth', 'common', 'local','version.update'])
+            Route::middleware(['web', 'auth', 'common', 'local', 'version.update'])
                 ->prefix('common')
-                ->namespace($this->namespace. '\Common')
+                ->namespace($this->namespace . '\Common')
                 ->group(base_path('routes/common.php'));
 
-
-
+            Route::middleware(['web', 'auth', 'local', 'version.update'])
+                ->group(base_path('routes/shared.php'));
         });
     }
 

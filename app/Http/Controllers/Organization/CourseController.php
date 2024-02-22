@@ -50,22 +50,46 @@ class CourseController extends Controller
         $data['number_of_course'] = count($data['courses']);
         return view('organization.course.index', $data);
     }
-
-    public function create()
+    public function createEmpty()
     {
-        $count = Course::where('user_id', auth()->id())->count();
-
-        if (hasLimitSaaS(PACKAGE_RULE_COURSE, PACKAGE_TYPE_SAAS_ORGANIZATION, $count)) {
-            $data['title'] = 'Upload Course';
-            $data['navCourseUploadActiveClass'] = 'active';
-            $data['rules'] = CourseUploadRule::all();
-            return view('organization.course.create', $data);
-        } else {
+        /**
+         * @var User $user
+         */
+        $user = auth()->user();
+        $count = Course::where('user_id', $user->id)->whereNot('status', EMPTY_COURSE)->count();
+        if (!hasLimitSaaS(PACKAGE_RULE_COURSE, PACKAGE_TYPE_SAAS_ORGANIZATION, $count)) {
             $this->showToastrMessage('error', __('Your Course Create limit has been finish.'));
             return redirect()->back();
         }
+        $course = $user->courses()->create(['status' => EMPTY_COURSE]);
+        return redirect(route('organization.course.set-overview', [$course->uuid]));
+    }
+    public function setOverview($uuid)
+    {
+        $course = Course::withoutGlobalScope('excludeEmptyCourses')->where('courses.uuid', $uuid)->firstOrFail();
+
+        $data['title'] = 'Upload Course';
+        $data['navCourseUploadActiveClass'] = 'active';
+        $data['rules'] = CourseUploadRule::all();
+        $data['course'] = $course;
+        return view('organization.course.create', $data);
+    }
+    public function setCategory($uuid)
+    {
+        $course = Course::where('courses.uuid', $uuid)->firstOrFail();
+        $this->authorize('update', $course);
+        $data['course'] = $course;
+        return view('organization.course.edit-category', $data);
+    }
+    public function addLessons($uuid)
+    {
+        $course = Course::where('courses.uuid', $uuid)->firstOrFail();
+        $this->authorize('update', $course);
+        $data['course'] = $course;
+        return view('organization.course.lesson', $data);
     }
 
+    // ! Deprecated
     public function store(StoreCourseRequest $request)
     {
         if (Course::where('slug', Str::slug($request->title))->count() > 0) {
@@ -80,7 +104,7 @@ class CourseController extends Controller
             'course_type' => $request->course_type,
             'subtitle' => $request->subtitle,
             'slug' => $slug,
-            'status' => 4,
+            'status' => DRAFT_COURSE,
             'description' => $request->description
         ];
 
@@ -117,10 +141,15 @@ class CourseController extends Controller
 
     public function edit($uuid)
     {
+        $course = Course::where('courses.uuid', $uuid)->firstOrFail();
+        if($course->isStillNew()){
+            return redirect(route('organization.course.set-overview', [$course->uuid]));
+        }
         $data['navCourseUploadActiveClass'] = 'active';
         $data['title'] = 'Upload Course';
         $data['rules'] = CourseUploadRule::all();
-        $data['course'] = Course::where('courses.uuid', $uuid)->firstOrFail();
+        $data['course'] = $course;
+
         $user_id = auth()->id();
 
         if (!$data['course']->user_id == $user_id) {
@@ -133,8 +162,19 @@ class CourseController extends Controller
             $this->showToastrMessage('error', __('You have a pending edit. wait for the admin response !'));
             return redirect()->back();
         }
-
-        $data['course_version_id'] = null;
+        $course_version = CourseVersion::where('course_id', $course->id)->whereIn('status', [INCOMPLETED_COURSE_VERSION, REFUSED_COURSE_VERSION])->first();
+        if (!$course_version) {
+            $last_course_version = CourseVersion::where('course_id', $course->id)->latest()->first();
+            $course_version = CourseVersion::create([
+                'course_id' => $course->id,
+                'instructor_id' => $user_id,
+                'version' => $last_course_version ? $last_course_version->version + 1 : 1,
+                'status' => INCOMPLETED_COURSE_VERSION,
+                'details' => [],
+            ]);
+        }
+        $data['course_version_id'] = $course_version->id;
+        $data['course_version'] = $course_version;
         if (\request('course_version_id')) {
 
             $course_version_id = \request('course_version_id');
@@ -142,19 +182,35 @@ class CourseController extends Controller
             $course_version = CourseVersion::find($course_version_id);
             $details = $course_version->details;
             if (isset($details['lessons'])) {
-
                 $edited_lessons = Course_lesson::whereIn('id', $details['lessons'])->get();
                 $data['edited_lessons'] = $edited_lessons;
             }
             if (isset($details['deleted_lectures'])) {
                 $data['deleted_lectures'] = Course_lecture::whereIn('id', $details['deleted_lectures'])->pluck('uuid')->toArray();
             }
+            if (isset($details['updated_course_lessons'])) {
+                $data['updated_course_lessons'] = Course_lesson::whereIn('id', array_keys($details['updated_course_lessons']))
+                    ->get()
+                    ->mapWithKeys(function ($model) {
+                        return [$model->id => $model];
+                    })
+                    ->toArray();
+            }
             if (isset($details['deleted_lessons'])) {
-                $data['deleted_lessons'] = Course_lesson::whereIn('id', $details['deleted_lessons'])->pluck('uuid')->toArray();
+                $data['deleted_lessons'] = Course_lesson::whereIn('id', $details['deleted_lessons'])
+                    ->get()
+                    ->mapWithKeys(function ($model) {
+                        return [$model->uuid => $model];
+                    })
+                    ->toArray();
             }
         }
-
-        $data['keyPoints'] = LearnKeyPoint::whereCourseId($data['course']->id)->get();
+        $added_key_points = LearnKeyPoint::whereIn('id', data_get($course_version->details, 'new_learn_key_points', []))->get();
+        $data['keyPoints'] = LearnKeyPoint::whereCourseId($data['course']->id)->get()->concat($added_key_points);
+        $added_lessons = Course_lesson::whereIn('id', data_get($course_version->details, 'lessons', []))->get();
+        $data['lessons'] = Course_lesson::whereCourseId($data['course']->id)->get()->concat($added_lessons);
+        $added_lectures = Course_lecture::with('lesson')->whereIn('id', data_get($course_version->details, 'lectures', []))->get();
+        $data['lectures'] = Course_lecture::whereCourseId($data['course']->id)->get()->concat($added_lectures);
         if (\request('step') == 'category') {
             $data['categories'] = Category::active()->orderBy('name', 'asc')->select('id', 'name')->get();
             $data['tags'] = Tag::orderBy('name', 'asc')->select('id', 'name')->get();
@@ -263,32 +319,29 @@ class CourseController extends Controller
                 'details' => [],
             ]);
         }
-
+        $details = $course_version->details;
         // $this->model->updateByUuid($data, $uuid); // update category
-        $new_learn_key_points = [];
-        $updated_learn_key_points = [];
+        $new_learn_key_points = data_get($details, 'new_learn_key_points', []);
+        $updated_learn_key_points = data_get($details, 'updated_learn_key_points', []);
 
-        $now = now();
-        if ($request['key_points']) {
-            if (count(@$request['key_points']) > 0) {
-                foreach ($request['key_points'] as $item) {
-                    if (@$item['name']) {
-                        if (@$item['id']) {
-                            $key_point = LearnKeyPoint::find($item['id']);
-                            if ($key_point->name != @$item['name']) {
-                                $key_point->name = @$item['name'];
-                                $key_point->updated_at = $now;
-                                $updated_learn_key_points[$key_point->id] = [
-                                    'name' => @$item['name'],
-                                    'updated_at' => $now,
-                                ];
-                            }
-                        } else {
-                            $key_point = new LearnKeyPoint();
-                            $key_point->name = @$item['name'];
-                            $key_point->updated_at = $now;
-                            // $key_point->course_id = $course->id;
-                            $key_point->save();
+        $keyPoints = $request->key_points;
+        if ($keyPoints) {
+            foreach ($keyPoints as $item) {
+                $name = data_get($item, 'name');
+                $id = data_get($item, 'id');
+                if ($name) {
+                    if ($id) {
+                        $key_point = LearnKeyPoint::find($item['id']);
+                        if ($key_point->name != $name) {
+                            $updated_learn_key_points[$key_point->id] = [
+                                'name' => $name,
+                            ];
+                        }
+                    } else {
+                        $key_point = LearnKeyPoint::create([
+                            'name' => $name,
+                        ]);
+                        if (!in_array($key_point->id, $new_learn_key_points)) {
                             $new_learn_key_points[] = $key_point->id;
                         }
                     }

@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Peopleaps\Scorm\Model\ScormModel;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Course extends Model
 {
@@ -42,7 +44,14 @@ class Course extends Model
         'is_subscription_enable',
         'private_mode',
     ];
-
+    public function courseVersions(): HasMany
+    {
+        return $this->hasMany(CourseVersion::class, 'course_id');
+    }
+    public function activeCourseVersion(): ?CourseVersion
+    {
+        return $this->courseVersions()->whereIn('status', [INCOMPLETED_COURSE_VERSION, PENDING_COURSE_VERSION])->latest()->first();
+    }
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -262,12 +271,19 @@ class Course extends Model
 
     protected static function booted()
     {
-        self::creating(function ($model){
+        self::creating(function ($model) {
             $authUser = auth()->user();
             $model->uuid = Str::uuid()->toString();
             $model->user_id = $authUser->id;
             $model->instructor_id = $authUser->instructor ? $authUser->instructor->id : null;
             $model->organization_id = $authUser->organization ? $authUser->organization->id : null;
         });
+        static::addGlobalScope('excludeEmptyCourses', function (Builder $builder) {
+            $builder->whereNot('status', EMPTY_COURSE);
+        });
+    }
+    public function isStillNew(): bool
+    {
+        return in_array($this->status, [DRAFT_COURSE, EMPTY_COURSE]);
     }
 }

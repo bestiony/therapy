@@ -37,7 +37,10 @@ class Course_lecture extends Model
     {
         return $this->belongsTo(Course_lesson::class, 'lesson_id');
     }
-
+    public function views ()
+    {
+        return $this->hasMany(Course_lecture_views::class, 'course_lecture_id');
+    }
     public function getImagePathAttribute()
     {
         if ($this->image)

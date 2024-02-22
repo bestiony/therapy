@@ -206,7 +206,6 @@ class CourseController extends Controller
 
                         $added_lecture_model = Course_lecture::find($added_lecture);
                         if ($added_lecture_model) {
-
                             $added_lecture_model->update([
                                 'course_id' => $course->id,
                                 'lesson_id' => $related_lesson,
@@ -279,6 +278,8 @@ class CourseController extends Controller
 
                 $data = [
                     'title' => $details['title'],
+                    'private_mode' => $details['private_mode'],
+                    'is_subscription_enable' => $details['is_subscription_enable'],
                     'course_type' => $details['course_type'],
                     'subtitle' => $details['subtitle'],
                     'slug' => $details['slug'],

@@ -520,6 +520,28 @@
             }
         })
     });
+    $(document).on("click", ".restoreItm", function () {
+        let form_id = this.dataset.formid;
+        Swal.fire({
+            title: 'Sure! You want to restore?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Restore It!'
+        }).then((result) => {
+            if (result.value) {
+                $("#" + form_id).submit();
+            } else if (result.dismiss === "cancel") {
+                Swal.fire(
+                    "Cancelled",
+                    "Your imaginary file is safe :)",
+                    "error"
+                )
+            }
+        })
+    });
 
     /** ============ my script ===============**/
     $(document).on("click", "a.delete", function () {

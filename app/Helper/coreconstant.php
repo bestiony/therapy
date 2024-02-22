@@ -94,6 +94,10 @@ const CERTIFICATE_VALID = 1;
 const GMEET_UNAUTHORIZE = 0;
 const GMEET_AUTHORIZE = 1;
 
+
+// video type
+const VIDEO_TYPE_LOCAL = 1;
+const VIDEO_TYPE_YOUTUBE = 2;
 // package Type
 const PACKAGE_TYPE_SUBSCRIPTION = 1;
 const PACKAGE_TYPE_SAAS_INSTRUCTOR = 2;
@@ -177,6 +181,13 @@ const PENDING_COURSE_VERSION = 1;
 const REFUSED_COURSE_VERSION = 2;
 const APPROVED_COURSE_VERSION = 3;
 
+/** COURSE STATUSES */
+const PENDING_COURSE = 0;
+const PUBLISHED_COURSE = 1;
+const WAITING_FOR_REVIEW_COURSE = 2;
+const HOLD_COURSE = 3;
+const DRAFT_COURSE = 4;
+const EMPTY_COURSE = 5;
 
 const MODELS = [
     'key_point' => 'App\Models\LearnKeyPoint',

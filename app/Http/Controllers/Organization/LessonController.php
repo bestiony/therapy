@@ -38,8 +38,8 @@ class LessonController extends Controller
 
     public function store(LessionRequest $request, $course_uuid)
     {
-        $course_version = CourseVersion::find($request->course_version_id);
         $course = $this->courseModel->getRecordByUuid($course_uuid);
+        $course_version = $course->activeCourseVersion();
         $data = [
             'name' => $request->name,
             'short_description' => $request->short_description ?: null,
@@ -55,6 +55,7 @@ class LessonController extends Controller
 
             $details = $course_version->details;
             $details['lessons'][] = $outcome->id;
+            $details['added_lessons'][] = $outcome->id;
             $course_version->update(['details' => $details]);
             $edited_lessons = Course_lesson::whereIn('id', $details['lessons'])->get();
         }
@@ -67,13 +68,24 @@ class LessonController extends Controller
     {
         $lesson = $this->model->getRecordByUuid($lesson_uuid);
         $course = $this->courseModel->getRecordByUuid($course_uuid);
+        $course_version = $course->activeCourseVersion();
         $data = [
-            'course_id' => $course->id,
             'name' => $request->name,
             'short_description' => $request->short_description ?: null,
         ];
-
-        $this->model->update($data, $lesson->id);
+        if ($course_version) {
+            $details = $course_version->details;
+            if (isset($details['deleted_lessons'][$lesson->uuid])) {
+                $this->showToastrMessage('error', __('Lesson Was Deleted ! restore it first.'));
+                return redirect()->back();
+            }
+            $details['updated_course_lessons'][$lesson->id] = $data;
+            $course_version->details = $details;
+            $course_version->update();
+        } else {
+            $data['course_id'] = $course->id;
+            $this->model->update($data, $lesson->id);
+        }
         $this->showToastrMessage('success', __('Updated successful.'));
         return redirect()->back();
     }
@@ -83,7 +95,7 @@ class LessonController extends Controller
         $deleted_lessons = [];
         $course_version_id = $request->course_version_id;
         $lesson = $this->model->getRecordByUuid($lesson_uuid);
-        if (!$course_version_id) {
+        if (!$course_version_id || !$lesson->course_id) {
             Course_lecture::where('lesson_id', $lesson->id)->delete();
             $this->model->deleteByUuid($lesson_uuid);
         } else {
@@ -96,8 +108,24 @@ class LessonController extends Controller
         }
         $this->showToastrMessage('success', __('Deleted successful'));
         return redirect()->back()->with('deleted_lessons', $deleted_lessons);
-
-
+    }
+    public function restoreLesson(Request $request, $lesson_uuid)
+    {
+        $course_version_id = $request->validate(['course_version_id' => 'required'])['course_version_id'];
+        $course_version = CourseVersion::findOrFail($course_version_id);
+        $lesson = $this->model->getRecordByUuid($lesson_uuid);
+        $details = $course_version->details;
+        $deleted_lessons =  data_get($details, 'deleted_lessons', []);
+        if (!in_array($lesson->id, $deleted_lessons)) {
+            $this->showToastrMessage('error', __('Lesson Was Not Deleted !'));
+            return redirect()->back();
+        }
+        $key = array_search($lesson->id, $details['deleted_lessons']);
+        unset($details['deleted_lessons'][$key]);
+        $course_version->details = $details;
+        $course_version->save();
+        $this->showToastrMessage('success', __('Restored successful'));
+        return redirect()->back();
     }
 
 
@@ -114,6 +142,9 @@ class LessonController extends Controller
 
     public function storeLecture(Request $request, $course_uuid, $lesson_uuid)
     {
+        $course = $this->courseModel->getRecordByUuid($course_uuid);
+        $lesson = $this->model->getRecordByUuid($lesson_uuid);
+        $course_version = $course->activeCourseVersion();
         $edited_lessons = [];
         if ($request->type == 'video') {
             $request->validate([
@@ -172,16 +203,15 @@ class LessonController extends Controller
             ]);
         }
 
-        $course = $this->courseModel->getRecordByUuid($course_uuid);
-        $lesson = $this->model->getRecordByUuid($lesson_uuid);
+
 
         $lecture = new Course_lecture();
         $lecture->fill($request->all());
         $lecture->pre_ids = ($lecture->pre_ids) ? json_encode($lecture->pre_ids) : NULL;
         $lecture->lesson_id = $lesson->id;
 
-        $course_version_id = $request->course_version_id;
-        if (!$course_version_id) {
+
+        if (!$course_version) {
             $lecture->course_id = $course->id;
         }
 
@@ -264,6 +294,7 @@ class LessonController extends Controller
             $course_version = CourseVersion::find($course_version_id);
             $details = $course_version->details;
             $details['lectures'][$lecture->id] = $lesson->id;
+            $details['added_lectures'][$lecture->id] = $lesson->id;
             $course_version->details = $details;
             $course_version->update();
             if (isset($details['lessons'])) {
@@ -488,7 +519,7 @@ class LessonController extends Controller
             });
 
             $this->lectureModel->deleteByUuid($lecture_uuid); // delete record
-        }else{
+        } else {
             $data['course_version_id'] = $course_version_id;
             //get details
             $details = $course_version->details;

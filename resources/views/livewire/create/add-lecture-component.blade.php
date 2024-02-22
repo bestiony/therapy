@@ -100,7 +100,7 @@
                                                                         alt="upload">
                                                                 </div>
                                                                 <input type="hidden" id="file_duration"
-                                                                    name="file_duration">
+                                                                    name="file_duration" wire:model='file_duration'>
                                                                 <input type="file" name="video_file"
                                                                     wire:model='video_file' accept="video/mp4"
                                                                     class="form-control"
@@ -358,7 +358,7 @@
                                                                                 class="form-control"
                                                                                 placeholder="{{ __('First steps') }}"
                                                                                 required>
-                                                                                @error('title')
+                                                                            @error('title')
                                                                                 <span class="text-danger"><i
                                                                                         class="fas fa-exclamation-triangle"></i>
                                                                                     {{ $message }}</span>
@@ -493,7 +493,7 @@
                                                                                 class="theme-btn upload-video-processing-item-save-btn">{{ __('Save') }}</button>
                                                                             <button data-bs-dismiss="modal"
                                                                                 class="theme-btn default-hover-btn default-back-btn theme-button3">{{ __('Cancel') }}</button>
-                                                                            {{ dump($lesson) }}
+                                                                            {{-- {{ dump($lesson) }} --}}
                                                                         </div>
                                                                     </div>
                                                                 </div>

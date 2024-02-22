@@ -4,11 +4,13 @@ namespace App\Http\Livewire\Create;
 
 use App\Models\Course;
 use App\Models\Course_lesson;
+use App\Traits\ImageSaveTrait;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 
 class AddCourseLessonsComponent extends Component
 {
+    use ImageSaveTrait;
     public Course $course;
     public $lessons;
     public $newLessonName;
@@ -19,6 +21,7 @@ class AddCourseLessonsComponent extends Component
         'sectionUpdated' => 'remountSections',
         'deleteSection' => 'deleteSection',
         'deleteLecture' => 'deleteLecture',
+        'lectureAdded' => 'remountSections'
     ];
     public function remountSections()
     {
@@ -53,9 +56,9 @@ class AddCourseLessonsComponent extends Component
         $this->showAddNewLesson = false;
     }
 
-    public function confirmDelete($lessonId, $deleteEvent)
+    public function confirmDelete($itemId, $deleteEvent)
     {
-        $this->dispatchBrowserEvent('triggerConfirmDelete', ['itemId' => $lessonId, 'deleteEvent' => $deleteEvent]);
+        $this->dispatchBrowserEvent('triggerConfirmDelete', ['itemId' => $itemId, 'deleteEvent' => $deleteEvent]);
     }
     public function deleteSection(int $lessonId)
     {
@@ -72,7 +75,9 @@ class AddCourseLessonsComponent extends Component
             $this->showToastrMessage('error', __('You don\'t have permission to edit this'));
             return redirect()->to('/');
         }
-        $lecture = $this->course->lectures()->where('course_lectures.id', $lectureId)->firstOrFail();
+        $lecture = $this->course->lectures()->where('id', $lectureId)->first();
+
+
         $this->deleteFile($lecture->file_path); // delete file from server
 
         if ($lecture->type == 'vimeo') {

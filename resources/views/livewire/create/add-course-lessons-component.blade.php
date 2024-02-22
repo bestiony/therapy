@@ -277,7 +277,7 @@
                                                                                             class="upload-course-video-edit-btn upload-course-video-main-edit-btn font-14 color-para font-medium bg-transparent border-0 mx-2"><span
                                                                                                 class="iconify"
                                                                                                 data-icon="clarity:note-edit-line"></span>{{ __('Edit Lesson') }}</a>
-                                                                                        <a wire:click='confirmDelete({{ $lesson->id }},"deleteLecture")'
+                                                                                        <a wire:click='confirmDelete({{ $lecture->id }},"deleteLecture")'
                                                                                             class="upload-course-video-edit-btn font-14 color-para font-medium bg-transparent border-0 mx-2 "><span
                                                                                                 class="iconify"
                                                                                                 data-icon="ant-design:delete-outlined"></span>{{ __('Delete Lesson') }}-2</a>
@@ -301,8 +301,7 @@
                                                                                     class="common-upload-video-btn color-heading font-13 font-medium ms-0 mt-4"
                                                                                     data-bs-toggle="modal"
                                                                                     data-bs-target="#addNewLecture"
-                                                                                    wire:click="setCurrentSection({{ $lesson }})"
-                                                                                    >
+                                                                                    wire:click="setCurrentSection({{ $lesson }})">
 
 
                                                                                     <span class="iconify"
@@ -661,6 +660,14 @@
                         Livewire.emit(deleteEvent, itemId);
                     }
                 })
+            });
+            window.addEventListener('showSuccess', (event) => {
+                console.log(event)
+                Swal.fire({
+                    title: "Success!",
+                    text: event.detail,
+                    icon: "success",
+                });
             });
         </script>
     @endpush

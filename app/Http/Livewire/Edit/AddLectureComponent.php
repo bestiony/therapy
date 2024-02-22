@@ -103,7 +103,7 @@ class AddLectureComponent extends Component
             'pre_ids' => json_encode($this->pre_ids),
         ]);
         if ($this->video_file && $this->type == 'video') {
-            $lecture->video = $this->uploadFile($this->video_file, 'uploads/video');
+            $lecture->file_path = $this->uploadFile($this->video_file, 'uploads/video');
         }
 
         if ($this->type == 'youtube') {

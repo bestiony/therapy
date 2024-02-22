@@ -53,7 +53,7 @@ class CoursePolicy
      */
     public function update(User $user, Course $course)
     {
-        return $user->id === $course->user_id ||
+        return $user->courses->contains($course) ||
             $course->course_instructors()->where('instructor_id', $user->id)->where('status', STATUS_ACCEPTED)->exists();
     }
 

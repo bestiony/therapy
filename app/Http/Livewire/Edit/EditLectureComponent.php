@@ -185,6 +185,7 @@ class EditLectureComponent extends Component
         $this->emit('lectureAdded');
         $this->dispatchBrowserEvent('closeModal');
         $this->dispatchBrowserEvent('showSuccess', 'Lecture update was successful!');
+        $this->dispatchBrowserEvent('pageReload');
     }
 
 

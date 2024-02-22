@@ -8,6 +8,7 @@ use App\Http\Requests\Instructor\StoreCourseRequest;
 use App\Models\CartManagement;
 use App\Models\Category;
 use App\Models\Course;
+use App\Models\Organization;
 use App\Models\Course_language;
 use App\Models\Course_lecture;
 use App\Models\Course_lecture_views;
@@ -88,6 +89,23 @@ class CourseController extends Controller
         $data['course'] = $course;
         return view('organization.course.lesson', $data);
     }
+    public function addInstructors($uuid)
+    {
+        $course = Course::where('courses.uuid', $uuid)->firstOrFail();
+        $this->authorize('update', $course);
+        $organization_id = auth()->user()->organization->id;
+        $data['instructors'] = Organization::find(4)->users;
+        //  User::where('role', USER_ROLE_INSTRUCTOR)
+        //     ->where('instructors.organization_id', $organization_id)
+        //     ->where('instructors.status', STATUS_APPROVED)
+        //     ->join('instructors', 'instructors.user_id', 'users.id')
+        //     ->where('users.id', '!=', $course->user_id)
+        //     ->where('users.id', '!=', auth()->id())
+        //     ->select('users.id', 'users.name')->get();
+        // dd(Organization::find(4)->users);
+        $data['course'] = $course;
+        return view('organization.course.instructors', $data);
+    }
 
     // ! Deprecated
     public function store(StoreCourseRequest $request)
@@ -142,7 +160,7 @@ class CourseController extends Controller
     public function edit($uuid)
     {
         $course = Course::where('courses.uuid', $uuid)->firstOrFail();
-        if($course->isStillNew()){
+        if ($course->isStillNew()) {
             return redirect(route('organization.course.set-overview', [$course->uuid]));
         }
         $data['navCourseUploadActiveClass'] = 'active';
@@ -556,9 +574,60 @@ class CourseController extends Controller
         return redirect()->back();
     }
 
+    public function setInstructors(Request $request, $uuid)
+    {
+        $course = Course::where('courses.uuid', $uuid)->firstOrFail();
+        $this->authorize('update', $course);
+        $totalShare = 0;
+        abort_if($course->user_id != auth()->id(), 403);
+
+        $request->validate([
+            'share.*' => 'bail|required|min:0|max:100'
+        ]);
+
+        $data = $request->all();
+        $courseInstructorIds = [];
+        if ($request->instructor_id) {
+
+            $totalShare = array_sum($request->share);
+            if ($totalShare > 100) {
+                $this->showToastrMessage('error', 'The total percentage should not be grater than 100');
+                return back()->withInput();
+            }
+
+            foreach ($data['instructor_id'] as $id => $instructor) {
+                $courseInstructor = CourseInstructor::updateOrCreate([
+                    'instructor_id' => $id,
+                    'course_id' => $course->id,
+                ], [
+                    'instructor_id' => $id,
+                    'course_id' => $course->id,
+                    'share' => $data['share'][$id],
+                ]);
+                array_push($courseInstructorIds, $courseInstructor->id);
+            }
+        } else {
+            $totalShare = 0;
+        }
+
+        $courseInstructor = CourseInstructor::updateOrCreate([
+            'instructor_id' => $course->user_id,
+            'course_id' => $course->id,
+        ], [
+            'instructor_id' => $course->user_id,
+            'course_id' => $course->id,
+            'share' => (100 - $totalShare),
+            'status' => STATUS_ACCEPTED
+        ]);
+        array_push($courseInstructorIds, $courseInstructor->id);
+        CourseInstructor::whereNotIn('id', $courseInstructorIds)->where('course_id', $course->id)->delete();
+        $this->showToastrMessage('success', __('Instructors has been added successfully.'));
+        return redirect(route('organization.course.index'));
+    }
     public function storeInstructor(Request $request, $uuid)
     {
-        $course = Course::where('user_id', auth()->id())->whereUuid($uuid)->firstOrFail();
+        $course = Course::where('courses.uuid', $uuid)->firstOrFail();
+        $this->authorize('update', $course);
         $course_version_id = $request->course_version_id;
         $course_version = CourseVersion::find($course_version_id);
         $details = $course_version ? $course_version->details : [];

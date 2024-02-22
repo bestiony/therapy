@@ -143,4 +143,15 @@ class Organization extends Model
     public function certified_parents(){
         return $this->hasMany(CertifiedParent::class);
     }
+    public function users()
+    {
+        return $this->hasManyThrough(
+            User::class,
+            Instructor::class,
+            'organization_id', // Foreign key on the instructors table...
+            'id', // Foreign key on the users table...
+            'id', // Local key on the organizations table...
+            'user_id' // Local key on the instructors table...
+        );
+    }
 }

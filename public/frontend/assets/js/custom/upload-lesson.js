@@ -18,6 +18,10 @@
         var type =  $(this).val();
         lectureType(type)
     })
+    $('.edit-lecture-type').on('click', function () {
+        var type =  $(this).val();
+        lectureType(type)
+    })
 
     $('.vimeo_upload_type').change(function (){
         var vimeo_upload_type = $(this).val();

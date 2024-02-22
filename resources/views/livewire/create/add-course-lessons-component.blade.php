@@ -272,11 +272,13 @@
                                                                                 <div class="flex-shrink-0">
                                                                                     <div
                                                                                         class="video-upload-done-phase-action-btns font-14 color-heading text-center font-medium">
-                                                                                        <a href="{{ route('organization.edit.lecture', [$course->uuid, $lesson->uuid, $lecture->uuid]) }}"
-                                                                                            type="button"
+                                                                                        <button type="button"
+                                                                                            data-bs-toggle="modal"
+                                                                                            data-bs-target="#editLecture"
+                                                                                            wire:click="setCurrentLecture({{ $lecture }})"
                                                                                             class="upload-course-video-edit-btn upload-course-video-main-edit-btn font-14 color-para font-medium bg-transparent border-0 mx-2"><span
                                                                                                 class="iconify"
-                                                                                                data-icon="clarity:note-edit-line"></span>{{ __('Edit Lesson') }}</a>
+                                                                                                data-icon="clarity:note-edit-line"></span>{{ __('Edit Lesson') }}</button>
                                                                                         <a wire:click='confirmDelete({{ $lecture->id }},"deleteLecture")'
                                                                                             class="upload-course-video-edit-btn font-14 color-para font-medium bg-transparent border-0 mx-2 "><span
                                                                                                 class="iconify"
@@ -556,9 +558,8 @@
                                                 <a href="{{ route('organization.course.set-category', [$course->uuid]) }}"
                                                     class="theme-btn theme-button3">{{ __('Back') }}</a>
                                                 @if ($course->lectures->count() > 0)
-                                                    <a href="{{ route('organization.course.edit', [$course->uuid, 'step=instructors']) }}"
-                                                        type="button"
-                                                        class="theme-btn theme-button1">{{ __('Save and continue') }}</a>
+                                                    <a href="{{ route('organization.course.add-instructors', ['uuid' => $course->uuid]) }}"
+                                                        class="theme-btn default-hover-btn theme-button1">{{ __('Save and continue') }}</a>
                                                 @endif
                                             </div>
 
@@ -614,10 +615,10 @@
                                             </div>
 
                                             <div class="stepper-action-btns">
-                                                <a href="{{ route('organization.course.edit', [$course->uuid, 'step=category']) }}"
+                                                <a href="{{ route('organization.course.set-category', ['uuid' => $course->uuid]) }}"
                                                     class="theme-btn theme-button3">{{ __('Back') }}</a>
-                                                <button type="submit"
-                                                    class="theme-btn default-hover-btn theme-button1">{{ __('Save and continue') }}</button>
+                                                <a href="{{ route('organization.course.add-instructors', ['uuid' => $course->uuid]) }}"
+                                                    class="theme-btn default-hover-btn theme-button1">{{ __('Save and continue') }}</a>
                                             </div>
 
                                         </div>
@@ -636,12 +637,14 @@
 
     @livewire('create.edit-section-name-component', ['section_id' => $currentSection?->id, 'section_name' => $currentSection?->name])
     @livewire('create.add-lecture-component', ['course' => $course, 'lesson' => $currentSection])
+    @livewire('create.edit-lecture-component', ['course' => $course, 'lecture' => $currentLecture])
     @push('script')
         <script>
             window.addEventListener('closeModal', event => {
                 console.log('closing modal');
                 $('#editSectionName').modal('hide');
                 $('#addNewLecture').modal('hide');
+                $('#editLecture').modal('hide');
             });
             window.addEventListener('triggerConfirmDelete', event => {
                 deleteEvent = event.detail.deleteEvent

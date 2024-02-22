@@ -82,6 +82,7 @@ Route::prefix('course')->group(function () {
     Route::get('set-overview/{uuid}', [CourseController::class, 'setOverview'])->name('course.set-overview');
     Route::get('set-category/{uuid}', [CourseController::class, 'setCategory'])->name('course.set-category');
     Route::get('add-lessons/{uuid}', [CourseController::class, 'addLessons'])->name('course.add-lessons');
+    Route::get('add-instructores/{uuid}', [CourseController::class, 'addInstructors'])->name('course.add-instructors');
 
 
     Route::get('/', [CourseController::class, 'index'])->name('course.index');
@@ -107,6 +108,7 @@ Route::prefix('course')->group(function () {
     });
 
     Route::post('store-instructor/{course_uuid}', [CourseController::class, 'storeInstructor'])->name('course.store.instructor')->middleware('isDemo');
+    Route::post('set-instructors/{course_uuid}', [CourseController::class, 'setInstructors'])->name('course.set-instructors')->middleware('isDemo');
     Route::prefix('scorm')->group(function () {
         Route::post('{course_uuid}', [ScormController::class, 'store'])->name('scorm.store')->middleware('isDemo');
     });

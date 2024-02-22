@@ -16,6 +16,7 @@ class AddCourseLessonsComponent extends Component
     public $newLessonName;
     public $showAddNewLesson = false;
     public $currentSection;
+    public $currentLecture;
     public $currentAccordion = 0;
     protected $listeners = [
         'sectionUpdated' => 'remountSections',
@@ -27,6 +28,11 @@ class AddCourseLessonsComponent extends Component
     {
         $this->course->load('lessons.lectures');
         $this->lessons = $this->course->lessons;
+    }
+    public function setCurrentLecture($lecture)
+    {
+        $this->currentLecture = $lecture;
+        $this->emit('lectureChanged', $lecture['id']);
     }
     public function setCurrentAccordion($accordion)
     {

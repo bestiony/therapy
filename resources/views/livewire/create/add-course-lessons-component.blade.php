@@ -639,10 +639,9 @@
     </div>
 
     @livewire('create.edit-section-name-component', ['section_id' => $currentSection?->id, 'section_name' => $currentSection?->name])
-    @livewire('create.edit-lecture-component', ['course' => $course, 'lecture' => $currentLecture])
     @livewire('create.add-lecture-component', ['course' => $course, 'lesson' => $currentSection])
+    @livewire('create.edit-lecture-component', ['course' => $course, 'lecture' => $currentLecture])
     @livewire('create.preview-pdf-modal', ['file_path' => $currentFilePath])
-
     @push('script')
         <script>
             window.addEventListener('closeModal', event => {
@@ -677,6 +676,7 @@
                     icon: "success",
                 });
             });
+            
         </script>
     @endpush
 </div>

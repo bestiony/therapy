@@ -116,8 +116,8 @@
                                                         </div>
 
                                                         <div id="youtube"
-                                                            {{-- class="{{ $type == 'youtube' ? '' : 'd-none' }}"> --}}
-                                                            class="d-none" wire:ignore.self>
+                                                            class="{{ $type == 'youtube' ? '' : 'd-none' }}">
+                                                            {{-- class="d-none" wire:ignore.self> --}}
 
                                                             <label
                                                                 class="label-text-title color-heading font-medium font-16 mb-3">{{ __('Lesson Youtube Video ID') }}
@@ -223,16 +223,18 @@
                                                         </div>
 
                                                         <div id="text"
-                                                            class="d-none" wire:ignore.self>
+                                                            class="{{ $type == 'text' ? '' : 'd-none' }}">
+                                                            {{-- class="d-none" wire:ignore.self> --}}
                                                             <label
                                                                 class="label-text-title color-heading font-medium font-16 mb-3">{{ __('Lesson Description') }}
                                                                 <span class="text-danger">*</span></label>
+                                                            <div wire:ignore>
 
-                                                            <textarea name="text_description" wire:model='text_description' id="summernoteedit" class="textDescription"
-                                                                cols="30" rows="10"></textarea>
-                                                            <div>
-
+                                                                <textarea name="text_description" id="summernoteedit" class="textDescription" cols="30" rows="10"></textarea>
                                                             </div>
+                                                            {{-- <textarea name="text_description" wire:model='text_description' id="summernoteedit" class="textDescription"
+                                                                cols="30" rows="10"></textarea> --}}
+
 
                                                         </div>
                                                         <div id="imageDiv"
@@ -542,7 +544,7 @@
                 <input type="hidden" value="{{ old('type') }}" class="oldTypeYoutube">
             </div>
             @push('script')
-                <script src="{{ asset('common/js/summernote/summernote-lite.min.js') }}"></script>
+                {{-- <script src="{{ asset('common/js/summernote/summernote-lite.min.js') }}"></script> --}}
 
                 <script wire:ignore>
                     $('#summernoteedit').summernote({
@@ -553,6 +555,13 @@
                             }
                         }
                     });
+                    document.addEventListener('set-summernote-value', function(e) {
+                        console.log(e)
+                        $('#summernoteedit').summernote('code', e.detail.value);
+                    });
+                    // $('#summernoteedit').summernote('code', '{{ $text_description }}');
+
+                    $('.note-editor').attr('wire:ignore', '')
 
                     // document.addEventListener('reinitializeSummernote', function() {
                     //     console.log('summer note  updated')

@@ -63,7 +63,8 @@ class EditLectureComponent extends Component
             'vimeo_file_duration' => $this->lecture->file_duration,
             'text_description' => $this->lecture->text,
         ]);
-        $this->dispatchBrowserEvent('reinitializeSummernote');
+        // $this->dispatchBrowserEvent('reinitializeSummernote');
+        $this->dispatchBrowserEvent('set-summernote-value', ['value' => $this->text_description]);
     }
     public function updated()
     {
@@ -103,6 +104,7 @@ class EditLectureComponent extends Component
     }
     public function updateLecture()
     {
+        // dd($this->text_description);
         $this->resetErrorBag();
         $this->validate();
         DB::beginTransaction();

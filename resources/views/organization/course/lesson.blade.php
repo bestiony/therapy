@@ -210,25 +210,25 @@
     <!-- Summernote JS - CDN Link -->
     <script src="{{ asset('common/js/summernote/summernote-lite.min.js') }}"></script>
     <script>
-        $(document).ready(function() {
-            $("#summernote").summernote({
-                dialogsInBody: true
-            });
-            $('.dropdown-toggle').dropdown();
-        });
+        // $(document).ready(function() {
+        //     $("#summernote").summernote({
+        //         dialogsInBody: true
+        //     });
+        //     $('.dropdown-toggle').dropdown();
+        // });
         document.addEventListener('livewire:load', function() {
-            initializeSummernote();
+            // initializeSummernote();
 
-            Livewire.on('contentUpdated', function() {
-                initializeSummernote();
-            });
+            // Livewire.on('contentUpdated', function() {
+            //     initializeSummernote();
+            // });
         });
 
-        function initializeSummernote() {
-            $("#summernote").summernote({
-                dialogsInBody: true
-            });
-        }
+        // function initializeSummernote() {
+        //     $("#summernote").summernote({
+        //         dialogsInBody: true
+        //     });
+        // }
     </script>
     <!-- //Summernote JS - CDN Link -->
 

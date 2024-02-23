@@ -196,7 +196,8 @@
                                                                                         </div>
                                                                                     </a>
                                                                                 @elseif($lecture->type == 'pdf')
-                                                                                    <button class="edit-lecture-preview-show d-flex align-items-center justify-content-between color-heading font-medium font-16 mb-3"
+                                                                                    <button
+                                                                                        class="edit-lecture-preview-show d-flex align-items-center justify-content-between color-heading font-medium font-16 mb-3"
                                                                                         data-bs-toggle="modal"
                                                                                         data-bs-target="#pdfModal"
                                                                                         wire:click='setCurrentFilePath("{{ asset($lecture->pdf) }}")'
@@ -619,8 +620,7 @@
                                             <div class="stepper-action-btns">
                                                 <a href="{{ route('organization.course.set-category', ['uuid' => $course->uuid]) }}"
                                                     class="theme-btn theme-button3">{{ __('Back') }}</a>
-                                                <button
-                                                type="submit"
+                                                <button type="submit"
                                                     class="theme-btn default-hover-btn theme-button1">{{ __('Save and continue') }}</button>
                                             </div>
 
@@ -639,10 +639,10 @@
     </div>
 
     @livewire('create.edit-section-name-component', ['section_id' => $currentSection?->id, 'section_name' => $currentSection?->name])
-    @livewire('create.add-lecture-component', ['course' => $course, 'lesson' => $currentSection])
     @livewire('create.edit-lecture-component', ['course' => $course, 'lecture' => $currentLecture])
-    @livewire('create.preview-pdf-modal',['file_path' => $currentFilePath])
-    
+    @livewire('create.add-lecture-component', ['course' => $course, 'lesson' => $currentSection])
+    @livewire('create.preview-pdf-modal', ['file_path' => $currentFilePath])
+
     @push('script')
         <script>
             window.addEventListener('closeModal', event => {

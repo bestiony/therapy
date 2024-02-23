@@ -57,14 +57,14 @@ class AddLectureComponent extends Component
         $this->course = $course;
         $this->lesson = $lesson;
     }
-    public function updatedType($value)
-    {
-        $this->reinitializeSummernote();
-    }
-    public function reinitializeSummernote()
-    {
-        $this->emit('reinitializeSummernote');
-    }
+    // public function updatedType($value)
+    // {
+    //     $this->reinitializeSummernote();
+    // }
+    // public function reinitializeSummernote()
+    // {
+    //     $this->emit('reinitializeSummernote');
+    // }
     public function rules()
     {
         return [

@@ -214,7 +214,7 @@
                                                             </div>
                                                         </div>
 
-                                                        <div id="text" class="d-none" wire:ignore.self>
+                                                        <div id="text" class="d-none" wire:ignore>
                                                             <label
                                                                 class="label-text-title color-heading font-medium font-16 mb-3">{{ __('Lesson Description') }}
                                                                 <span class="text-danger">*</span></label>
@@ -514,7 +514,35 @@
                 </div>
                 <input type="hidden" value="{{ old('type') }}" class="oldTypeYoutube">
             </div>
+            <script wire:ignore>
+                < script src = "{{ asset('common/js/summernote/summernote-lite.min.js') }}" >
+            </>
 
+            $('#summernote').summernote({
+            callbacks: {
+            onChange: function(contents, $editable) {
+            @this.set('text_description', contents);
+            }
+            }
+            });
+            document.addEventListener('livewire:load', function() {
+
+            initializeSummernote();
+            console.log('livewire loaded')
+            Livewire.on('reinitializeSummernote', function() {
+            console.log('reinitilized loaded')
+
+            initializeSummernote();
+
+            });
+            });
+
+            function initializeSummernote() {
+            $("#summernote").summernote({
+            dialogsInBody: true
+            });
+            }
+            </script>
         </div>
     </div>
 </div>

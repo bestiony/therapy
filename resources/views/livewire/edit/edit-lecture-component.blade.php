@@ -217,7 +217,7 @@
                                                         </div>
 
                                                         <div id="text"
-                                                            class="{{ $type == 'text' ? '' : 'd-none' }}">
+                                                            class="{{ $type == 'text' ? '' : 'd-none' }}" wire.ignore>
                                                             <label
                                                                 class="label-text-title color-heading font-medium font-16 mb-3">{{ __('Lesson Description') }}
                                                                 <span class="text-danger">*</span></label>
@@ -530,7 +530,17 @@
                 </div>
                 <input type="hidden" value="{{ old('type') }}" class="oldTypeYoutube">
             </div>
-
+            @push('script')
+                <script>
+                    $('#summernote').summernote({
+                        callbacks: {
+                            onChange: function(contents, $editable) {
+                                @this.set('text_description', contents);
+                            }
+                        }
+                    });
+                </script>
+            @endpush
         </div>
     </div>
 </div>

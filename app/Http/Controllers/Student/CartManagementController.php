@@ -822,8 +822,8 @@ class CartManagementController extends Controller
                 }
             }
 
-            // return redirect()->route('student.thank-you');
-
+            return redirect()->route('student.thank-you');
+        }
             if ($request->has('proceed_to_checkout')) {
                 return redirect(route('student.checkout'));
             } elseif ($request->has('pay_from_lmszai_wallet')) {
@@ -947,7 +947,7 @@ class CartManagementController extends Controller
             } else {
                 abort(404);
             }
-        }
+        
     }
     public function cartDelete($id)
     {

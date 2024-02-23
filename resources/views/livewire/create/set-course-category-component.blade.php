@@ -379,17 +379,31 @@
                                                     name="intro_video_check" value="{{ VIDEO_TYPE_YOUTUBE }}">
                                                 <label for="youtube_check">{{ __('Youtube Video') }}
                                                     ({{ __('write only video Id') }})</label><br>
+                                                @error('intro_video_check')
+                                                    <span class="text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                                        {{ $message }}</span>
+                                                @enderror
                                             </div>
                                             <div class="col-md-12 mb-30">
                                                 @if ($intro_video_check == VIDEO_TYPE_LOCAL)
                                                     <input wire:model='video' type="file" name="video"
                                                         id="video" accept="video/mp4" class="form-control ">
+                                                    @error('video')
+                                                        <span class="text-danger"><i
+                                                                class="fas fa-exclamation-triangle"></i>
+                                                            {{ $message }}</span>
+                                                    @enderror
                                                 @elseif($intro_video_check == VIDEO_TYPE_YOUTUBE)
                                                     <input wire:model='youtube_video_id' type="text"
                                                         name="youtube_video_id" id="youtube_video_id"
                                                         placeholder="{{ __('Type your youtube video ID') }}"
                                                         value="{{ $course->youtube_video_id }}"
                                                         class="form-control ">
+                                                    @error('youtube_video_id')
+                                                        <span class="text-danger"><i
+                                                                class="fas fa-exclamation-triangle"></i>
+                                                            {{ $message }}</span>
+                                                    @enderror
                                                 @endif
                                             </div>
                                             @if ($video)
@@ -426,10 +440,7 @@
                                                     </div>
                                                 </div>
                                             @endif
-                                            @error('video')
-                                                <span class="text-danger"><i class="fas fa-exclamation-triangle"></i>
-                                                    {{ $message }}</span>
-                                            @enderror
+
 
                                         </div>
 

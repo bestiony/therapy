@@ -60,7 +60,7 @@ class SetCourseCategoryComponent extends Component
             'subcategory_id' => $this->course->subcategory_id,
             'selectedTags' => $this->course->tags->pluck('id')->toArray(),
             'drip_content' => $this->course->drip_content,
-            'access_period' => $this->course->access_period,
+            'access_period' => $this->course->access_period ?? 0,
             'learner_accessibility' => $this->course->learner_accessibility,
             'price' => $this->course->price,
             'old_price' => $this->course->old_price,
@@ -121,9 +121,9 @@ class SetCourseCategoryComponent extends Component
             'course_language_id' => 'required',
             'difficulty_level_id' => 'required',
             // 'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'intro_video_check' => 'required',
-            'youtube_video_id' => [Rule::requiredIf($this->intro_video_check == VIDEO_TYPE_YOUTUBE)],
-            'video' => [Rule::requiredIf($this->intro_video_check == VIDEO_TYPE_LOCAL && !$this->course->video)],
+            // 'intro_video_check' => 'required',
+            // 'youtube_video_id' => [Rule::requiredIf($this->intro_video_check == VIDEO_TYPE_YOUTUBE)],
+            // 'video' => [Rule::requiredIf($this->intro_video_check == VIDEO_TYPE_LOCAL && !$this->course->video)],
         ];
     }
     public function updatedImage()

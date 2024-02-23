@@ -53,7 +53,7 @@
                                                     class="form-select" required>
                                                     <option value="">
                                                         {{ __('Select Course
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        Type') }}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Type') }}
                                                     </option>
                                                     <option value="{{ COURSE_TYPE_GENERAL }}"
                                                         {{ old('course_type') == COURSE_TYPE_GENERAL ? 'selected' : '' }}>
@@ -92,9 +92,12 @@
                                                     {{ __('Course Subtitle') }}
                                                     <span class="text-danger">*</span>
                                                 </div>
-                                                <textarea wire:model='subtitle' class="form-control" name="subtitle" cols="30" rows="10" required
-                                                    placeholder="Course subtitle in 1000 characters">{{ old('subtitle') }}</textarea>
-
+                                                <textarea id="subtitle" wire:model='subtitle' class="form-control" name="subtitle" cols="30" rows="10"
+                                                    required placeholder="Course subtitle in 1000 characters">{{ old('subtitle') }}</textarea>
+                                                <p id="countshow">
+                                                    {{ __('You have') }} <span id="charCount"
+                                                        class=""></span>{{ __('characters') }}
+                                                </p>
                                                 @error('subtitle')
                                                     <span class="text-danger"><i class="fas fa-exclamation-triangle"></i>
                                                         {{ $message }}</span>
@@ -246,7 +249,7 @@
                                             class="theme-btn theme-button3">{{ __('Cancel') }}</a>
                                         <button type="submit"
                                             class="theme-btn default-hover-btn theme-button1">{{ __('Save and
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        continue') }}</button>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    continue') }}</button>
                                     </div>
                                 </form>
                             </div>
@@ -259,4 +262,35 @@
             </div>
         </div>
     </div>
+    @push('script')
+        <script>
+            function updateCharCount() {
+                var count = $('#subtitle').val().length;
+                $('#charCount').text(count);
+                if (count) {
+                    $('#countshow').show();
+                } else {
+                    $('#countshow').hide();
+                }
+                if (count > 1000) {
+                    $('#charCount').addClass('text-danger').removeClass('text-success');
+                } else {
+                    $('#charCount').addClass('text-success').removeClass('text-danger');
+                }
+            }
+
+            $(document).ready(function() {
+                updateCharCount();
+                $('#subtitle').on('input', updateCharCount);
+            });
+            $('#countshow').attr('wire:ignore', '')
+            // document.addEventListener('livewire:load', function() {
+            //     updateCharCount();
+            //     @this.on('input', function() {
+            //         $('#subtitle').off('input', updateCharCount);
+            //         $('#subtitle').on('input', updateCharCount);
+            //     });
+            // });
+        </script>
+    @endpush
 </div>

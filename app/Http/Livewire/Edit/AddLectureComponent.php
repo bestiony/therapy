@@ -114,7 +114,7 @@ class AddLectureComponent extends Component
         }
 
         if ($this->type == 'vimeo') {
-            if ($this->file('vimeo_url_path') && ($this->vimeo_upload_type == 1)) {
+            if ($this->vimeo_url_path && ($this->vimeo_upload_type == 1)) {
                 $path = $this->uploadVimeoVideoFile($this->title, $this->vimeo_url_path);
                 $lecture->url_path = $path;
                 $lecture->file_duration = gmdate("i:s", $this->file_duration);

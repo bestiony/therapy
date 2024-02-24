@@ -34,7 +34,7 @@
                                 <li id="confirm"><strong>{{ __('Submit Process') }}</strong></li>
                             </ul>
                             <form method="POST"
-                                action="{{ route('organization.course.set-instructors', [$course->uuid]) }}"
+                                action="{{ route('organization.course.update-instructors', [$course->uuid]) }}"
                                 class="row g-3 needs-validation" novalidate>
                                 @csrf
                                 {{-- @if ($course_version_id)

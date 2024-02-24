@@ -558,10 +558,10 @@
                                         <div
                                             class="stepper-action-btns d-flex justify-content-between align-items-center add-more-lesson-box {{ $showAddNewLesson ? 'd-none' : '' }}">
                                             <div>
-                                                <a href="{{ route('organization.course.set-category', [$course->uuid]) }}"
+                                                <a href="{{ route('organization.course.update-category', [$course->uuid]) }}"
                                                     class="theme-btn theme-button3">{{ __('Back') }}</a>
                                                 @if ($course->lectures->count() > 0)
-                                                    <a href="{{ route('organization.course.add-instructors', ['uuid' => $course->uuid]) }}"
+                                                    <a href="{{ route('organization.course.update-instructors', [ $course->uuid]) }}"
                                                         class="theme-btn default-hover-btn theme-button1">{{ __('Save and continue') }}</a>
                                                 @endif
                                             </div>
@@ -618,7 +618,7 @@
                                             </div>
 
                                             <div class="stepper-action-btns">
-                                                <a href="{{ route('organization.course.set-category', ['uuid' => $course->uuid]) }}"
+                                                <a href="{{ route('organization.course.update-category', ['uuid' => $course->uuid]) }}"
                                                     class="theme-btn theme-button3">{{ __('Back') }}</a>
                                                 <button type="submit"
                                                     class="theme-btn default-hover-btn theme-button1">{{ __('Save and continue') }}</button>
@@ -676,7 +676,7 @@
                     icon: "success",
                 });
             });
-            
+
         </script>
     @endpush
 </div>

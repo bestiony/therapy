@@ -457,8 +457,7 @@ class CourseController extends Controller
         $course = Course::where('courses.uuid', $uuid)->firstOrFail();
         $this->authorize('update', $course);
         $course_version = $course->activeCourseVersion();
-        if (!$course_version)
-        {
+        if (!$course_version) {
             $this->showToastrMessage('error', __('Start from the first page !'));
             return redirect()->back();
         }
@@ -552,7 +551,77 @@ class CourseController extends Controller
         $course = Course::where('courses.uuid', $uuid)->firstOrFail();
         $this->authorize('update', $course);
         $data['course'] = $course;
-        return view('organization.course.edit.lesson',$data);
+        return view('organization.course.edit.lesson', $data);
+    }
+    public function updateInstructors($uuid)
+    {
+        $course = Course::where('courses.uuid', $uuid)->firstOrFail();
+        $this->authorize('update', $course);
+        $organization = auth()->user()->organization;
+        if (!$organization) {
+            $this->showToastrMessage('error', __('You don\'t have organization \' permissions to edit this'));
+            return redirect()->back();
+        }
+        $data['instructors'] = $organization->users;
+        $data['course'] = $course;
+        return view('organization.course.edit.instructors', $data);
+    }
+    public function updateCourseInstructors(Request $request, $uuid)
+    {
+        $course = Course::where('courses.uuid', $uuid)->firstOrFail();
+        $this->authorize('update', $course);
+        $totalShare = 0;
+        abort_if($course->user_id != auth()->id(), 403);
+
+        $request->validate([
+            'share.*' => 'bail|required|min:0|max:100'
+        ]);
+
+        $data = $request->all();
+        $courseInstructorIds = [];
+        if ($request->instructor_id) {
+
+            $totalShare = array_sum($request->share);
+            if ($totalShare > 100) {
+                $this->showToastrMessage('error', 'The total percentage should not be grater than 100');
+                return back()->withInput();
+            }
+
+            foreach ($data['instructor_id'] as $id => $instructor) {
+                $courseInstructor = CourseInstructor::updateOrCreate([
+                    'instructor_id' => $id,
+                    'course_id' => $course->id,
+                ], [
+                    'instructor_id' => $id,
+                    'course_id' => $course->id,
+                    'share' => $data['share'][$id],
+                ]);
+                array_push($courseInstructorIds, $courseInstructor->id);
+            }
+        } else {
+            $totalShare = 0;
+        }
+
+        $courseInstructor = CourseInstructor::updateOrCreate([
+            'instructor_id' => $course->user_id,
+            'course_id' => $course->id,
+        ], [
+            'instructor_id' => $course->user_id,
+            'course_id' => $course->id,
+            'share' => (100 - $totalShare),
+            'status' => STATUS_ACCEPTED
+        ]);
+        array_push($courseInstructorIds, $courseInstructor->id);
+        CourseInstructor::whereNotIn('id', $courseInstructorIds)->where('course_id', $course->id)->delete();
+        $this->showToastrMessage('success', __('Instructors has been added successfully.'));
+        return redirect(route('organization.course.submit-version', $course->uuid));
+    }
+    public function submitVersion($uuid)
+    {
+        $course = Course::where('courses.uuid', $uuid)->firstOrFail();
+        $this->authorize('update', $course);
+        $data['course'] = $course;
+        return view('organization.course.edit.submit-lesson', $data);
     }
     public function uploadFinished($uuid, Request $request)
     {

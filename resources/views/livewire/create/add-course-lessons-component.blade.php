@@ -561,10 +561,10 @@
                                                 <a href="{{ route('organization.course.set-category', [$course->uuid]) }}"
                                                     class="theme-btn theme-button3">{{ __('Back') }}</a>
                                                 @if ($course->lectures->count() > 0)
-                                                    <a href="{{ route('organization.course.add-instructors', ['uuid' => $course->uuid]) }}"
+                                                    <a href="{{ route('organization.course.update-instructors', ['uuid' => $course->uuid]) }}"
                                                         class="theme-btn default-hover-btn theme-button1">{{ __('Save and continue') }}</a>
                                                 @endif
-                                            </div>
+                                            </div> @dd('asdsad')
 
                                             <!-- When click this button show: "add-more-section-wrap" -->
                                             <button wire:click.prevent='toggleAddNewLesson'
@@ -676,7 +676,6 @@
                     icon: "success",
                 });
             });
-            
         </script>
     @endpush
 </div>

@@ -49,6 +49,7 @@ class SetCourseOverviewComponent extends Component
         $this->navCourseUploadActiveClass = $navCourseUploadActiveClass;
         $this->conditions = $conditions;
         $this->course = $course;
+
         $this->courseVersion = $course->activeCourseVersion();
         $this->details = $this->courseVersion->details;
         // dd($this->course);
@@ -57,7 +58,10 @@ class SetCourseOverviewComponent extends Component
 
         $this->updated_key_points = data_get($this->details, 'updated_key_points', []);
         $this->new_key_points = data_get($this->details, 'new_key_points', []);
+        $this->deleted_key_points = data_get($this->details, 'deleted_key_points', []);
+
         $this->original_key_points = $this->course->keyPoints->pluck('name', 'id')->toArray();
+
         $key_points = LearnKeyPoint::whereIn('id', $this->new_key_points)->get()->concat($this->course->keyPoints);
         $this->key_points = $key_points->mapWithKeys(function ($keyPoint) {
             return [
@@ -68,12 +72,12 @@ class SetCourseOverviewComponent extends Component
             ];
         })->toArray();
         // dd($this->key_points);
+
         foreach ($this->key_points as $key => $value) {
             $id = $value['id'];
             $name = $value['name'];
             if (isset($id) && isset($this->updated_key_points[$id])) {
-                $this->key_points[$key]['name'] =
-                    $this->updated_key_points[$id];
+                $this->key_points[$key]['name'] = $this->updated_key_points[$id];
             }
         }
 
@@ -120,13 +124,13 @@ class SetCourseOverviewComponent extends Component
         if (isset($this->new_key_point[$point_id])) {
             LearnKeyPoint::destroy($point_id);
             unset($this->key_points[$index]);
+        } else {
+            $this->deleted_key_points[] = $point_id;
         }
         unset(
             $this->new_key_points[$point_id],
             $this->updated_key_points[$point_id]
         );
-
-        $this->deleted_key_points[] = $point_id;
     }
     public function rules()
     {
@@ -171,15 +175,19 @@ class SetCourseOverviewComponent extends Component
 
 
 
-            $this->course->update($data);
             foreach ($this->key_points as ['id' => $point_id, 'name' => $point_name]) {
-                $point_was_updated = isset($this->updated_key_points[$point_id]);
+
+                $point_old_name = data_get($this->original_key_points, $point_id);
+                $point_was_updated = $point_old_name && $point_old_name != $point_name;
+
                 $point_is_new = isset($this->new_key_points[$point_id]);
                 $key_point = LearnKeyPoint::find($point_id);
+
                 if ($point_is_new) {
                     $key_point->update(['name' => $point_name]);
                     continue;
                 }
+
                 if ($point_was_updated) {
                     $this->updated_key_points[$point_id] = $point_name;
                 }
@@ -192,11 +200,11 @@ class SetCourseOverviewComponent extends Component
                 'deleted_key_points' => $this->deleted_key_points
             ];
             $this->courseVersion->update(['details' => $details]);
-            $this->courseVersion->refresh();
         } catch (\Exception $e) {
             DB::rollBack();
             throw $e;
         }
+        DB::commit();
         // $this->mount(
         //     $this->title,
         //     $this->navCourseUploadActiveClass,

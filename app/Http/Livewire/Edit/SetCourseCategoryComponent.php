@@ -36,7 +36,8 @@ class SetCourseCategoryComponent extends Component
     // form properties
     public User $user;
     public Course $course;
-    public CourseVersion $course_version;
+    public CourseVersion $courseVersion;
+    public $details = [];
     public $category_id;
     public $subcategory_id;
     public $selectedTags = [];
@@ -54,22 +55,27 @@ class SetCourseCategoryComponent extends Component
     public function mount()
     {
         $this->categories = Category::active()->orderBy('name', 'asc')->select('id', 'name')->get();
-        if ($this->course->category_id) {
-            $this->subcategories = Subcategory::where('category_id', $this->course->category_id)->select('id', 'name')->orderBy('name', 'asc')->get();
-        }
+
+        $this->courseVersion = $this->course->activeCourseVersion();
+        $this->details = $this->courseVersion->details;
+        $this->category_id = data_get($this->details, 'category_id', $this->course->category_id);
+        $this->subcategories = Subcategory::where('category_id', $this->course->category_id)->select('id', 'name')->orderBy('name', 'asc')->get();
+
+
+
+
         $this->fill([
-            'category_id' => $this->course->category_id,
-            'subcategory_id' => $this->course->subcategory_id,
-            'selectedTags' => $this->course->tags->pluck('id')->toArray(),
-            'drip_content' => $this->course->drip_content,
-            'access_period' => $this->course->access_period ?? 0,
-            'learner_accessibility' => $this->course->learner_accessibility,
-            'price' => $this->course->price,
-            'old_price' => $this->course->old_price,
-            'course_language_id' => $this->course->course_language_id,
-            'difficulty_level_id' => $this->course->difficulty_level_id,
-            'intro_video_check' => $this->course->intro_video_check,
-            'youtube_video_id' => $this->course->youtube_video_id,
+            'subcategory_id' => data_get($this->details, 'subcategory_id', $this->course->subcategory_id),
+            'selectedTags' => data_get($this->details,'tags',$this->course->tags->pluck('id')->toArray()),
+            'drip_content' => data_get($this->details,'drip_content',$this->course->drip_content),
+            'access_period' => data_get($this->details,'access_period',$this->course->access_period ?? 0),
+            'learner_accessibility' => data_get($this->details,'learner_accessibility',$this->course->learner_accessibility),
+            'price' => data_get($this->details,'price',$this->course->price),
+            'old_price' => data_get($this->details,'old_price',$this->course->old_price),
+            'course_language_id' => data_get($this->details,'course_language_id',$this->course->course_language_id),
+            'difficulty_level_id' => data_get($this->details,'difficulty_level_id',$this->course->difficulty_level_id),
+            'intro_video_check' => data_get($this->details,'intro_video_check',$this->course->intro_video_check),
+            'youtube_video_id' => data_get($this->details,'youtube_video_id',$this->course->youtube_video_id),
         ]);
         /** @var User $user */
         $user = auth()->user();
@@ -155,15 +161,16 @@ class SetCourseCategoryComponent extends Component
             return redirect()->to('/');
         }
         if ($this->image) {
-
-            $this->deleteFile($this->course->image); // delete file from server
+            // TODO use this in admin edit approval
+            // $this->deleteFile($this->course->image); // delete file from server
 
             $image = $this->saveImage('course', $this->image, null, null); // new file upload into server
         } else {
             $image = $this->course->image;
         }
         if ($this->video) {
-            $this->deleteVideoFile($this->course->video); // delete file from server
+            // TODO use this in admin edit approval
+            // $this->deleteVideoFile($this->course->video); // delete file from server
             $file_name = time() . Str::random(10) . '.' . $this->video->getClientOriginalExtension();
             $video = $this->video->storeAs('uploads/course', $file_name);
         } else {
@@ -180,15 +187,21 @@ class SetCourseCategoryComponent extends Component
             'course_language_id' => $this->course_language_id,
             'difficulty_level_id' => $this->difficulty_level_id,
             'learner_accessibility' => $this->learner_accessibility,
-            'image' => $image ?? null,
-            'video' => $video ?? null,
+            'image' => $image ?? $this->course->image,
+            'video' => $video ?? $this->course->video,
             'intro_video_check' => $this->intro_video_check,
             'youtube_video_id' => $this->youtube_video_id ?? null,
         ];
 
-
-        $this->course->update($data);
-        $this->course->tags()->sync($this->selectedTags);
+        $details = [
+            ...$this->details,
+            ...$data,
+            'tags' => $this->selectedTags,
+        ];
+        $this->courseVersion->update(['details' => $details]);
+        // TODO use this in admin edit approval
+        // $this->course->update($data);
+        // $this->course->tags()->sync($this->selectedTags);
 
 
 
@@ -198,6 +211,6 @@ class SetCourseCategoryComponent extends Component
         //     $this->send($text, 1, $target_url, null);
         // }
 
-        return redirect(route('organization.course.add-lessons', [$this->course->uuid,]));
+        return redirect(route('organization.course.update-lessons', [$this->course->uuid,]));
     }
 }

@@ -90,7 +90,7 @@ Route::prefix('course')->group(function () {
         Route::get('update-overview/{uuid}', [CourseController::class, 'updateOverview'])->name('course.update-overview');
         Route::get('update-category/{uuid}', [CourseController::class, 'updateCategory'])->name('course.update-category');
         Route::get('update-lessons/{uuid}', [CourseController::class, 'updateLessons'])->name('course.update-lessons');
-        Route::get('update-instructores/{uuid}', [CourseController::class, 'updateInstructors'])->name('course.update-instructors');
+        Route::get('update-instructors/{uuid}', [CourseController::class, 'updateInstructors'])->name('course.update-instructors');
         Route::get('submit-version/{uuid}', [CourseController::class, 'submitVersion'])->name('course.submit-version');
     });
 
@@ -119,6 +119,7 @@ Route::prefix('course')->group(function () {
 
     Route::post('store-instructor/{course_uuid}', [CourseController::class, 'storeInstructor'])->name('course.store.instructor')->middleware('isDemo');
     Route::post('set-instructors/{course_uuid}', [CourseController::class, 'setInstructors'])->name('course.set-instructors')->middleware('isDemo');
+    Route::post('update-instructors/{course_uuid}', [CourseController::class, 'updateCourseInstructors'])->name('course.update-instructors')->middleware('isDemo');
     Route::prefix('scorm')->group(function () {
         Route::post('{course_uuid}', [ScormController::class, 'store'])->name('scorm.store')->middleware('isDemo');
     });

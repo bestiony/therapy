@@ -279,7 +279,7 @@ class Course extends Model
             $model->organization_id = $authUser->organization ? $authUser->organization->id : null;
         });
         static::addGlobalScope('excludeEmptyCourses', function (Builder $builder) {
-            $builder->whereNot('status', EMPTY_COURSE);
+            $builder->whereNot('courses.status', EMPTY_COURSE);
         });
     }
     public function isStillNew(): bool

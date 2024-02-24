@@ -423,7 +423,7 @@ class CourseController extends Controller
     {
         $data['title'] = 'Course Enroll';
         $data['users'] = User::where('role', '!=', 1)->get();
-        $data['courses'] = Course::all();
+        $data['courses'] = Course::where('status', PUBLISHED_COURSE)->get();
 
         return view('admin.course.enroll-student', $data);
     }

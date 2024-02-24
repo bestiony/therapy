@@ -32,7 +32,8 @@
                                 @if ($course->private_mode)
                                     <span
                                         class="course-tag badge unpublish-badge radius-3 font-14 font-medium position-absolute">{{ __('Private') }}</span>
-                                @elseif($course->status == 1)
+                                        @endif
+                                @if($course->status == 1)
                                     <span
                                         class="course-tag badge publish-badge radius-3 font-14 font-medium position-absolute">{{ __('Published') }}</span>
                                 @elseif($course->status == 2)

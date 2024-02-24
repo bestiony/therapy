@@ -99,5 +99,7 @@ class Kernel extends HttpKernel
         'owns_comment' => \App\Http\Middleware\OwnsComment::class,
         'owns_reply' => \App\Http\Middleware\OwnsReply::class,
         'or' => \App\Http\Middleware\OrMiddleware::class,
+        'is_draft' => \App\Http\Middleware\CheckCourseDraft::class,
+        'is_published' => \App\Http\Middleware\CheckCoursePublished::class,
     ];
 }

@@ -29,6 +29,7 @@ use App\Traits\General;
 use App\Traits\ImageSaveTrait;
 use App\Traits\SendNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 class CourseController extends Controller
@@ -125,13 +126,14 @@ class CourseController extends Controller
             }
         }
 
-        $course->status = 2;
+        $course->status = WAITING_FOR_REVIEW_COURSE;
         $course->save();
-        if ($course->status != 0) {
-            $text = __("Course") . " " . $course->title . " " . __(" have a pending update by the instructor");
-            $target_url = route('admin.course.review_pending');
-            $this->send($text, 1, $target_url, null);
-        }
+
+        // notify admin for review course
+        $text = __("Course") . " " . $course->title . " " . __(" have a pending update by the instructor");
+        $target_url = route('admin.course.review_pending');
+        $this->send($text, 1, $target_url, null);
+
 
         return redirect(route('organization.course.index'));
     }
@@ -191,6 +193,8 @@ class CourseController extends Controller
         $course = Course::where('courses.uuid', $uuid)->firstOrFail();
         if ($course->isStillNew()) {
             return redirect(route('organization.course.set-overview', [$course->uuid]));
+        } else {
+            return redirect(route('organization.course.update-overview', [$course->uuid]));
         }
         $data['navCourseUploadActiveClass'] = 'active';
         $data['title'] = 'Upload Course';
@@ -307,8 +311,40 @@ class CourseController extends Controller
         }
     }
 
-    public function updateOverview(StoreCourseRequest $request, $uuid)
+    public function updateOverview($uuid)
     {
+        $course = Course::where('courses.uuid', $uuid)->firstOrFail();
+        $this->authorize('update', $course);
+        if (Gate::denies('createNewVersion', $course)) {
+            $this->showToastrMessage('error', __('This course was not submited yet. finish creating the course !'));
+            return redirect()->back();
+        }
+
+        $user = auth()->user();
+        $pending_course_version = $course->courseVersions()->where('status', PENDING_COURSE_VERSION)->first();
+        if ($pending_course_version || $course->status == WAITING_FOR_REVIEW_COURSE) {
+            $this->showToastrMessage('error', __('You have a pending edit. wait for the admin response !'));
+            return redirect()->back();
+        }
+
+        $course_version = $course->activeCourseVersion();
+        if (!$course_version) {
+            $last_course_version = $course->courseVersions()->latest()->first();
+            $course_version = $course->courseVersions()->create([
+                'instructor_id' => $user->id,
+                'version' => $last_course_version ? $last_course_version->version + 1 : 1,
+                'status' => INCOMPLETED_COURSE_VERSION,
+                'details' => [],
+            ]);
+        }
+
+        $data['title'] = 'Upload Course';
+        $data['navCourseUploadActiveClass'] = 'active';
+        $data['rules'] = CourseUploadRule::all();
+        $data['course'] = $course;
+        return view('organization.course.edit.create', $data);
+
+
         $data['navCourseUploadActiveClass'] = 'active';
         $course = Course::where('courses.uuid', $uuid)->firstOrFail();
         $user_id = auth()->id();
@@ -419,6 +455,23 @@ class CourseController extends Controller
     public function updateCategory(Request $request, $uuid)
     {
         $course = Course::where('courses.uuid', $uuid)->firstOrFail();
+        $this->authorize('update', $course);
+        $course_version = $course->activeCourseVersion();
+        if (!$course_version)
+        {
+            $this->showToastrMessage('error', __('Start from the first page !'));
+            return redirect()->back();
+        }
+        $data = [
+            'course' => $course,
+            'course_version' => $course_version,
+        ];
+        return view('organization.course.edit.edit-category', $data);
+
+
+
+
+        $course = Course::where('courses.uuid', $uuid)->firstOrFail();
         $user_id = auth()->id();
 
         if (!$course->user_id == $user_id) {
@@ -494,7 +547,10 @@ class CourseController extends Controller
 
         return redirect(route('organization.course.edit', [$course->uuid, 'step=lesson', 'course_version_id' => ($course_version ?  $course_version->id : null)]));
     }
-
+    public function updateLessons($uuid)
+    {
+        return view('organization.course.edit.lesson');
+    }
     public function uploadFinished($uuid, Request $request)
     {
         $course = Course::where('courses.uuid', $uuid)->firstOrFail();

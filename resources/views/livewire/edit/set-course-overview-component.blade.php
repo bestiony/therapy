@@ -18,7 +18,7 @@
 
                             <!-- Upload Course Overview-1 start -->
                             <div id="upload-course-overview-1">
-                                <form wire:submit.prevent="setCourseOverview" id="step1"
+                                <form wire:submit.prevent="updateCourseOverview" id="step1"
                                     class="row g-3 needs-validation" novalidate>
                                     @csrf
 
@@ -53,7 +53,7 @@
                                                     class="form-select" required>
                                                     <option value="">
                                                         {{ __('Select Course
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        Type') }}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Type') }}
                                                     </option>
                                                     <option value="{{ COURSE_TYPE_GENERAL }}"
                                                         {{ old('course_type') == COURSE_TYPE_GENERAL ? 'selected' : '' }}>
@@ -164,28 +164,47 @@
                                                     <div data-repeater-list="key_points" class="">
                                                         <label for="name" class="text-lg-right text-black">
                                                             {{ __('Name') }} </label>
-                                                        @foreach ($key_points as $key => $point)
+                                                        @foreach ($key_points as $key => ['id' => $point_id, 'name' => $point_name])
+                                                            @php
+                                                                $point_was_deleted = in_array($point_id, $deleted_key_points);
+                                                                $point_is_new = in_array($point_id, $new_key_points);
+
+                                                                $point_new_name = data_get($original_key_points, $point_id);
+                                                                $point_was_updated = $point_new_name && $point_new_name != $point_name;
+                                                            @endphp
                                                             <div data-repeater-item=""
                                                                 class="form-group row align-items-center">
                                                                 <div class="custom-form-group mb-3 col-md-10">
-                                                                    <input
+                                                                    @if ($point_was_updated)
+                                                                        <p>{{ __('Previous Value') }}:
+                                                                            <span class="badge bg-secondary">
+                                                                                {{ data_get($original_key_points, $point_id) }}
+                                                                            </span>
+                                                                        </p>
+                                                                    @endif
+                                                                    <input {{ $point_was_deleted ? 'disabled' : '' }}
+                                                                        style="
+                                                                        {{ $point_was_deleted ? 'text-decoration: line-through;' : '' }}
+                                                                        {{ $point_is_new ? 'border: 1px solid green;' : '' }}
+                                                                        {{ $point_was_updated ? 'border: 1px solid purple;' : '' }}"
                                                                         wire:model='key_points.{{ $key }}.name'
                                                                         wire:key='{{ $key }}' type="text"
                                                                         name="name" id="name"
                                                                         class="form-control"
                                                                         placeholder="Type key point name" required>
                                                                 </div>
-
-                                                                <div class="col mb-3">
-                                                                    <button {{-- href="javascript:;" data-repeater-delete="" --}}
-                                                                        wire:click.prevent='removeKeyPoint({{ $key }})'
-                                                                        class="theme-btn theme-button1 default-delete-btn-red default-hover-btn
+                                                                @if (!$point_was_deleted)
+                                                                    <div class="col mb-3">
+                                                                        <button {{-- href="javascript:;" data-repeater-delete="" --}}
+                                                                            wire:click.prevent='removeKeyPoint({{ $key }})'
+                                                                            class="theme-btn theme-button1 default-delete-btn-red default-hover-btn
                                                                         frontend-remove-btn
                                                                          btn-danger">
-                                                                        <span class="iconify"
-                                                                            data-icon="akar-icons:cross"></span>
-                                                                    </button>
-                                                                </div>
+                                                                            <span class="iconify"
+                                                                                data-icon="akar-icons:cross"></span>
+                                                                        </button>
+                                                                    </div>
+                                                                @endif
                                                             </div>
                                                         @endforeach
                                                         <div data-repeater-item=""
@@ -246,7 +265,7 @@
                                             class="theme-btn theme-button3">{{ __('Cancel') }}</a>
                                         <button type="submit"
                                             class="theme-btn default-hover-btn theme-button1">{{ __('Save and
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        continue') }}</button>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            continue') }}</button>
                                     </div>
                                 </form>
                             </div>

@@ -56,6 +56,10 @@ class CoursePolicy
         return $user->courses->contains($course) ||
             $course->course_instructors()->where('instructor_id', $user->id)->where('status', STATUS_ACCEPTED)->exists();
     }
+    public function createNewVersion(User $user, Course $course)
+    {
+        return in_array($course->status,[PUBLISHED_COURSE, HOLD_COURSE]);
+    }
 
     /**
      * Determine whether the user can delete the model.

@@ -12,7 +12,7 @@
                             <li id="organization"><strong>{{ __('Instructor') }}</strong></li>
                             <li id="confirm"><strong>{{ __('Submit process') }}</strong></li>
                         </ul>
-
+                        
                         <div class="upload-course-step-item upload-course-overview-step-item">
                             <!-- Upload Course Overview-2 start -->
                             <form {{-- method="POST" action="{{route('organization.course.update.category', [$course->uuid])}}" --}} wire:submit.prevent="setCourseCategory"

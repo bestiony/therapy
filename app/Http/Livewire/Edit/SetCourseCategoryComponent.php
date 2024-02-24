@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Edit;
 use App\Models\Category;
 use App\Models\Course;
 use App\Models\Course_language;
+use App\Models\CourseVersion;
 use App\Models\Difficulty_level;
 use App\Models\Subcategory;
 use App\Models\Tag;
@@ -35,6 +36,7 @@ class SetCourseCategoryComponent extends Component
     // form properties
     public User $user;
     public Course $course;
+    public CourseVersion $course_version;
     public $category_id;
     public $subcategory_id;
     public $selectedTags = [];
@@ -52,7 +54,7 @@ class SetCourseCategoryComponent extends Component
     public function mount()
     {
         $this->categories = Category::active()->orderBy('name', 'asc')->select('id', 'name')->get();
-        if($this->course->category_id){
+        if ($this->course->category_id) {
             $this->subcategories = Subcategory::where('category_id', $this->course->category_id)->select('id', 'name')->orderBy('name', 'asc')->get();
         }
         $this->fill([

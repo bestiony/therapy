@@ -79,22 +79,26 @@ Route::prefix('student')->group(function () {
 Route::prefix('course')->group(function () {
 
     Route::get('create', [CourseController::class, 'createEmpty'])->name('course.create-empty');
-    Route::get('set-overview/{uuid}', [CourseController::class, 'setOverview'])->name('course.set-overview');
-    Route::get('set-category/{uuid}', [CourseController::class, 'setCategory'])->name('course.set-category');
-    Route::get('add-lessons/{uuid}', [CourseController::class, 'addLessons'])->name('course.add-lessons');
-    Route::get('add-instructors/{uuid}', [CourseController::class, 'addInstructors'])->name('course.add-instructors');
-    Route::get('submit-draft/{uuid}', [CourseController::class, 'submitDraft'])->name('course.submit-draft');
-
-    Route::get('update-overview/{uuid}', [CourseController::class, 'updateOverview'])->name('course.update-overview');
-    Route::get('update-category/{uuid}', [CourseController::class, 'updateCategory'])->name('course.update-category');
-    Route::get('update-lessons/{uuid}', [CourseController::class, 'updateLessons'])->name('course.update-lessons');
-    Route::get('update-instructores/{uuid}', [CourseController::class, 'updateInstructors'])->name('course.update-instructors');
+    Route::middleware('is_draft')->group(function () {
+        Route::get('set-overview/{uuid}', [CourseController::class, 'setOverview'])->name('course.set-overview');
+        Route::get('set-category/{uuid}', [CourseController::class, 'setCategory'])->name('course.set-category');
+        Route::get('add-lessons/{uuid}', [CourseController::class, 'addLessons'])->name('course.add-lessons');
+        Route::get('add-instructors/{uuid}', [CourseController::class, 'addInstructors'])->name('course.add-instructors');
+        Route::get('submit-draft/{uuid}', [CourseController::class, 'submitDraft'])->name('course.submit-draft');
+    });
+    Route::middleware('is_published')->group(function () {
+        Route::get('update-overview/{uuid}', [CourseController::class, 'updateOverview'])->name('course.update-overview');
+        Route::get('update-category/{uuid}', [CourseController::class, 'updateCategory'])->name('course.update-category');
+        Route::get('update-lessons/{uuid}', [CourseController::class, 'updateLessons'])->name('course.update-lessons');
+        Route::get('update-instructores/{uuid}', [CourseController::class, 'updateInstructors'])->name('course.update-instructors');
+        Route::get('submit-version/{uuid}', [CourseController::class, 'submitVersion'])->name('course.submit-version');
+    });
 
 
     Route::get('/', [CourseController::class, 'index'])->name('course.index');
     Route::post('store', [CourseController::class, 'store'])->name('course.store')->middleware('isDemo');
     Route::get('edit/{uuid}', [CourseController::class, 'edit'])->name('course.edit');
-    Route::post('update-overview/{uuid}', [CourseController::class, 'updateOverview'])->name('course.update.overview')->middleware('isDemo');
+    // Route::post('update-overview/{uuid}', [CourseController::class, 'updateOverview'])->name('course.update.overview')->middleware('isDemo');
     Route::post('update-category/{uuid}', [CourseController::class, 'updateCategory'])->name('course.update.category')->middleware('isDemo');
     Route::get('upload-finished/{uuid}', [CourseController::class, 'uploadFinished'])->name('course.upload-finished');
     Route::delete('course-delete/{uuid}', [CourseController::class, 'delete'])->name('course.delete')->middleware('isDemo');

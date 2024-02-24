@@ -549,7 +549,10 @@ class CourseController extends Controller
     }
     public function updateLessons($uuid)
     {
-        return view('organization.course.edit.lesson');
+        $course = Course::where('courses.uuid', $uuid)->firstOrFail();
+        $this->authorize('update', $course);
+        $data['course'] = $course;
+        return view('organization.course.edit.lesson',$data);
     }
     public function uploadFinished($uuid, Request $request)
     {

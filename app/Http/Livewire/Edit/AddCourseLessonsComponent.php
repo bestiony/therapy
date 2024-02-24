@@ -107,6 +107,8 @@ class AddCourseLessonsComponent extends Component
     }
     public function render()
     {
-        return view('livewire.edit.add-course-lessons-component');
+        $this->dispatchBrowserEvent('contentUpdated');
+
+        return view('livewire.create.add-course-lessons-component');
     }
 }

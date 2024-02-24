@@ -676,6 +676,7 @@
                     icon: "success",
                 });
             });
+            
         </script>
     @endpush
 </div>

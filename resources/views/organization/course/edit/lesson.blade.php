@@ -25,7 +25,7 @@
         // dd($updated_course_lessons);
     @endphp
 
-    @livewire('create.add-course-lessons-component', [
+    @livewire('edit.add-course-lessons-component', [
         'course' => $course,
     ])
 @endsection

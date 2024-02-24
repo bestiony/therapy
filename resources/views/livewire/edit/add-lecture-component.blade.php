@@ -144,7 +144,8 @@
                                                                     </select>
                                                                 </div>
                                                             </div>
-                                                            <div class="vimeo_Video_file_upload_div d-none">
+                                                            <div class="vimeo_Video_file_upload_div d-none"
+                                                                wire:ignore.self>
                                                                 <label
                                                                     class="label-text-title color-heading font-medium font-16 mb-3">{{ __('Upload Video') }}<span
                                                                         class="text-danger">*</span></label>
@@ -168,7 +169,8 @@
                                                                         {{ $message }}</span>
                                                                 @enderror
                                                             </div>
-                                                            <div class="vimeo_uploaded_Video_id_div d-none">
+                                                            <div class="vimeo_uploaded_Video_id_div d-none"
+                                                                wire:ignore.self>
                                                                 <div class="row mb-30">
                                                                     <div class="col-md-12">
                                                                         <label
@@ -514,35 +516,37 @@
                 </div>
                 <input type="hidden" value="{{ old('type') }}" class="oldTypeYoutube">
             </div>
-            <script wire:ignore>
-                < script src = "{{ asset('common/js/summernote/summernote-lite.min.js') }}" >
-            </>
 
-            $('#summernote').summernote({
-            callbacks: {
-            onChange: function(contents, $editable) {
-            @this.set('text_description', contents);
-            }
-            }
-            });
-            document.addEventListener('livewire:load', function() {
-
-            initializeSummernote();
-            console.log('livewire loaded')
-            Livewire.on('reinitializeSummernote', function() {
-            console.log('reinitilized loaded')
-
-            initializeSummernote();
-
-            });
-            });
-
-            function initializeSummernote() {
-            $("#summernote").summernote({
-            dialogsInBody: true
-            });
-            }
-            </script>
         </div>
     </div>
+    @push('script')
+        <script src="{{ asset('common/js/summernote/summernote-lite.min.js') }}"></script>
+
+        <script wire:ignore>
+            $('#summernote').summernote({
+                callbacks: {
+                    onChange: function(contents, $editable) {
+                        @this.set('text_description', contents);
+                    }
+                }
+            });
+            // document.addEventListener('livewire:load', function() {
+
+            // initializeSummernote();
+            //     console.log('livewire loaded')
+            //     Livewire.on('reinitializeSummernote', function() {
+            //         console.log('reinitilized loaded')
+
+            //         initializeSummernote();
+
+            //     });
+            // });
+
+            // function initializeSummernote() {
+            //     $("#summernote").summernote({
+            //         dialogsInBody: true
+            //     });
+            // }
+        </script>
+    @endpush
 </div>

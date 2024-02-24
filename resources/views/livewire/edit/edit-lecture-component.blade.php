@@ -4,7 +4,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h6 class="modal-title" id="editLectureLabel">{{ __('Edit Lecture') }}: {{ $lecture?->title }}
-                    {{ $type }}</h6>
+                </h6>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="instructor-profile-right-part instructor-upload-course-box-part">
@@ -45,42 +45,44 @@
                                                                     <div>
                                                                         <label class="mr-15"><input type="radio"
                                                                                 wire:model='type' name="type"
-                                                                                value="video" checked class="">
+                                                                                value="video" checked
+                                                                                class="lecture-type">
                                                                             {{ __('Upload Video') }}</label>
                                                                         <label class="mr-15"><input type="radio"
                                                                                 wire:model='type' name="type"
-                                                                                value="youtube" class=""
+                                                                                value="youtube" class="lecture-type"
                                                                                 id="lectureTypeYoutube">
                                                                             {{ __('Youtube') }} </label>
                                                                         @if (env('VIMEO_STATUS') == 'active')
                                                                             <label class="mr-15"><input type="radio"
                                                                                     wire:model='type' name="type"
-                                                                                    value="vimeo" class="">
+                                                                                    value="vimeo" class="lecture-type">
                                                                                 {{ __('Vimeo') }}</label>
                                                                         @endif
                                                                         <label class="mr-15"><input type="radio"
                                                                                 wire:model='type' name="type"
-                                                                                value="text" class=""
+                                                                                value="text" class="lecture-type"
                                                                                 id="lectureTypeText">
                                                                             {{ __('Text') }} </label>
                                                                         <label class="mr-15"><input type="radio"
                                                                                 wire:model='type' name="type"
-                                                                                value="image" class=""
+                                                                                value="image" class="lecture-type"
                                                                                 id="lectureTypeImage">
                                                                             {{ __('Image') }} </label>
                                                                         <label class="mr-15"><input type="radio"
                                                                                 wire:model='type' name="type"
-                                                                                value="pdf" class=""
+                                                                                value="pdf" class="lecture-type"
                                                                                 id="lectureTypePDF">
                                                                             {{ __('PDF') }} </label>
                                                                         <label class="mr-15"><input type="radio"
                                                                                 wire:model='type' name="type"
-                                                                                value="slide_document" class=""
+                                                                                value="slide_document"
+                                                                                class="lecture-type"
                                                                                 id="lectureTypePowerpoint">
                                                                             {{ __('Slide Document') }} </label>
                                                                         <label class="mr-15"><input type="radio"
                                                                                 wire:model='type' name="type"
-                                                                                value="audio" class=""
+                                                                                value="audio" class="lecture-type"
                                                                                 id="lectureTypeAudio">
                                                                             {{ __('Audio') }} </label>
                                                                     </div>
@@ -115,6 +117,8 @@
 
                                                         <div id="youtube"
                                                             class="{{ $type == 'youtube' ? '' : 'd-none' }}">
+                                                            {{-- class="d-none" wire:ignore.self> --}}
+
                                                             <label
                                                                 class="label-text-title color-heading font-medium font-16 mb-3">{{ __('Lesson Youtube Video ID') }}
                                                                 <span class="text-danger">*</span></label>
@@ -146,7 +150,8 @@
                                                                     </select>
                                                                 </div>
                                                             </div>
-                                                            <div class="vimeo_Video_file_upload_div d-none">
+                                                            <div
+                                                                class="vimeo_Video_file_upload_div {{ $vimeo_upload_type == 1 ? '' : 'd-none' }}">
                                                                 <label
                                                                     class="label-text-title color-heading font-medium font-16 mb-3">{{ __('Upload Video') }}<span
                                                                         class="text-danger">*</span></label>
@@ -170,7 +175,8 @@
                                                                         {{ $message }}</span>
                                                                 @enderror
                                                             </div>
-                                                            <div class="vimeo_uploaded_Video_id_div d-none">
+                                                            <div
+                                                                class="vimeo_uploaded_Video_id_div {{ $vimeo_upload_type == 2 ? '' : 'd-none' }}">
                                                                 <div class="row mb-30">
                                                                     <div class="col-md-12">
                                                                         <label
@@ -217,12 +223,19 @@
                                                         </div>
 
                                                         <div id="text"
-                                                            class="{{ $type == 'text' ? '' : 'd-none' }}" wire.ignore>
+                                                            class="{{ $type == 'text' ? '' : 'd-none' }}">
+                                                            {{-- class="d-none" wire:ignore.self> --}}
                                                             <label
                                                                 class="label-text-title color-heading font-medium font-16 mb-3">{{ __('Lesson Description') }}
                                                                 <span class="text-danger">*</span></label>
-                                                            <textarea name="text_description" wire:model='text_description' id="summernote" class="textDescription"
-                                                                cols="30" rows="10">{{ old('text_description') }}</textarea>
+                                                            <div wire:ignore>
+
+                                                                <textarea name="text_description" id="summernoteedit" class="textDescription" cols="30" rows="10"></textarea>
+                                                            </div>
+                                                            {{-- <textarea name="text_description" wire:model='text_description' id="summernoteedit" class="textDescription"
+                                                                cols="30" rows="10"></textarea> --}}
+
+
                                                         </div>
                                                         <div id="imageDiv"
                                                             class="{{ $type == 'image' ? '' : 'd-none' }}">
@@ -406,8 +419,8 @@
                                                                             @enderror
                                                                         </div>
                                                                     </div>
-                                                                    <div class="row mb-30 d-none" id="fileDuration"
-                                                                        wire:ignore.self>
+                                                                    <div class="row mb-30 {{ $type == 'youtube' ? '' : 'd-none' }}"
+                                                                        id="fileDuration">
                                                                         <div class="col-md-12">
                                                                             <label
                                                                                 class="label-text-title color-heading font-medium font-16 mb-3">{{ __('Lesson File Duration') }}
@@ -531,14 +544,62 @@
                 <input type="hidden" value="{{ old('type') }}" class="oldTypeYoutube">
             </div>
             @push('script')
-                <script>
-                    $('#summernote').summernote({
+                {{-- <script src="{{ asset('common/js/summernote/summernote-lite.min.js') }}"></script> --}}
+
+                <script wire:ignore>
+                    $('#summernoteedit').summernote({
                         callbacks: {
                             onChange: function(contents, $editable) {
+                                console.log('sth hapended inside ')
                                 @this.set('text_description', contents);
                             }
                         }
                     });
+                    document.addEventListener('set-summernote-value', function(e) {
+                        console.log(e)
+                        $('#summernoteedit').summernote('code', e.detail.value);
+                    });
+                    // $('#summernoteedit').summernote('code', '{{ $text_description }}');
+
+                    $('.note-editor').attr('wire:ignore', '')
+
+                    // document.addEventListener('reinitializeSummernote', function() {
+                    //     console.log('summer note  updated')
+                    //     $('#summernoteedit').summernote({
+                    //         callbacks: {
+                    //             onChange: function(contents, $editable) {
+                    //                 console.log('sth hapended inside ')
+                    //                 @this.set('text_description', contents);
+                    //             }
+                    //         }
+                    //     });
+                    // });
+                    // initializeSummernote();
+
+                    // $(document).ready(function() {
+                    //     $("#summernote2").summernote({
+                    //         dialogsInBody: true
+                    //     });
+                    //     $('.dropdown-toggle').dropdown();
+                    // });
+
+                    // $(document).ready(function() {
+                    //     $('#summernote-edit').summernote();
+                    // });
+                    // document.addEventListener('livewire:load', function() {
+                    //     initializeSummernote();
+                    //     console.log('livewire loaded')
+                    //     Livewire.on('reinitializeSummernote', function() {
+                    //         console.log('reinitilized loaded')
+
+                    //         initializeSummernote();
+
+                    //     });
+                    // });
+
+                    // function initializeSummernote() {
+
+                    // }
                 </script>
             @endpush
         </div>

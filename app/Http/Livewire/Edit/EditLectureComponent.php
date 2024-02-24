@@ -51,6 +51,7 @@ class EditLectureComponent extends Component
     public function remountLecture($lecture_id)
     {
         $this->lecture = $this->course->lectures()->where('course_lectures.id', $lecture_id)->firstOrFail();
+        $this->mount($this->course, $this->lecture);
         $this->fill([
             'type' => $this->lecture->type,
             'lecture_type' => $this->lecture->lecture_type,
@@ -62,6 +63,12 @@ class EditLectureComponent extends Component
             'vimeo_file_duration' => $this->lecture->file_duration,
             'text_description' => $this->lecture->text,
         ]);
+        // $this->dispatchBrowserEvent('reinitializeSummernote');
+        $this->dispatchBrowserEvent('set-summernote-value', ['value' => $this->text_description]);
+    }
+    public function updated()
+    {
+        $this->dispatchBrowserEvent('reinitializeSummernote');
     }
     public function mount(Course $course,  $lecture = null)
     {
@@ -91,13 +98,13 @@ class EditLectureComponent extends Component
             'text_description' => Rule::requiredIf($this->type == 'text'),
             'image' => Rule::requiredIf($this->type == 'image' && !$this->lecture?->image),
             'pdf' => Rule::requiredIf($this->type == 'pdf' && !$this->lecture?->pdf),
-            'slide_document' => Rule::requiredIf($this->type == 'slide_document'&& !$this->lecture?->slide_document),
+            'slide_document' => Rule::requiredIf($this->type == 'slide_document' && !$this->lecture?->slide_document),
             'audio' => Rule::requiredIf($this->type == 'audio' && !$this->lecture?->audio),
         ];
     }
     public function updateLecture()
     {
-
+        // dd($this->text_description);
         $this->resetErrorBag();
         $this->validate();
         DB::beginTransaction();
@@ -188,7 +195,16 @@ class EditLectureComponent extends Component
         $this->dispatchBrowserEvent('pageReload');
     }
 
-
+    public function updatedType($value)
+    {
+        if ($this->type == 'text') {
+            $this->reinitializeSummernote();
+        }
+    }
+    public function reinitializeSummernote()
+    {
+        $this->emit('reinitializeSummernote');
+    }
 
     private function saveLectureVideo($request, $lecture, $course_version = null)
     {
@@ -218,7 +234,9 @@ class EditLectureComponent extends Component
 
     public function render()
     {
-        return view('livewire.edit.edit-lecture-component');
+        // $this->reinitializeSummernote();
+
+        return view('livewire.create.edit-lecture-component');
     }
     function timeToSeconds(string $time): int
     {

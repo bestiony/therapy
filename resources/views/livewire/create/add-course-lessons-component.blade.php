@@ -564,7 +564,7 @@
                                                     <a href="{{ route('organization.course.update-instructors', ['uuid' => $course->uuid]) }}"
                                                         class="theme-btn default-hover-btn theme-button1">{{ __('Save and continue') }}</a>
                                                 @endif
-                                            </div> @dd('asdsad')
+                                            </div> 
 
                                             <!-- When click this button show: "add-more-section-wrap" -->
                                             <button wire:click.prevent='toggleAddNewLesson'

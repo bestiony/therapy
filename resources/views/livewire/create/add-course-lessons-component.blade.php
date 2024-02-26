@@ -561,7 +561,7 @@
                                                 <a href="{{ route('organization.course.set-category', [$course->uuid]) }}"
                                                     class="theme-btn theme-button3">{{ __('Back') }}</a>
                                                 @if ($course->lectures->count() > 0)
-                                                    <a href="{{ route('organization.course.update-instructors', [$course->uuid]) }}"
+                                                    <a href="{{ route('organization.course.add-instructors', [$course->uuid]) }}"
                                                         class="theme-btn default-hover-btn theme-button1">{{ __('Save and continue') }}</a>
                                                 @endif
                                             </div>

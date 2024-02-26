@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Edit;
 
 use App\Models\Course;
 use App\Models\Course_lesson;
+use App\Models\CourseVersion;
 use App\Traits\ImageSaveTrait;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
@@ -25,6 +26,16 @@ class AddCourseLessonsComponent extends Component
         'deleteLecture' => 'deleteLecture',
         'lectureAdded' => 'remountSections'
     ];
+
+    // edit related
+    public CourseVersion $courseVersion;
+    public $details = [];
+    public $new_lessons =[];
+    public $updated_lessons = [];
+    public $deleted_lessons = [];
+    public $new_sections = [];
+    public $updated_sections = [];
+    public $deleted_sections = [];
     public function remountSections()
     {
         $this->course->load('lessons.lectures');
@@ -89,7 +100,9 @@ class AddCourseLessonsComponent extends Component
         }
         $lecture = $this->course->lectures()->where('id', $lectureId)->first();
 
-
+        if (in_array($lecture->id, $this->new_lessons)) {
+            
+        }
         $this->deleteFile($lecture->file_path); // delete file from server
 
         if ($lecture->type == 'vimeo') {
@@ -103,9 +116,18 @@ class AddCourseLessonsComponent extends Component
     public function mount()
     {
         $this->course->load('lessons.lectures');
-        $this->lessons = $this->course->lessons;
-        
+        $this->courseVersion = $this->course->activeCourseVersion();
+        $this->details = $this->courseVersion->details;
+        $this->fill([
+            'new_lessons' => data_get($this->details, 'new_lessons', []),
+            'updated_lessons' => data_get($this->details, 'updated_lessons', []),
+            'deleted_lessons' => data_get($this->details, 'deleted_lessons', []),
+            'new_sections' => data_get($this->details, 'new_sections', []),
+            'updated_sections' => data_get($this->details, 'updated_sections', []),
+            'deleted_sections' => data_get($this->details, 'deleted_sections', []),
+        ]);
 
+        $this->lessons = $this->course->lessons->concat(Course_lesson::whereIn('id',$this->new_lessons));
 
 
 

@@ -19,7 +19,7 @@ class CheckCourseDraft
      */
     public function handle(Request $request, Closure $next)
     {
-        $course = Course::where('uuid', $request->route('uuid'))->firstOrFail();
+        $course = Course::withoutGlobalScope('excludeEmptyCourses')->where('uuid', $request->route('uuid'))->firstOrFail();
         if (!$course->isStillNew()) {
             $this->showToastrMessage('error', 'This course is not in draft mode');
             return redirect()->back();

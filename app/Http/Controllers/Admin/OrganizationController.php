@@ -44,7 +44,7 @@ class OrganizationController extends Controller
         $data['title'] = __('Organization Profile');
         $organization = Organization::where('uuid', $uuid)->first();
         $data['organization'] =  $organization;
-        $data['category'] = Category::find($organization->user_category_id) ;
+        $data['category'] = Category::find($organization->user_category_id);
 
         $userCourseIds = Course::whereUserId($data['organization']->user->id)->pluck('id')->toArray();
         if (count($userCourseIds) > 0) {
@@ -196,7 +196,7 @@ class OrganizationController extends Controller
         $organization =  Organization::where('uuid', $uuid)->first();
         $data['organization'] = $organization;
         $data['user'] = User::findOrfail($data['organization']->user_id);
-        $data['category'] = Category::find($organization->user_category_id) ;
+        $data['category'] = Category::find($organization->user_category_id);
         $data['categories'] = Category::active()->orderBy('name', 'asc')->select('id', 'name')->get();
 
         $data['countries'] = Country::orderBy('country_name', 'asc')->get();
@@ -286,7 +286,7 @@ class OrganizationController extends Controller
             abort('403');
         } // end permission checking
 
-        $organization = Organization::where('uuid', $uuid)->first();
+        $organization = Organization::with(['certified_parents.user'])->where('uuid', $uuid)->firstOrFail();
         $user = User::findOrfail($organization->user_id);
 
         if ($organization && $user) {
@@ -330,10 +330,15 @@ class OrganizationController extends Controller
                 $course->delete();
             }
             //End:: Course Delete
+            foreach ($organization->certified_parents as $parent) {
+                // Delete the associated user
+                $parent->user()->delete();
+                // Delete the parent
+                $parent->delete();
+            }
         }
-
-        Organization::where('uuid', $uuid)->delete($uuid);
-
+        // Delete the organization
+        $organization->delete();
         $user->role = USER_ROLE_ORGANIZATION;
         $user->save();
 
@@ -363,10 +368,9 @@ class OrganizationController extends Controller
             return response()->json(['message' => __('Organization Not Found!'), 'status' => false]);
         }
 
-        if ($request->status == STATUS_APPROVED)
-        {
+        if ($request->status == STATUS_APPROVED) {
             $user = $organization->user;
-            if(!UserPackage::where('user_id', $user->id)->first()){
+            if (!UserPackage::where('user_id', $user->id)->first()) {
                 //set default package
                 $package = Package::where('is_default', 1)->where('package_type', PACKAGE_TYPE_SAAS_ORGANIZATION)->firstOrFail();
                 $userPackageData['user_id'] = $user->id;

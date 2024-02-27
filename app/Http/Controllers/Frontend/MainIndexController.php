@@ -213,26 +213,24 @@ class MainIndexController extends Controller
             $data['pageTitle'] = __('About Instructor');
         } elseif ($user->role == USER_ROLE_ORGANIZATION) {
             $data['pageTitle'] = __('About Organization');
-        }
-        elseif ($user->role == USER_ROLE_PARENT) {
+        } elseif ($user->role == USER_ROLE_PARENT) {
             $data['pageTitle'] = __('About Parent');
-        }
-        elseif ($user->role == USER_ROLE_STUDENT) {
+        } elseif ($user->role == USER_ROLE_STUDENT) {
             $data['pageTitle'] = __('About Student');
         }
         if ($data['user']->role == USER_ROLE_ORGANIZATION) {
             $data['parents'] = User::join('certified_parents as certp', 'certp.user_id', '=', 'users.id')
-            ->where('certp.status', STATUS_APPROVED)
-            ->where('organization_id', $data['user']->organization->id)
-            ->select('*', 'users.id')
-            ->orderBy('certp.rank', 'ASC')
-            ->paginate(12);
+                ->where('certp.status', STATUS_APPROVED)
+                ->where('organization_id', $data['user']->organization->id)
+                ->select('*', 'users.id')
+                ->orderBy('certp.rank', 'ASC')
+                ->paginate(12);
             $data['instructors'] = User::join('instructors as ins', 'ins.user_id', '=', 'users.id')
-            ->where('ins.status', STATUS_APPROVED)
-            ->where('organization_id', $data['user']->organization->id)
-            ->select('*', 'users.id')
-            ->orderBy('ins.rank', 'ASC')
-            ->paginate(12);
+                ->where('ins.status', STATUS_APPROVED)
+                ->where('organization_id', $data['user']->organization->id)
+                ->select('*', 'users.id')
+                ->orderBy('ins.rank', 'ASC')
+                ->paginate(12);
             $data['consultationInstructors'] = User::join('instructors as ins', 'ins.user_id', '=', 'users.id')->where('ins.status', STATUS_APPROVED)->where('ins.consultation_available', STATUS_APPROVED)->where('organization_id', $data['user']->organization->id)->select('*', 'users.id')->paginate(12);
         }
         $data['intro_video_check'] = $user->$userRelation->intro_video_check;
@@ -875,7 +873,7 @@ class MainIndexController extends Controller
             })
             // ->whereNull('ins.organization_id')
             ->select('users.*', 'ins.organization_id', DB::raw(selectStatement()))
-            ->paginate(2);
+            ->paginate(12);
 
         $mapArray = array();
         foreach ($users as $user) {

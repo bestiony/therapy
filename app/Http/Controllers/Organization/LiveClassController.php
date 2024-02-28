@@ -180,7 +180,7 @@ class LiveClassController extends Controller
 
     public function getZoomMeetingLink(Request $request)
     {
-        $response = $this->create($request->all());
+        $response = $this->createOAuth($request->all());
 
         return response()->json([
             'start_url' => $response['data']['start_url'],

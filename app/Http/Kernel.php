@@ -94,12 +94,13 @@ class Kernel extends HttpKernel
         'device.control' => DeviceControlMiddleware::class,
         'private.mode' => PrivateModeMiddleware::class,
         'saas_check' => SaasCheck::class,
-        'verifiedphone' =>\App\Http\Middleware\PhoneIsVerified::class,
-        'notverifiedphone' =>\App\Http\Middleware\PhoneNotVerified::class,
+        'verifiedphone' => \App\Http\Middleware\PhoneIsVerified::class,
+        'notverifiedphone' => \App\Http\Middleware\PhoneNotVerified::class,
         'owns_comment' => \App\Http\Middleware\OwnsComment::class,
         'owns_reply' => \App\Http\Middleware\OwnsReply::class,
         'or' => \App\Http\Middleware\OrMiddleware::class,
         'is_draft' => \App\Http\Middleware\CheckCourseDraft::class,
         'is_published' => \App\Http\Middleware\CheckCoursePublished::class,
+        'ckeck_podcast_status' => \App\Http\Middleware\CheckPodcastStatus::class,
     ];
 }

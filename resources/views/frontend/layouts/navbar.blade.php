@@ -781,14 +781,14 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('blogs') }}">{{ __('Blog') }}</a>
                             </li>
-                            
-                            
-                            
+
+
+                            @if(get_option('podcast_status') == 1)
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('videos') }}">{{ __('Podcast ') }}</a>
                             </li>
-                            
-                            
+                            @endif
+
                             <li class="nav-item">
                                 <a class="nav-link" aria-current="page"
                                     href="{{ route('contact') }}">{{ __('Contact') }}</a>

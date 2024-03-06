@@ -5,19 +5,33 @@
                 <h2>{{ __("Students' Courses") }}</h2>
             </div>
             <div class="customers__table">
-                <div class="input__group mb-25">
-                    <select wire:model="selected_course" class="form-control" name="course_name" id="course_name">
-                        <option value="">{{ __('Choose a Course') }}</option>
-                        @foreach ($courses as $course)
-                            <option value="{{ $course->id }}">{{ $course->title }}</option>
-                        @endforeach
-                    </select>
-                    @if ($selected_course)
-                        <div class="item-title d-flex justify-content-center">
-                            <h3>{{ __('Course') }}: {{ $courses->where('id', $selected_course)->first()->title }}</h3>
-                        </div>
-                    @endif
+                <div class="d-flex justify-content-between">
+
+                    <div class="input__group mb-25">
+                        <select wire:model="selected_course" class="form-control" name="course_name" id="course_name">
+                            <option value="">{{ __('Choose a Course') }}</option>
+                            @foreach ($courses as $course)
+                                <option value="{{ $course->id }}">{{ $course->title }}</option>
+                            @endforeach
+                        </select>
+                        @if ($selected_course)
+                            <div class="item-title d-flex justify-content-center">
+                                <h3>{{ __('Course') }}: {{ $courses->where('id', $selected_course)->first()->title }}
+                                </h3>
+                            </div>
+                        @endif
+                    </div>
+                    <div class="input__group mb-25 col-2">
+                        <select wire:model="items_per_page" class="form-control" name="items_per_page"
+                            id="items_per_page">
+                            <option value="">{{ __('Choose a items per page') }}</option>
+                            @foreach ([10, 15, 25, 50, 100, 150] as $count)
+                                <option value="{{ $count }}">{{ __('showing') }} {{ $count }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
+
                 <table id="" class="row-border data-table-filter table-style">
                     <thead>
                         <tr>
@@ -67,13 +81,14 @@
                                             class="btn-action mr-30" title="Edit Details">
                                             <img src="{{ asset('admin/images/icons/edit-2.svg') }}" alt="edit">
                                         </a> --}}
-                                        @if($selected_course)
-                                        <a href="#" wire:click.prevent='confirm_remove({{ $student->user_id }})'>
-                                            <span class="">
-                                                <img src="{{ asset('admin/images/icons/trash-2.svg') }}"
-                                                    alt="trash">
-                                            </span>
-                                        </a>
+                                        @if ($selected_course)
+                                            <a href="#"
+                                                wire:click.prevent='confirm_remove({{ $student->user_id }})'>
+                                                <span class="">
+                                                    <img src="{{ asset('admin/images/icons/trash-2.svg') }}"
+                                                        alt="trash">
+                                                </span>
+                                            </a>
                                         @endif
                                         {{-- <button class="ms-3">
                                             <span data-formid="delete_row_form_{{ $student->id }}" class="deleteItem">

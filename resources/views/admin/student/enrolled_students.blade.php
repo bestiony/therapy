@@ -15,7 +15,8 @@
                         <div class="breadcrumb__content__right">
                             <nav aria-label="breadcrumb">
                                 <ul class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="{{route('admin.dashboard')}}">{{__('Dashboard')}}</a></li>
+                                    <li class="breadcrumb-item"><a
+                                            href="{{ route('admin.dashboard') }}">{{ __('Dashboard') }}</a></li>
                                     <li class="breadcrumb-item active" aria-current="page">{{ __('All student') }}</li>
                                 </ul>
                             </nav>
@@ -31,16 +32,18 @@
 @endsection
 
 @push('style')
-    <link rel="stylesheet" href="{{asset('admin/css/jquery.dataTables.min.css')}}">
+    <link rel="stylesheet" href="{{ asset('admin/css/jquery.dataTables.min.css') }}">
     @livewireStyles
 @endpush
 
 @push('script')
-    <script src="{{asset('admin/js/jquery.dataTables.min.js')}}"></script>
-    <script src="{{asset('admin/js/custom/data-table-page.js')}}"></script>
+    @livewireScripts
+
+    <script src="{{ asset('admin/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('admin/js/custom/data-table-page.js') }}"></script>
     <script>
         'use strict'
-        $(".status").change(function () {
+        $(".status").change(function() {
             var id = $(this).closest('tr').find('#hidden_id').html();
             var status_value = $(this).closest('tr').find('.status option:selected').val();
             Swal.fire({
@@ -48,28 +51,30 @@
                 text: "{{ __('You won`t be able to revert this!') }}",
                 icon: "warning",
                 showCancelButton: true,
-                confirmButtonText: "{{__('Yes, Change it!')}}",
-                cancelButtonText: "{{__('No, cancel!')}}",
+                confirmButtonText: "{{ __('Yes, Change it!') }}",
+                cancelButtonText: "{{ __('No, cancel!') }}",
                 reverseButtons: true
-            }).then(function (result) {
+            }).then(function(result) {
                 if (result.value) {
                     $.ajax({
                         type: "POST",
-                        url: "{{route('admin.student.changeStudentStatus')}}",
-                        data: {"status": status_value, "id": id, "_token": "{{ csrf_token() }}",},
+                        url: "{{ route('admin.student.changeStudentStatus') }}",
+                        data: {
+                            "status": status_value,
+                            "id": id,
+                            "_token": "{{ csrf_token() }}",
+                        },
                         datatype: "json",
-                        success: function (data) {
+                        success: function(data) {
                             toastr.options.positionClass = 'toast-bottom-right';
                             toastr.success('', "{{ __('Student status has been updated') }}");
                         },
-                        error: function () {
+                        error: function() {
                             alert("Error!");
                         },
                     });
-                } else if (result.dismiss === "cancel") {
-                }
+                } else if (result.dismiss === "cancel") {}
             });
         });
     </script>
-    @livewireScripts
 @endpush

@@ -7,9 +7,9 @@
             <div class="customers__table">
                 <div class="d-flex justify-content-between">
 
-                    <div class="input__group mb-25">
+                    <div class="input__group mb-10">
                         <select wire:model="selected_course" class="form-control" name="course_name" id="course_name">
-                            <option value="">{{ __('Choose a Course') }}</option>
+                            <option value="">{{ __('All Courses') }}</option>
                             @foreach ($courses as $course)
                                 <option value="{{ $course->id }}">{{ $course->title }}</option>
                             @endforeach
@@ -21,7 +21,7 @@
                             </div>
                         @endif
                     </div>
-                    <div class="input__group mb-25 col-2">
+                    <div class="input__group mb-10 col-2">
                         <select wire:model="items_per_page" class="form-control" name="items_per_page"
                             id="items_per_page">
                             <option value="">{{ __('Choose a items per page') }}</option>
@@ -31,7 +31,9 @@
                         </select>
                     </div>
                 </div>
-
+                <div class="my-3">
+                    {{ $students->links() }}
+                </div>
                 <table id="" class="row-border data-table-filter table-style">
                     <thead>
                         <tr>
